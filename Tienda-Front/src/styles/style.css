@@ -1,0 +1,4 @@
+.container {
+  max-width: 90vw; /* Establece el ancho máximo al 90% del ancho de la ventana del navegador */
+  overflow: auto; /* Agrega un desplazamiento si el contenido excede el tamaño máximo */
+}
