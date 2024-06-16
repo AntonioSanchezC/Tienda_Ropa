@@ -1,7 +1,7 @@
-import useQuisco from "../hooks/useQuiosco";
+import React, { useState } from "react";
+import useQuiosco from "../hooks/useQuiosco";
 import Category from "./Category";
 import SubCategory from "./SubCategory";
-import { useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 
 export default function SidebarMostrar() {
@@ -10,21 +10,25 @@ export default function SidebarMostrar() {
     subCategories,
     currentCategory,
     obtenerSubCategoriasPorCategoria,
-    handleClickFilteredProducts
-  } = useQuisco();
-
-  console.log("El valor de categories en SidebarMostrar es", categories);
-  console.log("El valor de currentCategory en SidebarMostrar es", currentCategory);
+    handleClickFilteredProducts,
+    filterProductsByGender
+  } = useQuiosco();
 
   const [errores, setErrores] = useState([]);
   const { search } = useAuth({
     middleware: 'guest',
-    url:'/'
+    url: '/'
   });
+
+
+  const handleGenderClick = (gender) => {
+    filterProductsByGender(gender);
+  };
 
   return (
     <div className="absolute z-40 md:top-32 right-0 left-0 h-full bg-white w-72 p-4 shadow-md">
-      <p>Hombre | Mujer</p>
+      <p className="cursor-pointer" onClick={() => handleGenderClick('M')}>Hombre</p>
+      <p className="cursor-pointer" onClick={() => handleGenderClick('F')}>Mujer</p>
       <div className="flex md:w-72">
         <div className="basis-1/2">
           {categories.map((category) => (
@@ -34,7 +38,7 @@ export default function SidebarMostrar() {
                 obtenerSubCategoriasPorCategoria(category.id);
                 handleClickFilteredProducts({ id: category.id, type: 'category' });
                 search();
-              }} // Llama a la función del contexto
+              }} 
             >
               <Category category={category} />
             </div>

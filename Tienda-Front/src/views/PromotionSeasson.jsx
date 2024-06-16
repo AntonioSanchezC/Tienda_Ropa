@@ -4,7 +4,7 @@ import useQuisco from '../hooks/useQuiosco';
 import Product from "../components/Product";
 
 export default function PromotionSeasson() {
-  const { img, promotions, promoProduct, product, imgProduct, idImgProduct } = useQuisco();
+  const { img, promotions, promoProduct, genderProducts, imgProduct, idImgProduct } = useQuisco();
   const listRef = useRef();
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -16,7 +16,7 @@ export default function PromotionSeasson() {
   const seassonProductIds = promoProduct
     .filter(item => filteredPromotionSeasson.some(promo => promo.id === item.promotion_id))
     .map(item => item.product_id);
-  const promotionProduct = product.filter(prod => seassonProductIds.includes(prod.id));
+  const promotionProduct = genderProducts.filter(prod => seassonProductIds.includes(prod.id));
 
   const imgProductKeys = Object.keys(idImgProduct);
   const filteredKeys = imgProductKeys.filter(key => {

@@ -9,6 +9,7 @@ import ModalProducto from '../components/ModalProducto';
 import Head from '../components/Head';
 import { useAuth } from "../hooks/useAuth";
 import '../styles/style.css';
+import Footer from '../components/Footer';
 
 const customStyles = {
   content: {
@@ -25,8 +26,8 @@ Modal.setAppElement('#root')
 
 export default function Layout() {
   const { user, error } = useAuth({ middleware: 'auth' });
-  const { modal, users, products } = useQuisco();
-console.log("El valor de products desde Layout es ", products);
+  const { modal, users, genderProducts } = useQuisco();
+console.log("El valor de products desde Layout es ", genderProducts);
   return (
     <>
       <div > 
@@ -40,6 +41,8 @@ console.log("El valor de products desde Layout es ", products);
 
           </div>
         </div>
+
+        <Footer/>
       </div>
       <ToastContainer />
     </>

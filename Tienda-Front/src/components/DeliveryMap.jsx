@@ -54,7 +54,7 @@ const DeliveryMap = ({ orderId }) => {
                 </Marker>
             ))}
             {arrival && (
-                <Marker position={[arrival.lat, arrival.lng]} icon={L.icon({ iconUrl: 'path/to/arrival-icon.png' })}>
+                <Marker position={[arrival.lat, arrival.lng]} icon={L.icon({ iconUrl: './public/icon/point.png' })}>
                     {/* Opcional: Popup para más información sobre el punto de llegada */}
                 </Marker>
             )}

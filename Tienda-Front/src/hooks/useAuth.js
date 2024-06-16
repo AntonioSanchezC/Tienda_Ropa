@@ -39,8 +39,24 @@ export const useAuth = ({middleware, url}) => {
     }
 
 
-    
-
+    const instanceProduct = async (gender, setErrores) => {
+      try {
+          console.log("Filtrando productos por género:", gender);
+  
+          // Realiza una llamada POST a tu backend para filtrar productos por género
+          await clienteAxios.post("/api/products/filter", { gender });
+  
+          setErrores([]);
+          await mutate();
+          console.log("Filtrado de productos exitoso");
+          // navigate('/'); // Si necesitas redirigir después del filtrado, descomenta esta línea
+          return null;
+      } catch (error) {
+          setErrores(["Error al filtrar los productos"]);
+          return null;
+      }
+  };
+  
 
     const insetImg = async (formData, setErrores) => {
         try {
@@ -92,11 +108,13 @@ const insetProduct = async (formData, setErrores) =>
               // Luego, enviar los datos del formulario junto con la ruta de la imagen
               const datosP = {
                               name: formData.get('name'),
+                              gender: formData.get('gender'),
                               price: formData.get('price'), // Convertir a número
                               disp: parseInt(formData.get('disp')), // Convertir a número entero
                               description: formData.get('description'),
                               size: formData.get('size'),
                               color: formData.get('color'),
+                              code_color: formData.get('code_color'),
                               quantity: formData.get('quantity'), 
                               subcate: formData.get('subcate'), 
                               image: String(imagenData.imagen), // Usar la respuesta de la subida de imagen
@@ -104,7 +122,7 @@ const insetProduct = async (formData, setErrores) =>
                               novelty:parseInt(formData.get('novelty')), // Convertir a número entero
                               warehouses: formData.get('warehouses'), 
                             };
-                  console.log('Datos del producto:', datosP); // Agregar esta línea
+                  console.log('Datos del producto:', datosP); 
               const { data } = await clienteAxios.post('/api/insertProduct', datosP);
                   console.log('Respuesta del servidor:', data); // Agregar esta línea
                   localStorage.setItem('AUTH_TOKEN', data.token); // Cambiar a 'data' en lugar de 'response.data'
@@ -141,6 +159,8 @@ const insetProduct = async (formData, setErrores) =>
     const GetSizesAndColors = async (productCode, setErrores) => {
       try {
         const { data } = await clienteAxios.get(`/api/products/${productCode}/sizes-colors`);
+        console.log("El valor de data en GetSizesAndColors es ", data.message);
+        console.log("El valor de data.colors en GetSizesAndColors es ", data.colors);
         return data;
       } catch (error) {
         setErrores(["Error with the product to fetch sizes and colors"]);
@@ -500,6 +520,7 @@ useEffect(() => {
 
 
     return{
+      instanceProduct,
         login, 
         register, 
         logout,

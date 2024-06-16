@@ -9,7 +9,7 @@ import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 
 // Ruta del icono personalizado en el servidor Laravel
-const pointIconUrl = '/icons/point.png'; // Ruta desde la carpeta 'public' de Laravel
+const pointIconUrl = '/icon/point.png'; // Ruta desde la carpeta 'public' de Laravel
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({

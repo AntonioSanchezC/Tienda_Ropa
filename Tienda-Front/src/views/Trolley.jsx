@@ -30,7 +30,7 @@ export default function Trolley() {
 
       <div className="flex flex-col md:flex-row">
         <div className="md:w-1/2 md:pr-4 p-5">
-          <div className="py-10 bg-slate-500">
+          <div className="py-10 ">
             {order.length === 0 ? (
                 <p className="text-center text-2xl">No hay elemento de tu pedido aún</p>
             ) : (
@@ -44,36 +44,28 @@ export default function Trolley() {
         </div>
 
         <div className="md:w-1/2 md:pl-4">
-          <form className="w-full" onSubmit={handleSubmit}>
-
-          <div className="py-10 ">
+          <form className="w-full bg-zinc-200 shadow-md rounded p-8" onSubmit={handleSubmit}>
+          <h1 className="text-3xl font-bold text-center mb-6">Lista de Precios</h1>
+          <div  className=" p-16">
             {order.length === 0 ? (
-                <p className="text-center text-2xl">No hay elemento de tu pedido aún</p>
+              <p className="text-center text-2xl">No hay elemento de tu pedido aún</p>
             ) : (
               order.map((product) => (
                 <TrolleyList key={product.id} product={product} />
               ))
             )}
-          </div>
-
-
-
-            <p className="text-xl mt-10">
-                Total: {''}
-                {formatearDinero(total)}
+            <p className="text-xl mt-10 text-right">
+              Total: <span className="font-bold">{formatearDinero(total)}</span>
             </p>
-
-
-            <div className="mt-5 ">
-
-
-              <Link to="/checkout">
-              <button className="bg-zinc-300 hover:bg-zinc-600 px-5 py-2 rounded uppercase font-bold text-white text-center w-1/2 md:h-32 md:ml-48 cursor-pointer">
+          </div>
+          <div className="mt-5 text-center">
+            <Link to="/checkout">
+              <button className="bg-zinc-600 hover:bg-zinc-800 px-5 py-2 rounded uppercase font-bold text-white w-full md:w-1/2 md:mx-auto">
                 Proceder al Pago
               </button>
             </Link>
-            </div>
-          </form>
+          </div>
+        </form>
         </div>
 
       </div>

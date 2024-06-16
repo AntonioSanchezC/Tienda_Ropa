@@ -9,22 +9,27 @@ export default function TrolleyProducts({product}) {
 
 
   console.log("El valor de product en TrolleyProducts ", product);
+  
     return (
-      <div className="shadow space-y-1 p-4 bg-white">
-        <div className="space-y-2">
-          <p className="text-xl font-bold">{name}</p>
-          <p className="text-lg font-bold ">Cantidad: {quantity}</p>
-          <p className="text-lg font-bold text-amber-500">
-            Precio: {formatearDinero(price.toFixed(2))}
-          </p>
-          {product.imgs && product.imgs.map(img => (
-            <img key={img.id} src={`${baseURL}/${img.image}`} alt={product.name} />
-
-        ))}
-          <p className="text-lg text-gray-700">
-            Subtotal: {formatearDinero(price * quantity)}
+      <div className="shadow-2xl mt-1 p-4 bg-white flex items-center space-x-4">
+      {product.imgs && product.imgs.map(img => (
+        <img
+          key={img.id}
+          src={`${baseURL}/${img.image}`}
+          alt={product.name}
+          className="w-20 h-20 object-cover"
+        />
+      ))}
+      <div className="flex-grow">
+        <p className="text-xl font-bold">{name}</p>
+        <div className="flex space-x-4">
+          <p className="text-lg text-zinc-500">Cantidad: {quantity}</p>
+          <p className="text-lg text-zinc-500">
+            Precio: {formatearDinero(price)}
           </p>
         </div>
+
+      </div>
   
         <div className="flex justify-between gap-2 pb-4">
           <button

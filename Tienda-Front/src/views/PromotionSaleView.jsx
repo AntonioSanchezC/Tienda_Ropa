@@ -5,13 +5,13 @@ import Product from '../components/Product';
 export default function PromotionSaleView() {
   const location = useLocation();
   const { promotion } = location.state;
-  const { promoProduct, product, imgProduct, idImgProduct } = useQuisco();
+  const { promoProduct, genderProducts, imgProduct, idImgProduct } = useQuisco();
 
   // Filtrar los productos asociados a la promoción actual
   const promotionProducts = promoProduct
     .filter(pp => pp.promotion_id === promotion.id)
     .map(pp => {
-      const productDetails = product.find(p => p.id === pp.product_id);
+      const productDetails = genderProducts.find(p => p.id === pp.product_id);
       if (productDetails) {
         const discount = parseFloat(promotion.discount) / 100;
         const discountedPrice = productDetails.price - (productDetails.price * discount);

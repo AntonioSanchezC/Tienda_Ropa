@@ -26,6 +26,9 @@ import Checkout from './views/Checkout'
 import UserView from './views/UserView'
 import PromotionSeasson from './views/PromotionSeasson'
 import PromotionSaleView from './views/PromotionSaleView'
+import InitialGender from './views/InitialGender'
+import AboutOus from './views/AboutOus'
+import ContactUs from './views/ContactUs'
 
 const router = createBrowserRouter([
     {
@@ -58,6 +61,12 @@ const router = createBrowserRouter([
         },{
             path: '/PromotionSaleView',
             element: <PromotionSaleView />
+        },{
+            path: '/aboutUs',
+            element: <AboutOus />
+        },{
+            path: '/auth/contactUs',
+            element: <ContactUs />
         },
     ]
      },
@@ -80,6 +89,9 @@ const router = createBrowserRouter([
             },     {
                 path: '/auth/code',
                 element: <Code />
+            },      {
+                path: '/auth/ini',
+                element: <InitialGender />
             }, 
 
         ]

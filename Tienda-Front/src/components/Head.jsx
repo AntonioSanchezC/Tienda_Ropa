@@ -52,12 +52,12 @@ export default function Head() {
   };
 
   return (
-    <div className=' md:w-full h-32 bg-black flex justify-between items-center m-0'>
+    <div className=' md:w-full md:h-[5rem] bg-black flex justify-between items-center m-0'>
       <Sidebar/>
 
       <div className='absolute left-1/2  transform -translate-x-1/2  rounded-full overflow-hidden' >
         <Link to={`/`}>
-          <img src={`${baseURL}/icon/Logo.png`} alt="logo icon" className='md:w-36 md:h-28'/>
+          <img src={`${baseURL}/icon/Logo.png`} alt="logo icon" className='md:w-[5rem] md:h-[6rem]'/>
         </Link>
       </div>
 

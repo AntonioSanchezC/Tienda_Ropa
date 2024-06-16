@@ -7,21 +7,21 @@ import SearchedGallery from './SearchedGallery';
 import { Link } from 'react-router-dom';
 
 export default function InitialA() {
-  const { img, promotions, promoProduct, product, imgProduct, idImgProduct } = useQuisco();
+  const { img, promotions, promoProduct, genderProducts, imgProduct, idImgProduct } = useQuisco();
 
   const listRef = useRef();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [groups, setGroups] = useState([]);
 
   useEffect(() => {
-    const noveltyProducts = product.filter((product) => product.novelty === 1);
+    const noveltyProducts = genderProducts.filter((product) => product.novelty === 1);
     noveltyProducts.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
     const groupedProducts = [];
     for (let i = 0; i < noveltyProducts.length; i += 4) {
       groupedProducts.push(noveltyProducts.slice(i, i + 4));
     }
     setGroups(groupedProducts);
-  }, [product]);
+  }, [genderProducts]);
 
   const scrollToImage = (direction) => {
     const numSlides = Math.ceil(groups.length);
@@ -47,7 +47,7 @@ export default function InitialA() {
     <div className='flex-column'>
       {lastSeasonPromotionSeasson && (
         <div className="relative group flex justify-center">
-          <Link to={`/PromotionSeasson`} className="block w-11/12 h-2/3 md:h-4/5 hover:opacity-50 transition-opacity duration-300">
+          <Link to={`/PromotionSeasson`} className="block w-10/12 h-2/3 md:h-[35rem] hover:opacity-50 transition-opacity duration-300">
             <img
               src={imagePromotionSeasson}
               alt={lastSeasonPromotionSeasson.name}
@@ -58,7 +58,7 @@ export default function InitialA() {
       )}
       {lastSeasonPromotionSale && (
         <div className="relative group flex justify-center">
-          <Link to={`/PromotionSaleView`} state={{ promotion: lastSeasonPromotionSale }} className="block w-11/12 h-2/3 md:h-4/5">
+          <Link to={`/PromotionSaleView`} state={{ promotion: lastSeasonPromotionSale }} className=" md:w-full md:h-48 my-24">
             <img
               src={imagePromotionSale}
               alt={lastSeasonPromotionSale.name}
@@ -67,49 +67,46 @@ export default function InitialA() {
           </Link>
         </div>
       )}
-      <SearchedGallery
-        products={groups[currentIndex] || []}
-        onPrev={() => scrollToImage('prev')}
-        onNext={() => scrollToImage('next')}
-      />
+
+      <SearchedGallery />
 
 
 
 
-
-      <div className="w-full relative m-0 p-6 bg-zinc-300">
-          <p className='text-slate-700'>Han llegado</p>
-            <div className="ml-18 my-3 bg-zinc-700 h-px w-[92rem]  top-1/2 transform -translate-y-1/2"></div>
-
-            <div className='absolute top-1/2 transform -translate-y-1/2 left-8 text-5xl font-bold text-slate-200 z-10 cursor-pointer' onClick={() => scrollToImage('prev')}>&#10092;</div>
-            <div className='absolute top-1/2 transform -translate-y-1/2 right-8 text-5xl font-bold text-slate-200 z-10 cursor-pointer' onClick={() => scrollToImage('next')}>&#10093;</div>
-            <div className="border border-solid border-gray-300 overflow-hidden p-7">
-              <ul ref={listRef} className='' style={{  transition: 'all 0.5s' }} >
-                {groups.map((group, groupIndex) => (
-                  <li key={groupIndex} className='' style={{ display: groupIndex === currentIndex ? 'block' : 'none' }}>
-                  <div className="flex justify-center ">
-                      {group.map((product, index) => {
-                        const imgProductForProduct = imgProduct.find((imgP) => imgP.product_id === product.id);
-                        const key = imgProductForProduct ? `${product.id}_${imgProductForProduct.img_id}` : '';
-                        const imgRelated = key && idImgProduct[key];
-                        const imagenProducto = imgRelated && imgRelated.image ? `${clienteAxios.defaults.baseURL}/${imgRelated.image}` : null;
-
-                        return (
-                          <div key={index} className="md:mt-2 md:mx-5 ">
-                            <img 
-                              src={imagenProducto}  
-                              alt={product.name}  
-                              className=" md:w-[23rem] md:h-[30rem] md:px-2"
-                            />
-                          </div>
-                        );
-                      })}
+      <div className="md:w-full md:h-[30rem] relative m-0 p-6 bg-zinc-100 mb-12">
+      <p className="text-slate-700">Han llegado</p>
+      <div className="ml-18 my-3 bg-zinc-700 h-px w-[92rem] top-1/2 transform -translate-y-1/2"></div>
+    
+      <div className="absolute top-1/2 transform -translate-y-1/2 left-8 text-5xl font-bold text-slate-200 z-10 cursor-pointer" onClick={() => scrollToImage('prev')}>&#10092;</div>
+      <div className="absolute top-1/2 transform -translate-y-1/2 right-8 text-5xl font-bold text-slate-200 z-10 cursor-pointer" onClick={() => scrollToImage('next')}>&#10093;</div>
+      <div className="overflow-hidden p-7">
+        <ul ref={listRef} className="" style={{ transition: 'all 0.5s' }}>
+          {groups.map((group, groupIndex) => (
+            <li key={groupIndex} className="" style={{ display: groupIndex === currentIndex ? 'block' : 'none' }}>
+              <div className="flex justify-center mt-[-1rem] ">
+                {group.map((product, index) => {
+                  const imgProductForProduct = imgProduct.find((imgP) => imgP.product_id === product.id);
+                  const key = imgProductForProduct ? `${product.id}_${imgProductForProduct.img_id}` : '';
+                  const imgRelated = key && idImgProduct[key];
+                  const imagenProducto = imgRelated && imgRelated.image ? `${clienteAxios.defaults.baseURL}/${imgRelated.image}` : null;
+    
+                  return (
+                    <div key={index} className="md:mt-1 md:mx-8 transform -translate-y-4 ">
+                      <img 
+                        src={imagenProducto}  
+                        alt={product.name}  
+                        className="md:w-[19rem] md:h-[23rem] md:px-2"
+                      />
                     </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
+                  );
+                })}
+              </div>
+            </li>
+          ))}
+        </ul>
       </div>
+    </div>
+    
     
 
 </div>

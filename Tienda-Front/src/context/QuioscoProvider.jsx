@@ -2,6 +2,7 @@ import { createContext, useState, useEffect } from "react";
 import { toast } from "react-toastify"; 
 import clienteAxios from "../config/axios";
 import personalAxios from "../config/axios";
+import { Navigate, useNavigate } from "react-router-dom";
 
 
 
@@ -21,6 +22,7 @@ const QuioscoProvider = ({children}) =>{
     
     //Variables que optienen los productos
     const [product, setProduct] = useState([]);
+    const [genderProducts, setGenderProducts] = useState([]);
     const [currentProduct, setCurrentProduct] = useState({});
 
     //Variables que optienen los usuarios
@@ -137,12 +139,17 @@ const QuioscoProvider = ({children}) =>{
         } catch (error) {
             console.log(error);
         }
-    };
-
-    
+    };    
     useEffect(() => {
         obtenProducts();
     },[])
+    // Filtrar productos por género
+    const filterProductsByGender = (gender) => {
+        const filtered = product.filter(product => product.gender === gender);
+        setGenderProducts(filtered);
+    };
+
+
             
     //Obtener los teléfonos
     const getPhone = async () => {
@@ -374,15 +381,17 @@ const QuioscoProvider = ({children}) =>{
     const handleSetProducto = product => {
         setProduct(product)
     }
+
     const handleQuantityCustomers = async (product, quantityCustomer) => {
+        console.log("El valor de product(s) en handleQuantityCustomers es, ", product);
         const quantityNumber = parseInt(quantityCustomer, 10);
-        const productExistIndex = order.findIndex(item => item.id === product.id);
-        
         const price = parseFloat(product.price);
+    
+        const productExistIndex = order.findIndex(item => item.id === product.id && item.warehouse_id === product.warehouse_id);
     
         if (productExistIndex !== -1) {
             const updatedOrder = order.map(item => {
-                if (item.id === product.id) {
+                if (item.id === product.id && item.warehouse_id === product.warehouse_id) {
                     return { ...item, quantity: quantityNumber, price };
                 }
                 return item;
@@ -391,14 +400,18 @@ const QuioscoProvider = ({children}) =>{
             toast.success('Cantidad actualizada');
         } else {
             const newProduct = { ...product, quantity: quantityNumber, price };
+            console.log("El valor de newProduct en handleQuantityCustomers es, ", newProduct);
             setOrder([...order, newProduct]);
+            console.log("El valor de order en handleQuantityCustomers es, ", order);
             toast.success('Producto agregado al pedido');
         }
     };
     
     
+    
       
     const handleSubmitNewOrder = async (orderData, setErrores) => {
+        console.log("El valor de orderData desde handleSubmitNewOrder es", orderData);
         const token = localStorage.getItem('AUTH_TOKEN');
         try {
           const { data } = await clienteAxios.post('/api/orders', orderData, {
@@ -406,11 +419,11 @@ const QuioscoProvider = ({children}) =>{
               Authorization: `Bearer ${token}`
             }
           });
+          console.log("El valor de validated en handleSubmitNewOrder es, ", data.validated);
           toast.success(data.message);
           setTimeout(() => {
             setOrder([]);
             localStorage.removeItem('AUTH_TOKEN');
-            logaut();
           }, 1000);
         } catch (error) {
           console.log(error);
@@ -450,6 +463,21 @@ const QuioscoProvider = ({children}) =>{
         try {
             // Realiza una solicitud al backend para enviar el mensaje
             await clienteAxios.post('/api/send-mail', { email: address, addressCode: addressCode });
+    
+            // Actualiza el estado indicando que el mensaje se ha solicitado
+            setSendedMail(true);
+        } catch (error) {
+            console.error('Error al solicitar el mensaje:', error);
+            // Manejar el error según tus necesidades
+        }
+    };
+    
+    const handleClickSendClientMessage = async (formData) => {
+        console.log("desde handleClickSendClientMessage inputValue es: ", formData);
+        try {
+            // Realiza una solicitud al backend para enviar el mensaje
+            const { data } = await clienteAxios.post('/api/contact-us', formData);
+            toast.success(data.message);
     
             // Actualiza el estado indicando que el mensaje se ha solicitado
             setSendedMail(true);
@@ -602,6 +630,7 @@ const QuioscoProvider = ({children}) =>{
                 orders,
                 warehouses,
                 arrivals,
+                genderProducts,
                 
                 handleClickCategoria,
                 handleSetProducto,
@@ -616,6 +645,8 @@ const QuioscoProvider = ({children}) =>{
                 handleClickBill,
                 handleClickSubCategoria,
                 handleClickFilteredProducts,
+                filterProductsByGender,
+                handleClickSendClientMessage
             }}
         >
             {children}
