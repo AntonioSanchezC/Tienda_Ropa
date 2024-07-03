@@ -4,17 +4,17 @@ import clienteAxios from '../config/axios';
 import useQuisco from '../hooks/useQuiosco';
 
 export default function SearchedGallery() {
-  const { genderProducts, imgProduct, idImgProduct } = useQuisco();
+  const { genderProducts, imgProduct, idImgProduct,product } = useQuisco();
 
-  if (!genderProducts || genderProducts.length === 0) {
+  if (!product || product.length === 0) {
     return <div>No hay productos disponibles.</div>;
   }
 
   // Ordenar los products por el campo "searched" de forma descendente
-  genderProducts.sort((a, b) => b.searched - a.searched);
+  product.sort((a, b) => b.searched - a.searched);
 
   // Obtener el product con el campo "searched" más alto y los otros cuatro products
-  const [mainProduct, ...otherProducts] = genderProducts.slice(0, 5);
+  const [mainProduct, ...otherProducts] = product.slice(0, 5);
 
   // Función para obtener la imagen relacionada con el product
   const getImageForProduct = (prod) => {

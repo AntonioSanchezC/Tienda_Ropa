@@ -1,0 +1,13 @@
+@keyframes slideInFromLeft {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(0);
+    }
+  }
+  
+  .sidebar-anim {
+    animation: slideInFromLeft 1s forwards;
+    z-index: 50; /* Asegúrate de que tenga un z-index alto */
+  }

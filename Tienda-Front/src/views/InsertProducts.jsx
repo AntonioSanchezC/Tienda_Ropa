@@ -1,9 +1,10 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 import { useAuth } from "../hooks/useAuth";
 import Alerta from "../components/Alerta";
 import useQuisco from "../hooks/useQuiosco";
 import { ChromePicker } from 'react-color';
+import '../styles/detailsProducts.css';
 
 export default function InsertProducts() {
   const [color, setColor] = useState('#ffffff'); // Estado inicial del color
@@ -129,226 +130,240 @@ export default function InsertProducts() {
 
   return (
     <>
-      <h1 className="text-4xl font-black">Productos de tienda</h1>
-      <p>Inserte los datos de los productos</p>
-      <div className="mt-10 px-5 py-10">
-        <form onSubmit={handleSubmit} noValidate encType="multipart/form-data">
-          {errores ? errores.map((error, i) => <Alerta key={i}>{error}</Alerta>) : null}
-          <div className="flex flex-wrap">
-            <div className="w-1/2 pr-4">
-              <div className="mb-4">
-                <label className="text-slate-800" htmlFor="name">Nombre:</label>
-                <input
-                  type="text"
-                  id="name"
-                  className="mt-2 w-full p-3 bg-gray-50"
-                  name="name"
-                  placeholder="Tu Nombre"
-                  ref={nameRef}
-                />
-              </div>
-              <div className="mb-4">
-                <label className="text-slate-800">Sexo desigando:</label>
-                <div>
-                  <label>
-                    <input type="radio" name="gender" value="F" ref={genderRef} />{" "} Femenino
-                  </label>
-                  <label>
-                    <input type="radio" name="gender" value="M" ref={genderRef} />{" "} Masculino
-                  </label>
-                </div>
-              </div>
-              <div className="mb-4">
-                <label className="text-slate-800" htmlFor="price">Precio:</label>
-                <input
-                  type="number"
-                  step="0.01"
-                  id="price"
-                  className="mt-2 w-full p-3 bg-gray-50"
-                  name="price"
-                  placeholder="Precio del producto"
-                  ref={priceRef}
-                />
-              </div>
-              <div className="mb-4">
-                <label className="text-slate-800" htmlFor="quantity">Cantidad:</label>
-                <input
-                  type="quantity"
-                  step="0.01"
-                  id="quantity"
-                  className="mt-2 w-full p-3 bg-gray-50"
-                  name="quantity"
-                  placeholder="Cantidad del producto"
-                  ref={quantityRef}
-                />
-              </div>
-              <div className="mb-4">
-                <label className="text-slate-800" htmlFor="image">Añadir Imagen:</label>
-                <div {...getRootProps()} className="dropzone">
-                  <input type="file" name="file" {...getInputProps()} />
-                  {acceptedFiles.length > 0 ? (
-                    acceptedFiles.map((file) => (
-                      <div key={file.name}>
-                        <p>Archivo seleccionado: {file.name}</p>
-                        <button onClick={() => [setPreviewImageNull(), removeFile(file)]}>Eliminar archivo</button>
-                      </div>
-                    ))
-                  ) : isDragActive ? (
-                    <p>Suelta los archivos aquí...</p>
-                  ) : (
-                    <p>Arrastra y suelta archivos aquí o haz clic para subir.</p>
-                  )}
-                </div>
-                {previewImage && (
-                  <div>
-                    <img src={previewImage} alt="Vista previa" className="max-w-xs mt-4" />
+        <div className='mt-8 p-6 shadow-2xl rounded-lg md:m-5 overflow-hidden'>
+            <h2 className="text-4xl text-gray-500 font-black pb-4">Productos de tienda</h2>
+            <div className="bg-gradient-to-r from-slate-500 to-cyan-500 h-px md:mt-4 md:mb-6"></div>
+            <div className="flex flex-col md:flex-row">
+                <form onSubmit={handleSubmit} noValidate encType="multipart/form-data" className="w-full p-2">
+                <div className="flex flex-wrap">
+                <div className="w-1/2 pr-4">
+                  <div className="mb-4">
+                    <label className="text-slate-800" htmlFor="name">Nombre:</label>
+                    <input
+                      type="text"
+                      id="name"
+                      className="mt-2 w-full p-3 bg-gray-50"
+                      name="name"
+                      placeholder="Tu Nombre"
+                      ref={nameRef}
+                    />
                   </div>
-                )}
-              </div>
-              <div className="mb-4">
-                <label className="text-slate-800">Disponibilidad:</label>
-                <div>
-                  <label>
-                    <input type="radio" name="disp" value="1" ref={dispRef} />{" "} Disponible
-                  </label>
-                  <label>
-                    <input type="radio" name="disp" value="0" ref={dispRef} />{" "} No disponible
-                  </label>
+                  <div className="mb-4">
+                    <label className="text-slate-800">Sexo desigando:</label>
+                    <div>
+                      <label>
+                        <input type="radio" name="gender" value="F" ref={genderRef} />{" "} Femenino
+                      </label>
+                      <label>
+                        <input type="radio" name="gender" value="M" ref={genderRef} />{" "} Masculino
+                      </label>
+                    </div>
+                  </div>
+                  <div className="mb-4">
+                    <label className="text-slate-800" htmlFor="price">Precio:</label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      id="price"
+                      className="mt-2 w-full p-3 bg-gray-50"
+                      name="price"
+                      placeholder="Precio del producto"
+                      ref={priceRef}
+                    />
+                  </div>
+                  <div className="mb-4">
+                    <label className="text-slate-800" htmlFor="quantity">Cantidad:</label>
+                    <input
+                      type="quantity"
+                      step="0.01"
+                      id="quantity"
+                      className="mt-2 w-full p-3 bg-gray-50"
+                      name="quantity"
+                      placeholder="Cantidad del producto"
+                      ref={quantityRef}
+                    />
+                  </div>
+                  <div className="mb-4">
+                    <label className="text-slate-800" htmlFor="image">Añadir Imagen:</label>
+                    <div {...getRootProps()} className="dropzone">
+                      <input type="file" name="file" {...getInputProps()} />
+                      {acceptedFiles.length > 0 ? (
+                        acceptedFiles.map((file) => (
+                          <div key={file.name}>
+                            <p>Archivo seleccionado: {file.name}</p>
+                            <button onClick={() => [setPreviewImageNull(), removeFile(file)]}>Eliminar archivo</button>
+                          </div>
+                        ))
+                      ) : isDragActive ? (
+                        <p>Suelta los archivos aquí...</p>
+                      ) : (
+                        <p>Arrastra y suelta archivos aquí o haz clic para subir.</p>
+                      )}
+                    </div>
+                    {previewImage && (
+                      <div>
+                        <img src={previewImage} alt="Vista previa" className="max-w-xs mt-4" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="mb-4">
+                    <label className="text-slate-800">Disponibilidad:</label>
+                    <div>
+                      <label>
+                        <input type="radio" name="disp" value="1" ref={dispRef} />{" "} Disponible
+                      </label>
+                      <label>
+                        <input type="radio" name="disp" value="0" ref={dispRef} />{" "} No disponible
+                      </label>
+                    </div>
+                  </div>
+                  <div className="mb-4">
+                    <label className="text-slate-800">¿Es una novedad?:</label>
+                    <div>
+                      <label>
+                        <input type="radio" name="nove" value="1" ref={noveRef} />{" "} Novedad
+                      </label>
+                      <label>
+                        <input type="radio" name="nove" value="0" ref={noveRef} />{" "} No es novedad
+                      </label>
+                    </div>
+                  </div>
+                  <div className="mb-4">
+                    <label className="text-slate-800" htmlFor="description">Descripción:</label>
+                    <input
+                      type="text"
+                      id="description"
+                      className="mt-2 w-full p-3 bg-gray-50"
+                      name="description"
+                      placeholder="Descripción de producto"
+                      ref={descriptionRef}
+                    />
+                  </div>
                 </div>
-              </div>
-              <div className="mb-4">
-                <label className="text-slate-800">¿Es una novedad?:</label>
-                <div>
-                  <label>
-                    <input type="radio" name="nove" value="1" ref={noveRef} />{" "} Novedad
-                  </label>
-                  <label>
-                    <input type="radio" name="nove" value="0" ref={noveRef} />{" "} No es novedad
-                  </label>
+                <div className="w-1/2 pl-4">
+                  <div className="mb-4">
+                    <label className="text-slate-800" htmlFor="size">Talla:</label>
+                    <input
+                      type="text"
+                      id="size"
+                      className="mt-2 w-full p-3 bg-gray-50"
+                      name="size"
+                      placeholder="Talla de producto"
+                      ref={sizeRef}
+                    />
+                  </div>
+                  <div className="mb-4">
+                    <label className="text-slate-800" htmlFor="color">Nombre del Color:</label>
+                    <input
+                      type="text"
+                      id="color"
+                      className="mt-2 w-full p-3 bg-gray-50"
+                      name="color"
+                      placeholder="Color de producto"
+                      ref={colorRef}
+                    />
+                  </div>
+                  <div className="color-picker-container rounded-lg overflow-hidde flex justify-center items-center">
+                  <ChromePicker
+                    color={color}
+                    className="rounded-lg"
+                    onChange={(newColor) => {
+                      setColor(newColor.hex); // Actualiza el estado del color cuando cambia
+                      setCodeColor(newColor.hex); // Actualiza el estado del código de color
+                    }}
+                  />
                 </div>
-              </div>
-              <div className="mb-4">
-                <label className="text-slate-800" htmlFor="description">Descripción:</label>
-                <input
-                  type="text"
-                  id="description"
-                  className="mt-2 w-full p-3 bg-gray-50"
-                  name="description"
-                  placeholder="Descripción de producto"
-                  ref={descriptionRef}
-                />
-              </div>
-            </div>
-            <div className="w-1/2 pl-4">
-              <div className="mb-4">
-                <label className="text-slate-800" htmlFor="size">Talla:</label>
-                <input
-                  type="text"
-                  id="size"
-                  className="mt-2 w-full p-3 bg-gray-50"
-                  name="size"
-                  placeholder="Talla de producto"
-                  ref={sizeRef}
-                />
-              </div>
-              <div className="mb-4">
-                <label className="text-slate-800" htmlFor="color">Nombre del Color:</label>
-                <input
-                  type="text"
-                  id="color"
-                  className="mt-2 w-full p-3 bg-gray-50"
-                  name="color"
-                  placeholder="Color de producto"
-                  ref={colorRef}
-                />
-              </div>
-              <div className="mb-4">
-                <label className="text-slate-800" htmlFor="code_color">Código de Color:</label>
-                <ChromePicker
-                  color={color}
-                  onChange={(newColor) => {
-                    setColor(newColor.hex); // Actualiza el estado del color cuando cambia
-                    setCodeColor(newColor.hex); // Actualiza el estado del código de color
-                  }}
-                />
-              </div>
-              <div className="mb-4">
-                <select
-                  id="category"
-                  className="mt-2 w-full p-3 bg-gray-50"
-                  name="category"
-                  htmlFor="category"
-                  onChange={handleChangeCategoria}
-                >
-                  <option value="" disabled selected>
-                    Seleccione una categoría
-                  </option>
-                  {categories.map((category) => (
-                    <option key={category.id} value={category.id}>
-                      {category.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="mb-4">
-                <select
-                  id="subcate"
-                  className="mt-2 w-full p-3 bg-gray-50"
-                  name="subcate"
-                  htmlFor="subcate"
-                  ref={subCateRef}
-                  onChange={handleChangeSubcategory}
-                >
-                  <option value="" disabled selected>
-                    Seleccione una subcategoría
-                  </option>
-                  {subCategories
-                    .filter((sub) => sub.parent_category_id === selectedCategoryId)
-                    .map((sub, index) => (
-                      <option key={sub.id} value={sub.id}>
-                        {sub.name}
+                  <div className="mb-4">
+                    <select
+                      id="category"
+                      className="mt-2 w-full p-3 bg-gray-50"
+                      name="category"
+                      htmlFor="category"
+                      onChange={handleChangeCategoria}
+                    >
+                      <option value="" disabled selected>
+                        Seleccione una categoría
                       </option>
-                    ))}
-                </select>
+                      {categories.map((category) => (
+                        <option key={category.id} value={category.id}>
+                          {category.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="mb-4">
+                    <select
+                      id="subcate"
+                      className="mt-2 w-full p-3 bg-gray-50"
+                      name="subcate"
+                      htmlFor="subcate"
+                      ref={subCateRef}
+                      onChange={handleChangeSubcategory}
+                    >
+                      <option value="" disabled selected>
+                        Seleccione una subcategoría
+                      </option>
+                      {subCategories
+                        .filter((sub) => sub.parent_category_id === selectedCategoryId)
+                        .map((sub, index) => (
+                          <option key={sub.id} value={sub.id}>
+                            {sub.name}
+                          </option>
+                        ))}
+                    </select>
+                  </div>
+                  <div className="mb-4">
+                    <select
+                      id="warehouse"
+                      className="mt-2 w-full p-3 bg-gray-50"
+                      name="warehouse"
+                      htmlFor="warehouse"
+                      ref={warehousesRef}
+                      onChange={handleChangeSubcategory}
+                      defaultValue=""
+                    >
+                      <option value="" disabled selected>
+                        Seleccione el almacen donde es guardado
+                      </option>
+                      {warehouses.map((warehouse) => (
+                        <option key={warehouse.id} value={warehouse.id}>
+                          {warehouse.address}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+                <input
+                  type="hidden"
+                  name="promotion"
+                  value="promotion"
+                  ref={entityRef}
+              
+              />
               </div>
-              <div className="mb-4">
-                <select
-                  id="warehouse"
-                  className="mt-2 w-full p-3 bg-gray-50"
-                  name="warehouse"
-                  htmlFor="warehouse"
-                  ref={warehousesRef}
-                  onChange={handleChangeSubcategory}
-                  defaultValue=""
-                >
-                  <option value="" disabled selected>
-                    Seleccione el almacen donde es guardado
-                  </option>
-                  {warehouses.map((warehouse) => (
-                    <option key={warehouse.id} value={warehouse.id}>
-                      {warehouse.address}
-                    </option>
-                  ))}
-                </select>
-              </div>
+                    <div className="button-container">
+                        <input
+                            type="submit"
+                            value="Subir Producto"
+                            className="bg-white hover:bg-zinc-700 text-black hover:text-white p-0 uppercase font-bold cursor-pointer"
+                        />
+                        <input
+                            type="button"
+                            value="Borrar campos"
+                            onClick={handleClearFields}
+                            className="bg-red-500 text-white px-4 py-2 hover:bg-red-600"
+                        />
+                    </div>
+                </form>
             </div>
-          </div>
-          <input type="hidden" name="product" value="product" ref={entityRef} />
-          <div className="flex">
-            <input
-              type="submit"
-              value="Subir Producto"
-              className="bg-white w-1/2 hover:bg-zinc-700 text-black hover:text-white md:mt-12 p-0 uppercase font-bold cursor-pointer md:h-16"
-            />
-            <input
-              type="button"
-              value="Borrar campos"
-              onClick={handleClearFields}
-              className="bg-red-500 w-1/2 md:h-16 text-white px-4 py-2 md:mt-12 hover:bg-red-600"
-            />
-          </div>
-        </form>
-      </div>
+        </div>
+        {errores.length > 0 && (
+            <div className="mt-4">
+                {errores.map((error, index) => (
+                    <Alerta key={index}>{error}</Alerta>
+                ))}
+            </div>
+        )}
     </>
-  );
+);
 }

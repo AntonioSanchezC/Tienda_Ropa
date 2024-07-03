@@ -6,10 +6,7 @@ export default function Email() {
     const { handleClickEnviarMensaje, mensajeEnviado, addressRecent, addressCode, generateNumber,handleClickCode } = useQuisco();
 
     const [errores, setErrores] = useState([]);
-    const {verifyEmail} = useAuth({
-        middleware: 'auth',
-        url:'/'
-    })
+    const {verifyEmail} = useAuth()
 
 
     const generateNumberAndSend = async (address) => {
@@ -18,7 +15,7 @@ export default function Email() {
 
         // Llama a la función para enviar el mensaje, pasando la dirección y el código generado
         handleClickEnviarMensaje(address, newAddressCode);
-        verifyEmail(newAddressCode, setErrores); // Cambiado a newAddressCode
+        verifyEmail(newAddressCode, setErrores); 
     };
 
     return (

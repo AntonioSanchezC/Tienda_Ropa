@@ -13,6 +13,8 @@ use App\Models\OrderProduct;
 use App\Models\Warehouse;
 use App\Models\warehouses_products;
 use Carbon\Carbon;
+use Dotenv\Exception\ValidationException;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use GuzzleHttp\Client;
@@ -106,6 +108,7 @@ class OrderController extends Controller
 
          return $durationInSeconds;
      }
+
      public function store(OrderRequest $request)
      {
          $logs = []; // Array para almacenar los logs
@@ -277,18 +280,52 @@ class OrderController extends Controller
      }
 
 
-     public function storeOrder($data)
+
+          /**
+      * Genera un código único para el pedido.
+      *
+      * @return int
+      */
+     private function generateUniqueCode()
+     {
+         do {
+             // Generar un número aleatorio de 5 dígitos
+             $code = mt_rand(10000, 99999);
+         } while (Order::where('code', $code)->exists());
+
+         return $code;
+     }
+
+
+
+     public function storeP(Request $request)
      {
          $logs = []; // Array para almacenar los logs
 
          try {
+             // Validar los datos básicos
+             $validated = $request->validate([
+                 'total' => 'required|numeric',
+                 'arrivalId' => 'required|integer',
+                 'products' => 'required|array',
+                 'products.*.id' => 'required|integer',
+                 'products.*.quantity' => 'required|integer',
+                 'products.*.name' => 'required|string',
+                 'products.*.price' => 'required|numeric',
+                 'products.*.color' => 'required|integer',
+                 'products.*.size' => 'required|integer',
+                 'products.*.product_code' => 'required|string',
+                 'paypal_order_id' => 'required|string'
+             ]);
+
+             $logs[] = 'Validated Data: ' . json_encode($validated);
+
              // Crear una nueva instancia de Order
              $order = new Order;
              $order->user_id = Auth::user()->id;
-             $order->total = $data['total'];
+             $order->total = $validated['total'];
              $order->code = $this->generateUniqueCode();
-             $order->paypal_order_id = $data['paypal_order_id'];
-             $order->status = true;
+             $order->paypal_order_id = $validated['paypal_order_id'];
              $order->save();
 
              $logs[] = 'Order Created: ' . $order->id;
@@ -297,10 +334,10 @@ class OrderController extends Controller
              $orderId = $order->id;
 
              // Obtener el ID del arrival o punto de entrega
-             $arrivalId = $data['arrivalId'];
+             $arrivalId = $validated['arrivalId'];
 
              // Obtener los productos del pedido
-             $products = $data['products'];
+             $products = $validated['products'];
 
              foreach ($products as $product) {
                  $logs[] = 'Processing Product: ' . json_encode($product);
@@ -416,7 +453,7 @@ class OrderController extends Controller
                      'quantity' => $productBill['quantity'],
                      'name' => $productBill['name'],
                      'price' => $productBill['price'],
-                     'price_total' => $data['total'],
+                     'price_total' => $validated['total'],
                      'code' => $order->code,
                  ];
              }
@@ -429,64 +466,23 @@ class OrderController extends Controller
              // Envía el correo electrónico utilizando el Mailable
              Mail::to($email)->send($emailMailable);
 
-             return [
+             return response()->json([
                  'message' => 'Pedido realizado correctamente, estará listo en unos minutos',
                  'arrivalCoordinates' => $arrivalCoordinates,
                  'warehouseCoordinates' => $warehouseCoordinates,
                  'logs' => $logs // Incluir los logs en la respuesta
-             ];
+             ], 200);
 
          } catch (\Exception $e) {
              $logs[] = 'Error al procesar el pedido: ' . $e->getMessage();
-             return [
+             return response()->json([
                  'message' => 'Error en la creación del pedido',
                  'error' => $e->getMessage(),
                  'logs' => $logs // Incluir los logs en la respuesta en caso de error
-             ];
+             ], 500);
          }
      }
 
 
 
-          /**
-      * Genera un código único para el pedido.
-      *
-      * @return int
-      */
-     private function generateUniqueCode()
-     {
-         do {
-             // Generar un número aleatorio de 5 dígitos
-             $code = mt_rand(10000, 99999);
-         } while (Order::where('code', $code)->exists());
-
-         return $code;
-     }
-
-
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Order $order)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update()
-    {
-        //
-
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Order $order)
-    {
-        //
-    }
 }

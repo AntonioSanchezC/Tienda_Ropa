@@ -1,0 +1,70 @@
+/* Ajustes en los contenedores */
+.mt-8 {
+    margin-top: 2rem;
+  }
+  
+  .p-6 {
+    padding: 1.5rem;
+  }
+  
+  .shadow-2xl {
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  }
+  
+  .rounded-lg {
+    border-radius: 0.5rem;
+  }
+  
+  .overflow-hidden {
+    overflow: hidden;
+  }
+  
+  .w-full {
+    width: 100%;
+  }
+  
+  .p-2 {
+    padding: 0.5rem;
+  }
+  
+  .pr-4 {
+    padding-right: 1rem;
+  }
+  
+  .mt-10 {
+    margin-top: 2.5rem;
+  }
+  
+  .bg-gray-50 {
+    background-color: #f9fafb;
+  }
+  
+  /* Dropzone CSS */
+  .dropzone {
+    padding: 1rem;
+    border: 2px dashed #ccc;
+    border-radius: 0.5rem;
+    text-align: center;
+  }
+  
+  .dropzone--active {
+    border-color: #00e676;
+  }
+  
+  .w-full {
+    width: 100%;
+  }
+  
+  .h-auto {
+    height: auto;
+  }
+  
+  .rounded-lg {
+    border-radius: 0.5rem;
+  }
+  
+  /* Botones */
+  button {
+    cursor: pointer;
+  }
+  

@@ -22,14 +22,16 @@ const QuioscoProvider = ({children}) =>{
     
     //Variables que optienen los productos
     const [product, setProduct] = useState([]);
+    const [productAll, setProductAll] = useState([]);
     const [genderProducts, setGenderProducts] = useState([]);
     const [currentProduct, setCurrentProduct] = useState({});
 
     //Variables que optienen los usuarios
-    const [user, setUser] = useState([]);
+    //Consulta de usuarios existentes
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [errores, setErrores] = useState([]);
     const [phone, setPhone] = useState([]);
 
     const [promotions, setPromotion] = useState([]);
@@ -65,6 +67,49 @@ const QuioscoProvider = ({children}) =>{
     //Variable para filtrado en barra de busqueda y menu catageorías
     const [ filteredProducts, setFilteredProducts ] = useState([]);
     const [ filteredProductsCount, setFilteredProductsCount ] = useState([]);
+
+    //Variable para Layout
+    const [ init, setInit ] = useState(false);
+
+    const [selectedArrival, setSelectedArrival] = useState(1);
+
+
+    //Declarar datos para la cookie
+    const [gender, setGender] = useState("");
+
+    // Funciones auxiliares para manejar cookies
+    const setCookie = async (name, value, days) => {
+        const date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        const expires = `expires=${date.toUTCString()}`;
+        document.cookie = `${name}=${value}; ${expires}; path=/`;
+    };
+
+    const getCookie = async (name) => {
+        const nameEQ = `${name}=`;
+        const ca = document.cookie.split(';');
+        for (let i = 0; i < ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+            if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+        }
+        return null;
+    }
+
+    useEffect(() => {
+        // Al montar el componente, intentar obtener el género de la cookie
+        const savedGender = getCookie('selectedGender');
+        if (savedGender) {
+            setGender(savedGender);
+        } 
+    }, []);
+
+    const selectGender = async (newGender) => {
+        setGender(newGender);
+        console.log("El valor de gender desde selectGender es ", gender);
+        setCookie('selectedGender', newGender, 7); 
+    };
+
 
     useEffect(() => {
         const newTotal = order.reduce((total, product) => {
@@ -126,28 +171,45 @@ const QuioscoProvider = ({children}) =>{
 
 
     
-    //Obtener los productos
+    // Obtener los productos
 
     const obtenProducts = async () => {
+        const token = localStorage.getItem('AUTH_TOKEN');
         try {
 
             if (!product.length) {
-                const { data } = await clienteAxios.get('/api/products')
-                setProduct(data.data);
+                const { data } = await clienteAxios.get('/api/productsAdmin', {
+                    headers: {
+                      Authorization: `Bearer ${token}`
+                    }
+                  });
+                  setTimeout(() => {
+                    localStorage.removeItem('AUTH_TOKEN');
+                  }, 1000);
+                setProductAll(data.data);
             }
 
         } catch (error) {
             console.log(error);
         }
     };    
-    useEffect(() => {
-        obtenProducts();
-    },[])
-    // Filtrar productos por género
-    const filterProductsByGender = (gender) => {
-        const filtered = product.filter(product => product.gender === gender);
-        setGenderProducts(filtered);
+
+       
+
+ 
+    const getProducts = async (gender) => {
+        try {
+            const { data } = await clienteAxios.get(`/api/products/${gender}`);
+            setProduct(data.data);
+        } catch (error) {
+            console.log(error);
+        }
     };
+
+
+ 
+
+ 
 
 
             
@@ -166,53 +228,32 @@ const QuioscoProvider = ({children}) =>{
     };
 
     
-    useEffect(() => {
-        getPhone();
-    },[])
-        
-    const getUsers = async () => {
-        try {
-            const response = await clienteAxios.get('/api/users');
-            console.log("El valor de response en getUsers es ", response);
-            const userData = response.data.data;
-            setUsers(userData);
-        } catch (error) {
-            console.error('Error al obtener los usuarios:', error);
-            setError(error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        getUsers();
-    }, []);
-
-    const getUser = async () => {
-        try {
+            
+        const getUsers = async () => {
             const token = localStorage.getItem('AUTH_TOKEN');
-            if (!token) {
-                throw new Error('No se encontró el token de autenticación');
+
+            try {
+
+                const response = await clienteAxios.get('/api/users', {
+                    headers: {
+                      Authorization: `Bearer ${token}`
+                    }
+                  });
+                  const userData = response.data.data;
+                  setUsers(userData);
+                  setTimeout(() => {
+                    localStorage.removeItem('AUTH_TOKEN');
+                  }, 1000);
+                console.log("El valor de response en getUsers es ", response);
+            } catch (error) {
+                console.error('Error al obtener los usuarios:', error);
+                setError(error);
+            } finally {
+                setLoading(false);
             }
+        };
 
-            const response = await clienteAxios.get('/api/user', {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-
-            const userData = response.data.data;
-            setUser(userData);
-            setLoading(false);
-        } catch (error) {
-            setError(error);
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        getUser();
-    }, []);
+    
 
 
 
@@ -221,8 +262,12 @@ const QuioscoProvider = ({children}) =>{
             try {
                 const token = localStorage.getItem('AUTH_TOKEN');
 
-                const response = await clienteAxios.get('/api/ordersRelease');
-                const userData = response.data.data; // Acceder a la propiedad 'data' de la respuesta
+                const response = await clienteAxios.get('/api/ordersRelease', {
+                    headers: {
+                      Authorization: `Bearer ${token}`
+                    }
+                  });
+                const userData = response.data.data; 
                 setOrders(userData)
 
             } catch (error) {
@@ -231,31 +276,31 @@ const QuioscoProvider = ({children}) =>{
         };
     
         
-        useEffect(() => {
-            getOrders();
-        },[])
+
     
     //Obtener los promociones
 
-    const getPromotion = async () => {
+    const getPromotion = async (gender) => {
         try {
-            const { data } = await clienteAxios('/api/promo')
+            const { data } = await clienteAxios(`/api/promo/${gender}`);
             setPromotion(data.data);
         } catch (error) {
             console.log(error);
         }
     };
 
-    
+
+ 
     useEffect(() => {
         getPromotion();
     },[])
-
+    
     //Obtener los datos de promotion_productos
     const getPromoProducts = async () => {
         try {
             const { data } = await clienteAxios('/api/promoProduct')
             setPromoProduct(data.data);
+
         } catch (error) {
             console.log(error);
         }
@@ -331,31 +376,26 @@ const QuioscoProvider = ({children}) =>{
 
     //Obtener las prefijos
 
-    const obtenerPrefijos = async () => {
+    const getPrefixes = async () => {
         try {
             const { data } = await clienteAxios('/api/prefixes')
             setPrefixes(data.data);
             setSubPrefijes(data.data[0]);
-            console.log("Prefijos: ".data.data);
         } catch (error) {
             console.log(error);
         }
     };
     
-    useEffect(() => {
-        obtenerPrefijos();
-    },[])
+
 
     //Obtener las subcategorias
 
     const obtenerSubCategoriasPorCategoria = async (parentCategorie) => {
         try {
-            console.log("El valor de parentCategorie en obtenerSubCategoriasPorCategoria es ", parentCategorie);
             const { data } = await clienteAxios(`/api/subcategories?parent_category_id===${parentCategorie}`);
 
             setSubCategories(data.data);
 
-            console.log("El valor de data.data desde obtenerSubCategoriasPorCategoria es ", data.data);
         } catch (error) {
             console.log(error);
         }
@@ -383,7 +423,6 @@ const QuioscoProvider = ({children}) =>{
     }
 
     const handleQuantityCustomers = async (product, quantityCustomer) => {
-        console.log("El valor de product(s) en handleQuantityCustomers es, ", product);
         const quantityNumber = parseInt(quantityCustomer, 10);
         const price = parseFloat(product.price);
     
@@ -400,7 +439,6 @@ const QuioscoProvider = ({children}) =>{
             toast.success('Cantidad actualizada');
         } else {
             const newProduct = { ...product, quantity: quantityNumber, price };
-            console.log("El valor de newProduct en handleQuantityCustomers es, ", newProduct);
             setOrder([...order, newProduct]);
             console.log("El valor de order en handleQuantityCustomers es, ", order);
             toast.success('Producto agregado al pedido');
@@ -419,7 +457,7 @@ const QuioscoProvider = ({children}) =>{
               Authorization: `Bearer ${token}`
             }
           });
-          console.log("El valor de validated en handleSubmitNewOrder es, ", data.validated);
+
           toast.success(data.message);
           setTimeout(() => {
             setOrder([]);
@@ -434,7 +472,37 @@ const QuioscoProvider = ({children}) =>{
             setErrores(["Hubo un problema al procesar tu pedido. Inténtalo de nuevo."]);
           }
         }
-      };
+      };    
+      const handleSubmitNewOrderSuccess = async (orderData,transactionId, setErrores) => {
+          console.log("El valor de orderData desde handleSubmitNewOrder es", orderData);
+          const token = localStorage.getItem('AUTH_TOKEN');
+          try {
+            const { data } = await clienteAxios.post('/api/ordersSuccess', {
+                total: orderData.total,
+                arrivalId: orderData.arrivalId,
+                products: orderData.products,
+                paypal_order_id: transactionId,
+              }, {
+                headers: {
+                  Authorization: `Bearer ${token}`
+                }
+              });
+  
+           toast.success(data.message);
+            setTimeout(() => {
+              setOrder([]);
+              localStorage.removeItem('AUTH_TOKEN');
+            }, 1000);
+          } catch (error) {
+            console.log(error);
+            if (error.response && error.response.data.errors) {
+              const backendErrors = Object.values(error.response.data.errors).flat();
+              setErrores(backendErrors);
+            } else {
+              setErrores(["Hubo un problema al procesar tu pedido. Inténtalo de nuevo."]);
+            }
+          }
+        };
       
     const handleEditarCantidad = id =>{
         const currentProduct = order.filter(product => product.id === id)[0]
@@ -459,6 +527,7 @@ const QuioscoProvider = ({children}) =>{
     }
 
     const handleClickEnviarMensaje = async (address, addressCode) => {
+        console.log("desde handleClickEnviarMensaje addressCode es: ", address);
         console.log("desde handleClickEnviarMensaje addressCode es: ", addressCode);
         try {
             // Realiza una solicitud al backend para enviar el mensaje
@@ -576,26 +645,43 @@ const QuioscoProvider = ({children}) =>{
     
     
     useEffect(() => {
-        const searchCount = async (filteredProductsCount) => {
-            try {
-                console.log("Desde searchCount en useEffect de provider ", filteredProductsCount);
-                const { data } = await clienteAxios.post('/api/productSearch', filteredProductsCount);
-                console.log({ data });
-                await mutate();
-                return null; // Return null for successful registration
-            } catch (error) {
-                console.log(Object.values(error.response.data.errors));
-                console.log("Return error for unsuccessful");
-                return error; // Return error for unsuccessful registration
-            }
-        };
 
-        // Llama a la función searchCount con los productos filtrados y el setter de errores
-        searchCount(filteredProducts);
+        if(filteredProductsCount.length > 0){
+
+            const searchCount = async (filteredProductsCount) => {
+                try {
+                    console.log("Desde searchCount en useEffect de provider ", filteredProductsCount);
+                    const { data } = await clienteAxios.post('/api/productSearch', filteredProductsCount);
+                    console.log({ data });
+                    return null; 
+                } catch (error) {
+                    console.log(Object.values(error.response.data.errors));
+                    console.log("Return error for unsuccessful");
+                    return error;
+                }
+            };
+        
+
+            searchCount(filteredProducts);
+        }
     }, [filteredProductsCount])
-    
+
+
+    const handleArriveId = (arriveId) => {
+        try {
 
     
+            console.log('Productos filtrados:', arriveId);
+    
+            setSelectedArrival(arriveId);
+    
+        } catch (error) {
+            console.error('Error al filtrar productos:', error);
+        }
+    };
+    
+
+
     
     return (
         <QuioscoContext.Provider
@@ -623,14 +709,24 @@ const QuioscoProvider = ({children}) =>{
                 cartState,
                 setCartState,
                 filteredProducts,
-                user,
-                setUser,
                 users,
                 phone,
                 orders,
                 warehouses,
                 arrivals,
                 genderProducts,
+                gender,
+                setGender,
+                selectGender,
+                productAll,
+                init,
+                setInit,
+                errores,
+                setErrores,
+                selectedArrival, 
+                setSelectedArrival,
+                handleArriveId,
+
                 
                 handleClickCategoria,
                 handleSetProducto,
@@ -645,8 +741,16 @@ const QuioscoProvider = ({children}) =>{
                 handleClickBill,
                 handleClickSubCategoria,
                 handleClickFilteredProducts,
-                filterProductsByGender,
-                handleClickSendClientMessage
+                handleClickSendClientMessage,
+                obtenProducts,
+                getPrefixes,
+                getUsers,
+                getPhone,
+                getOrders,
+                getProducts, 
+                getPromotion,
+                handleSubmitNewOrderSuccess,
+
             }}
         >
             {children}

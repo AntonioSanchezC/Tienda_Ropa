@@ -7,21 +7,21 @@ import SearchedGallery from './SearchedGallery';
 import { Link } from 'react-router-dom';
 
 export default function InitialA() {
-  const { img, promotions, promoProduct, genderProducts, imgProduct, idImgProduct } = useQuisco();
+  const { img, promotions,product, imgProduct, idImgProduct } = useQuisco();
 
   const listRef = useRef();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [groups, setGroups] = useState([]);
 
   useEffect(() => {
-    const noveltyProducts = genderProducts.filter((product) => product.novelty === 1);
+    const noveltyProducts = product.filter((product) => product.novelty === 1);
     noveltyProducts.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
     const groupedProducts = [];
     for (let i = 0; i < noveltyProducts.length; i += 4) {
       groupedProducts.push(noveltyProducts.slice(i, i + 4));
     }
     setGroups(groupedProducts);
-  }, [genderProducts]);
+  }, [product]);
 
   const scrollToImage = (direction) => {
     const numSlides = Math.ceil(groups.length);
@@ -35,11 +35,13 @@ export default function InitialA() {
 
   const filteredPromotionSeasson = promotions.filter(promo => promo.tipe === 'seasson' && promo.status === 1);
   const lastSeasonPromotionSeasson = filteredPromotionSeasson[filteredPromotionSeasson.length - 1];
+  console.log("El valor de lastSeasonPromotionSeasson es ", lastSeasonPromotionSeasson);
   const imgPSeasson = lastSeasonPromotionSeasson ? img.find(img => img.id === lastSeasonPromotionSeasson.id_imgs) : null;
   const imagePromotionSeasson = imgPSeasson && imgPSeasson.image ? `${clienteAxios.defaults.baseURL}/${imgPSeasson.image}` : null;
 
   const filteredPromotionSale = promotions.filter(promo => promo.tipe === 'sale' && promo.status === 1);
   const lastSeasonPromotionSale = filteredPromotionSale[filteredPromotionSale.length - 1];
+  console.log("El valor de lastSeasonPromotionSale es ", lastSeasonPromotionSale);
   const imgPSale = lastSeasonPromotionSale ? img.find(img => img.id === lastSeasonPromotionSale.id_imgs) : null;
   const imagePromotionSale = imgPSale && imgPSale.image ? `${clienteAxios.defaults.baseURL}/${imgPSale.image}` : null;
 

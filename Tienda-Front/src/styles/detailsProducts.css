@@ -1,0 +1,21 @@
+.button-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem;
+}
+
+.button-container input[type="submit"],
+.button-container input[type="button"] {
+    width: 48%;
+    padding: 0.75rem;
+    font-size: 1rem;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.button-container input[type="submit"]:hover,
+.button-container input[type="button"]:hover {
+    background-color: #4a5568;
+    color: #ffffff;
+}

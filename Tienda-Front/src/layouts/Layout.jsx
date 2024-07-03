@@ -10,6 +10,9 @@ import Head from '../components/Head';
 import { useAuth } from "../hooks/useAuth";
 import '../styles/style.css';
 import Footer from '../components/Footer';
+import { useEffect } from 'react';
+import {useNavigate} from 'react-router-dom'
+
 
 const customStyles = {
   content: {
@@ -26,8 +29,21 @@ Modal.setAppElement('#root')
 
 export default function Layout() {
   const { user, error } = useAuth({ middleware: 'auth' });
-  const { modal, users, genderProducts } = useQuisco();
-console.log("El valor de products desde Layout es ", genderProducts);
+  const {  gender, getProducts, getPromotion } = useQuisco();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if(!gender){
+      navigate('/auth/ini')
+    }else{
+      
+      if (gender) {
+          getProducts(gender);
+          getPromotion(gender);
+      }
+    }
+  }, [gender]);
+  
   return (
     <>
       <div > 

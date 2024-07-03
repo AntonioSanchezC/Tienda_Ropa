@@ -109,7 +109,7 @@ export default function Login() {
                         </form>
                     </div>
                     <nav className="mt-5">
-                        <Link to="/auth/register">¿No tienes cueta?Crea tu cuenta</Link>
+                        <Link to="/register">¿No tienes cueta?Crea tu cuenta</Link>
                     </nav>
                     
                 </div>

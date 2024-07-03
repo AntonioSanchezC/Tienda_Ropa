@@ -8,13 +8,17 @@ import { useAuth } from "../hooks/useAuth";
 export default function DetailsUsersAdmin() {
     const location = useLocation();
     const { user } = location.state || {};
-    const { setEmailValue, prefixes, phone } = useQuisco();
+    const { obtenerPrefijos,setEmailValue, prefixes, phone } = useQuisco();
 
+    useEffect(() => {
+        obtenerPrefijos();
+    },[])
 
 
     const idRef = useRef();
     const nameRef = useRef();
     const lastNameRef = useRef();
+    const genderRef = useRef();
     const direRef = useRef();
     const prefRef = useRef();
     const telfRef = useRef();
@@ -34,6 +38,7 @@ export default function DetailsUsersAdmin() {
             id: user.id,
             name: nameRef.current.value,
             lastName: lastNameRef.current.value,
+            gender: document.querySelector('input[name="gender"]:checked').value,
             address: direRef.current.value,
             value: prefRef.current.value,
             telf: telfRef.current.value,
@@ -81,7 +86,7 @@ export default function DetailsUsersAdmin() {
 
   return (
     <>
-    <h1 className="text-4xl font-black mb-10 mr-6">Registro</h1>
+    <h1 className="text-4xl font-black mb-10 mr-6">Datos de Registro</h1>
     <div className="flex">
 
         <form
@@ -213,6 +218,17 @@ export default function DetailsUsersAdmin() {
 
                         
                         <div>
+                        <div className="mb-4">
+                          <label className="text-slate-800">Sexo desigando:</label>
+                          <div>
+                            <label>
+                              <input type="radio" name="gender" value="F" ref={genderRef} />{" "} Femenino
+                            </label>
+                            <label>
+                              <input type="radio" name="gender" value="M" ref={genderRef} />{" "} Masculino
+                            </label>
+                          </div>
+                        </div>
                             <div >
                                 <label 
                                     className="text-slate-800"

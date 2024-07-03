@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import L from 'leaflet'; // Importa Leaflet
+import L from 'leaflet'; 
 
 export default function UbiCenter() {
     const [arrival, setArrival] = useState(null);
@@ -9,9 +9,9 @@ export default function UbiCenter() {
 
     // Define el icono personalizado
     const myIcon = L.icon({
-        iconUrl: `${baseURL}/icon/point.png`, // Reemplaza 'url_del_icono' con la URL de tu icono
-        iconSize: [32, 32], // Tamaño del icono
-        iconAnchor: [16, 32], // Punto de anclaje del icono
+        iconUrl: `${baseURL}/public/icon/point.png`, 
+        iconSize: [32, 32], 
+        iconAnchor: [16, 32], 
     });
 
     return (

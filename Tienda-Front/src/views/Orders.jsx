@@ -5,27 +5,37 @@ import { Link } from "react-router-dom";
 
 export default function Orders() {
   const { orders } = useQuisco();
-  console.log("El valor de orders en Orders es ", orders);
+
   return (
     <>
-        <h1 className="text-4xl font-black">Ordenes</h1>
-        <p className="text-2xl my-10">
-          Administra las ordenes desde aqui
-        </p>
-        <div className="flex flex-col ">
-        {orders.map((order) => (
-          <div key={order.id} className="flex flex-nowrap mt-3">
-         <Link to={`/admin/detailsOrder`}    state={{ orderD: order }}  className="flex flex-nowrap w-4/5 md:top-32  bg-white p-4 shadow-md hover:bg-slate-400 hover:text-white">
-          <p className="md:mr-3">Total de productos: {order.total}</p>
-          <p className="md:mr-3">Código de pedido: {order.code}</p>
+      <h1 className="text-4xl font-black">Órdenes</h1>
+      <p className="text-2xl my-10">Administra las órdenes desde aquí</p>
 
-          </Link>
-              <button onClick={() => handleDelete(prod.id)} className="bg-red-500 hover:bg-red-700  text-white p-3">
-                Borrar Orden
-              </button>
+      <div className="mt-8 p-4 shadow-2xl rounded-lg md:m-5">
+        <div className="bg-white p-4 rounded-md mt-4">
+          <div className="text-4xl text-gray-500 font-black pb-4">Órdenes en la Base de Datos</div>
+          <div className="my-1"></div> 
+          <div className="bg-gradient-to-r from-slate-400 to-cyan-500 h-px mb-6"></div> 
+
+          {/* Lista de órdenes */}
+          <div className="flex flex-col">
+            {Array.isArray(orders) &&
+              orders.map((order) => (
+                <div key={order.id} className="flex flex-nowrap items-center justify-between bg-white p-4 shadow-md hover:bg-slate-400 hover:text-white mb-4 rounded-md">
+                  <div className="flex flex-col md:flex-row md:items-center w-full">
+                    <Link to={{ pathname: `/admin/detailsOrder`, state: { orderD: order } }} className="text-lg md:mr-3">
+                      Total de productos: {order.total}
+                    </Link>
+                    <p className="hidden md:block">Código de pedido: {order.code}</p>
+                  </div>
+                  <button onClick={() => handleDelete(order.id)} className="bg-red-500 hover:bg-red-700 text-white py-1 px-2 rounded-md">
+                    Borrar Orden
+                  </button>
+                </div>
+              ))}
           </div>
-        ))}
+        </div>
       </div>
     </>
-  )
+  );
 }

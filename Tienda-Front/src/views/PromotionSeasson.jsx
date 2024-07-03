@@ -1,10 +1,11 @@
 import clienteAxios from "../config/axios";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState } from "react";
 import useQuisco from '../hooks/useQuiosco';
 import Product from "../components/Product";
 
 export default function PromotionSeasson() {
-  const { img, promotions, promoProduct, genderProducts, imgProduct, idImgProduct } = useQuisco();
+  const { img, promotions, promoProduct, imgProduct, idImgProduct, product } = useQuisco();
+  console.log("El valor de promotion desde PromotionSeasson es ", promotions);
   const listRef = useRef();
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -16,7 +17,8 @@ export default function PromotionSeasson() {
   const seassonProductIds = promoProduct
     .filter(item => filteredPromotionSeasson.some(promo => promo.id === item.promotion_id))
     .map(item => item.product_id);
-  const promotionProduct = genderProducts.filter(prod => seassonProductIds.includes(prod.id));
+  const promotionProduct = product.filter(prod => seassonProductIds.includes(prod.id));
+  console.log("El valor de promotionProduct desde PromotionSeasson es ", promotionProduct);
 
   const imgProductKeys = Object.keys(idImgProduct);
   const filteredKeys = imgProductKeys.filter(key => {
@@ -28,6 +30,7 @@ export default function PromotionSeasson() {
     acc[key] = idImgProduct[key];
     return acc;
   }, {});
+  console.log("El valor de filteredIdImgProduct desde PromotionSeasson es ", filteredIdImgProduct);
 
   // Obtener la imagen de la última promoción de tipo 'seasson'
   const imgP = img.find(img => img.id === lastSeasonPromotionSeasson.id_imgs);

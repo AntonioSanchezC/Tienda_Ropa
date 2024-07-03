@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('promotions', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('gender');
             $table->string('tipe');
             $table->string('description');
             $table->decimal('discount', 8, 2)->nullable();

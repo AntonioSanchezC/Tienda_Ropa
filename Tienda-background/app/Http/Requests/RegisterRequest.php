@@ -25,6 +25,7 @@ class RegisterRequest extends FormRequest
         return [
             'name' => ['required', 'string'],
             'lastName' => ['required', 'string'],
+            'gender' => ['required', 'string'],
             'address' => ['required', 'string'],
             'telf' => ['required', 'string','max:20'],
             'email' => [
@@ -46,6 +47,7 @@ class RegisterRequest extends FormRequest
         return [
             'name' => 'El Nombre es obligatorio',
             'lastName' => 'El apellido es obligatorio',
+            'gender' => 'El sexo es obligatorio',
             'address' => 'El direccion es obligatorio',
             'telf' => 'El telefono es obligatorio',
             'email.required' => 'El Email es obligatorio',

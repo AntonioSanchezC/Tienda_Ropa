@@ -87,7 +87,7 @@ public function insertProduct(AddProductoRequest $request)
         DB::commit();
 
         return response()->json([
-            'message' => 'Producto y relación de imagen creados exitosamente.',
+            'message' => 'Producto creado exitosamente.',
             'product' => $product,
             'full_product_code' => $product->generateFullProductCode(),
             'image' => $image,
@@ -263,6 +263,7 @@ public function updateUser(Request $request)
         $user = User::findOrFail($data['id']);
         $user->name = $request->input('name');
         $user->lastName = $request->input('lastName');
+        $user->gender = $request->input('gender');
         $user->address = $request->input('address');
         $user->email = $request->input('email');
 
@@ -309,6 +310,7 @@ public function updateUser(Request $request)
              Promotion::create([
 
                 'name' => $data['name'],
+                'gender' => $data['gender'],
                 'description' => $data['description'],
                 'tipe' => $data['tipe'],
                 'discount' => $data['discount'],

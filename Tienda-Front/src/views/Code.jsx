@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 
 export default function VerificationCode() {
@@ -11,9 +10,21 @@ export default function VerificationCode() {
   });
 
   const handleChange = (index, value) => {
+    if (value.length > 1) {
+      value = value.slice(0, 1); // Asegúrate de que solo se ingrese un carácter por campo
+    }
     const newCodeParts = [...codeParts];
     newCodeParts[index] = value;
     setCodeParts(newCodeParts);
+  };
+
+  const handlePaste = (e) => {
+    const pasteData = e.clipboardData.getData("Text");
+    if (pasteData.length === 5) {
+      const newCodeParts = pasteData.split("").map(char => char.slice(0, 1));
+      setCodeParts(newCodeParts);
+      e.preventDefault(); // Previene que el valor pegado sea ingresado en el primer campo
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -33,7 +44,7 @@ export default function VerificationCode() {
       <form
         onSubmit={handleSubmit}
         noValidate
-        className="md:w-3/5 md:h-1/2 bg-zinc-300 shadow-md border-solid border-2 border-gray-500 mt-12 px-10 py-7"
+        className="md:w-2/5 md:h-3/5 bg-zinc-300 shadow-md border-solid border-2 border-gray-500 mt-12 px-10 py-7"
       >
         <div>
           <label className="space-x-8 text-xl text-slate-800" htmlFor="code">
@@ -48,6 +59,7 @@ export default function VerificationCode() {
                 maxLength="1"
                 value={part}
                 onChange={(e) => handleChange(index, e.target.value)}
+                onPaste={index === 0 ? handlePaste : null} // Solo el primer campo escucha el evento onPaste
                 required
               />
             ))}

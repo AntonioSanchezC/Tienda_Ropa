@@ -5,12 +5,14 @@ import useQuisco from "../hooks/useQuiosco";
 export default function InitialGender() {
 
     const baseURL = 'http://localhost';
-    const { filterProductsByGender } = useQuisco();
+    const { 
+        gender,
+        selectGender, } = useQuisco();
     const navigate = useNavigate();
 
 
     const handleGenderClick = (gender) => {
-        filterProductsByGender(gender);
+        selectGender(gender);
         navigate('/');
     };
 

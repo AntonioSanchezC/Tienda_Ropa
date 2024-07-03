@@ -27,6 +27,7 @@ class PromotionRequest extends FormRequest
             'entity' => ['required', 'string'],
 
             'name' => ['required', 'string'],
+            'gender' => ['required', 'string'],
             'tipe' => ['required', 'string'],
             'description' => ['required', 'string'],
             'discount' => ['required', 'numeric'],
@@ -41,6 +42,7 @@ class PromotionRequest extends FormRequest
             'entity' => 'La entidad de imagen no ha sido establecida.',
 
             'name' => 'El nombre es obligatorio.',
+            'gender' => 'No se ha elegido el genero asignado de la promocion.',
             'tipe' => 'Tipo de promoción.',
             'description' => 'Anade una descripcion.',
             'discount' => 'El descuento.',

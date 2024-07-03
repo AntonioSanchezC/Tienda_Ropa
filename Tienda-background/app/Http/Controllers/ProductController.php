@@ -15,7 +15,7 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function indexAdmin()
     {
         // Obtener productos agrupados por nombre y tomar solo uno por cada grupo
         $products = Product::with('imgs')
@@ -28,6 +28,24 @@ class ProductController extends Controller
         return new ProductCollection($products);
     }
 
+    public function index($gender)
+    {
+        // Verifica que el género sea válido ('M' o 'F')
+        if (!in_array($gender, ['M', 'F'])) {
+            return response()->json(['error' => 'Género inválido'], 400);
+        }
+
+        // Obtener productos con el género especificado
+        $products = Product::with('imgs')
+            ->where('gender', $gender)
+            ->select('products.*')
+            ->join(DB::raw('(SELECT MIN(id) as id FROM products WHERE gender = ? GROUP BY name) as grouped_products'), 'products.id', '=', 'grouped_products.id')
+            ->setBindings([$gender], 'join')
+            ->orderBy('products.id', 'DESC')
+            ->get();
+
+        return new ProductCollection($products);
+    }
 
 
 

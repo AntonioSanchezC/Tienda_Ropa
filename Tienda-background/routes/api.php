@@ -51,7 +51,7 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::get('/user', function(Request $request){
         return $request->user();
     });
-
+    Route::get('/productsAdmin', [ProductController::class, 'indexAdmin']);
     Route::post('/verifyEmail', [EmailController::class, 'verifyEmail']);
     Route::post('/code', [EmailController::class, 'code']);
     Route::post('/logout', [AuthController::class, 'logout']);
@@ -67,6 +67,8 @@ Route::middleware('auth:sanctum')->group(function() {
 
     // Almacenar ordenes
     Route::post('/orders', [OrderController::class, 'store']);
+    Route::post('/ordersSuccess', [OrderController::class, 'storeP']);
+
 });
 
 
@@ -81,13 +83,14 @@ Route::post('/productSearch', [ProductController::class, 'searchCount']);
 // Rutas de registro que requieren verificación de correo
     Route::post('/register', [AuthController::class, 'register']);
 
-Route::get('/products', [ProductController::class, 'index']);
+Route::get('/products/{gender}', [ProductController::class, 'index']);
+
 Route::post('/products/filter', [ProductController::class, 'filter']);
 Route::get('/products/{product_code}/sizes-colors', [ProductController::class, 'getSizesAndColors']);
 Route::get('/products/{productCode}/sizes-colors-filter', [ProductController::class, 'getProductsByCode']);
 
+Route::get('/promo/{gender}', [PromotionController::class, 'getPromotionsByGender']);
 
-Route::apiResource('/promo', PromotionController::class);
 Route::apiResource('/promoProduct', PromoProductsController::class);
 Route::apiResource('/img', ImgController::class);
 Route::apiResource('/imgProduct', ImgProductController::class);

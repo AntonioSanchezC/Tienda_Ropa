@@ -21,22 +21,38 @@ export default function AdminUsers() {
 
   return (
     <>
-    <h1 className="text-4xl font-black">Usuarios en la Base de Datos</h1>
+      <h1 className="text-4xl font-black">Usuarios en la Base de Datos</h1>
 
-      <div className="flex flex-col ">
-      {Array.isArray(users) && users.map((user) => (
-        <div key={user.id} className="flex flex-nowrap mt-3">
-        <Link to={`/admin/detailsUsers`}   state={{ user: user }} className="flex flex-nowrap w-4/5 md:top-32  bg-white p-4 shadow-md hover:bg-slate-400 hover:text-white">
-          <p className="md:mr-3">{user.name}</p>
-          <p className="md:mr-3">{user.lastName}</p>
-            <p>Dirección: {user.address}</p>
-          </Link>
-              <button onClick={() => handleDelete(user.id)} className="bg-red-500 hover:bg-red-700  text-white p-3">
-                Borrar usuario
-              </button>
+      <div className="mt-8 p-4 shadow-2xl rounded-lg md:m-5">
+        <div className="bg-white p-4 rounded-md mt-4">
+          <div className="text-4xl text-gray-500 font-black pb-4">Usuarios en la Base de Datos</div>
+          <div className="my-1"></div>
+          <div className="bg-gradient-to-r from-slate-400 to-cyan-500 h-px mb-6"></div> 
+
+          <div className="flex flex-col">
+            {Array.isArray(users) &&
+              users.map((user) => (
+                <div key={user.id} className="flex flex-nowrap items-center justify-between bg-white p-4 shadow-md hover:bg-slate-400 hover:text-white mb-4 rounded-md">
+                  <div className="flex flex-col md:flex-row md:items-center w-full">
+                    <Link to={{ pathname: `/admin/detailsUsers`, state: { user: user } }} className="text-lg md:mr-3">
+                      {user.name} {user.lastName}
+                    </Link>
+                    <p className="hidden md:block">Dirección: {user.address}</p>
+                  </div>
+                  <button onClick={() => handleDelete(user.id)} className="bg-red-500 hover:bg-red-700 text-white py-1 px-2 rounded-md">
+                    Borrar usuario
+                  </button>
+                </div>
+              ))}
           </div>
-        ))}
+
+          <div className="text-right mt-4">
+            <Link to="/admin/transactions" className="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded">
+              Ver más
+            </Link>
+          </div>
+        </div>
       </div>
     </>
-  )
+  );
 }

@@ -1,18 +1,30 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import useQuiosco from "../hooks/useQuiosco";
 import { formatearDinero } from "../helpers";
 import PayPalPayment from "../components/PayPalPayment";
+import ComponentePay from "../components/componentePay";
 import Alerta from "../components/Alerta";
 
 export default function Checkout() {
-  const { order, total, arrivals, handleSubmitNewOrder, user } = useQuiosco();
-  const [selectedArrival, setSelectedArrival] = useState("");
+  const { order, total, arrivals, handleSubmitNewOrder, handleSubmitNewOrderSuccess, user} = useQuiosco();
+
+
+const [arrivalId, setarrivalId] = useState();
+
   const [cardNumber, setCardNumber] = useState("");
   const [cardExpiry, setCardExpiry] = useState("");
   const [cardCVC, setCardCVC] = useState("");
   const [errores, setErrores] = useState([]);
 
-  const handleArrivalChange = (e) => setSelectedArrival(e.target.value);
+
+
+  const handleArrivalChange = (e) => {
+    const selectedValue = parseInt(e.target.value, 10);
+    setarrivalId(selectedValue);
+  };
+  
+
+
   const handleCardNumberChange = (e) => setCardNumber(e.target.value);
   const handleCardExpiryChange = (e) => setCardExpiry(e.target.value);
   const handleCardCVCChange = (e) => setCardCVC(e.target.value);
@@ -22,7 +34,7 @@ export default function Checkout() {
 
     const orderData = {
       total,
-      arrivalId: selectedArrival,
+      arrivalId: arrivalId,
       products: order.map((product) => ({
         id: product.id,
         quantity: product.quantity,
@@ -40,29 +52,7 @@ export default function Checkout() {
     handleSubmitNewOrder(orderData, setErrores);
   };
 
-  const handlePaymentSuccess = (details) => {
-    const paypalOrderId = details.id; // Asumiendo que 'details.id' contiene el ID de la orden de PayPal
-    console.log("Pago con PayPal completado exitosamente", details);
-  
-    const orderData = {
-      total,
-      arrivalId: selectedArrival, // Asigna aquí el id del punto de entrega seleccionado
-      products: order.map((product) => ({
-        id: product.id,
-        quantity: product.quantity,
-        name: product.name,
-        price: product.price,
-        color: product.selectedColor,
-        size: product.selectedSize,
-        product_code: product.product_code,
-      })),
-      paypal_order_id: paypalOrderId // Incluye el ID de la orden de PayPal capturada
-    };
-  
-    handleSubmitNewOrder(orderData, setErrores);
-  };
-  
-  
+
 
   return (
     <div className="container mx-auto p-12">
@@ -102,29 +92,30 @@ export default function Checkout() {
             )}
           </div>
         </div>
-        
+
         <div className="md:w-1/2 mx-auto">
           <form onSubmit={handleSubmit} className="bg-gray-200 shadow-md border-solid border-2 border-gray-700 rounded-lg p-8 md:p-12" noValidate>
             <h2 className="text-2xl font-bold mb-6 text-center">Detalles de Pago</h2>
-        
+
             {errores.length > 0 && errores.map((error, i) => <Alerta key={i}>{error}</Alerta>)}
-        
+
             <div className="mb-4 flex items-center">
-              <label htmlFor="arrival" className="w-1/3 text-lg font-medium text-gray-700">Punto de Entrega</label>
+              <label htmlFor="arrivalId" className="w-1/3 text-lg font-medium text-gray-700">Punto de Entrega</label>
               <select
-                id="arrival"
+                id="arrivalId"
                 className="w-2/3 bg-gray-100 h-12 p-3 border-b-2 border-gray-400 focus:border-blue-500 outline-none"
-                name="arrival"
-                value={selectedArrival}
+                name="arrivalId"
+                value={arrivalId}
                 onChange={handleArrivalChange}
+                selected
               >
-                <option value="" disabled>Seleccione el punto de entrega</option>
+                <option value="" >Seleccione el punto de entrega</option>
                 {arrivals.map((arrival) => (
                   <option key={arrival.id} value={arrival.id}>{arrival.address}</option>
                 ))}
               </select>
             </div>
-        
+
             <div className="mb-4 flex items-center">
               <label htmlFor="cardNumber" className="w-1/3 text-lg font-medium text-gray-700">Número de Tarjeta</label>
               <input
@@ -135,7 +126,7 @@ export default function Checkout() {
                 onChange={handleCardNumberChange}
               />
             </div>
-        
+
             <div className="mb-4 flex items-center">
               <label htmlFor="cardExpiry" className="w-1/3 text-lg font-medium text-gray-700">Fecha de Expiración</label>
               <input
@@ -147,7 +138,7 @@ export default function Checkout() {
                 placeholder="MM/YY"
               />
             </div>
-        
+
             <div className="mb-4 flex items-center">
               <label htmlFor="cardCVC" className="w-1/3 text-lg font-medium text-gray-700">CVC</label>
               <input
@@ -158,7 +149,7 @@ export default function Checkout() {
                 onChange={handleCardCVCChange}
               />
             </div>
-        
+
             {user && user.email_verified_at ? (
               <div className="mt-5 text-center">
                 <input
@@ -175,30 +166,28 @@ export default function Checkout() {
         </div>
       </div>
 
+
+
       {/* Componente de PayPalPayment */}
+      {order.length > 0 && (
         <div className="mt-4">
-// En el componente Checkout
-
-// En el componente Checkout
-
-<PayPalPayment 
-  orderData={{ 
-    total, 
-    products: order.map((product) => ({
-      id: product.id,
-      quantity: product.quantity,
-      name: product.name,
-      price: product.price,
-      color: product.selectedColor,
-      size: product.selectedSize,
-      product_code: product.product_code,
-    })), 
-    arrivalId: selectedArrival 
-  }} 
-  onPaymentSuccess={handlePaymentSuccess} 
-/>
-
-        </div>
+        <PayPalPayment 
+          orderData={{ 
+            total, 
+            arrivalId:arrivalId,
+            products: order.map((product) => ({
+              id: product.id,
+              quantity: product.quantity,
+              name: product.name,
+              price: product.price,
+              color: product.selectedColor,
+              size: product.selectedSize,
+              product_code: product.product_code,
+            })),
+          }} 
+        />
+      </div>
+      )}
     </div>
   );
 }

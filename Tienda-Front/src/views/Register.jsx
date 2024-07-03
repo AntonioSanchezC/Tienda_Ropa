@@ -6,10 +6,16 @@ import useQuisco from "../hooks/useQuiosco";
  
     export default function Register() {
 
-        const { setEmailValue, prefixes } = useQuisco();
+        const {getPrefixes, setEmailValue, prefixes  } = useQuisco();
+        useEffect(() => {
+            getPrefixes();
+        },[])
 
+
+        
         const nameRef = createRef();
         const lastNameRef = createRef();
+        const genderRef = createRef(null);
         const direRef = createRef();
         const prefRef = createRef();
         const telfRef = createRef();
@@ -24,6 +30,9 @@ import useQuisco from "../hooks/useQuiosco";
             url:'/'
         })
     
+        const selectedGender = document.querySelector('input[name="gender"]:checked');
+        const genderValue = selectedGender ? selectedGender.value : '';
+
 
         const handleSubmit = async e => {
             e.preventDefault();
@@ -31,6 +40,7 @@ import useQuisco from "../hooks/useQuiosco";
             const datos = {
                 name: nameRef.current.value,
                 lastName: lastNameRef.current.value,
+                gender:  genderValue,
                 address: direRef.current.value,
                 value: prefRef.current.value,
                 telf: telfRef.current.value,
@@ -38,8 +48,6 @@ import useQuisco from "../hooks/useQuiosco";
                 password: passwordRef.current.value,
                 password_confirmation: passwordConfirmtionRef.current.value
             }
-            // registro(datos, setErrores)
-            // console.log('Datos del formulario:', datos.name); // Agregar esta línea
 
             // Llama a la función de registro dentro de una función async
             const registerUser = async () => {
@@ -54,7 +62,7 @@ import useQuisco from "../hooks/useQuiosco";
 
 
     return ( 
-        <div className="grid place-content-start md:place-content-center w-full ">
+        <div className="grid place-content-start md:place-content-center w-full md:mb-12">
 
             <div className="bg-zinc-300 shadow-md border-solid border-2 border-gray-700 mt-12 px-10 py-7 ">
             <h1 className="text-4xl font-black mb-10 mr-6">Registro</h1>
@@ -172,6 +180,17 @@ import useQuisco from "../hooks/useQuiosco";
                                     ref={emailRef}
 
                                 />
+                            </div>
+                            <div className="mb-4">
+                              <label className="text-slate-800">Sexo desigando:</label>
+                              <div>
+                                <label>
+                                  <input type="radio" name="gender" value="F" ref={genderRef} />{" "} Femenino
+                                </label>
+                                <label>
+                                  <input type="radio" name="gender" value="M" ref={genderRef} />{" "} Masculino
+                                </label>
+                              </div>
                             </div>
                             <div className="mb-4 space-x-8 flex">
                                 <label 

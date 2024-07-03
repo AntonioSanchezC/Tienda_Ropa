@@ -14,7 +14,13 @@ class EmailController extends Controller
     public function email(Request $request)
     {
         try {
-            // Obtener el correo electrónico del cuerpo de la solicitud
+            // Validar la solicitud
+            $request->validate([
+                'email' => 'required|email',
+                'addressCode' => 'required|string',
+            ]);
+
+            // Obtener el correo electrónico y el código de la dirección del cuerpo de la solicitud
             $email = $request->input('email');
             $addressCode = $request->input('addressCode');
 
@@ -24,12 +30,14 @@ class EmailController extends Controller
             // Envía el correo electrónico utilizando el Mailable
             Mail::to($email)->send($emailMailable);
 
-            return response()->json(['message' => 'Correo electrónico enviado con éxito',], 200);
+            return response()->json(['message' => 'Correo electrónico enviado con éxito'], 200);
         } catch (\Exception $e) {
+            Log::error('Error enviando correo: ', ['error' => $e->getMessage()]);
             // Devuelve una respuesta más informativa en caso de error
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+
     public function emailClient(Request $request)
     {
         try {
