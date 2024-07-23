@@ -42,10 +42,20 @@ public function insertProduct(AddProductoRequest $request)
         $sizeId = $size->id;
 
         // Crear o buscar el color
-        $color = Color::firstOrCreate(
-            ['name' => $data['color'], 'code_color' => $data['code_color']],
-            ['code_shop' => strtoupper(substr($data['code_color'], 2, 5))]
-        );
+        $color = Color::where('name', $data['color'])->first();
+
+        if ($color) {
+            // Actualizar el código de color si el color ya existe
+            $color->update(['code_color' => $data['code_color'], 'code_shop' => strtoupper(substr($data['code_color'], 2, 5))]);
+        } else {
+            // Crear un nuevo color si no existe
+            $color = Color::create([
+                'name' => $data['color'],
+                'code_color' => $data['code_color'],
+                'code_shop' => strtoupper(substr($data['code_color'], 2, 5))
+            ]);
+        }
+
         $colorId = $color->id;
 
         // Crear la imagen
@@ -105,7 +115,6 @@ public function insertProduct(AddProductoRequest $request)
         ], 500);
     }
 }
-
 
     public function deleteProduct(Request $request)
     {

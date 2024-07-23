@@ -4,7 +4,12 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 export default function Products() {
-  const { productAll } = useQuisco();
+  const { obtenProducts,productAll } = useQuisco();
+
+  useEffect(() => {
+      obtenProducts();
+  }, []);
+    
   const { deleteProduct } = useAuth({
     middleware: 'auth',
     url: '/'

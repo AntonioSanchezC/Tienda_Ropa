@@ -1,151 +1,99 @@
-import { createRef, useState, useRef, useEffect } from "react" 
-import { Link } from "react-router-dom"
+import { createRef, useState } from "react";
+import { Link } from "react-router-dom";
 import Alerta from "../components/Alerta";
 import { useAuth } from "../hooks/useAuth";
-import useQuisco from "../hooks/useQuiosco";
-import clienteAxios from "../config/axios";
 
+export default function Login() {
 
-export default function Login() {    
-    
-    const emailRef = createRef();
-    const passwordRef = createRef();
-    const { product,  imgProduct, idImgProduct } = useQuisco();
-    const [errores, setErrores] = useState([]);
-    const listRef = useRef();
-    const [currentIndex, setCurrentIndex] = useState(0);
+  const emailRef = createRef();
+  const passwordRef = createRef();
+  // Aquí usamos useState
+  const [remember, setRemember] = useState(false); 
 
-    const {login} = useAuth({
-        middleware: 'guest',
-        url:'/'
-    })
+  const [errores, setErrores] = useState([]);
+  const baseURL = 'http://localhost';
+  const { login } = useAuth({
+    middleware: "guest",
+    url: "/",
+  });
 
-    const handleSubmit = async e => {
-        e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-        const datos = {
-            email: emailRef.current.value,
-            password: passwordRef.current.value,
-        }
+    const datos = {
+      email: emailRef.current.value,
+      password: passwordRef.current.value,
+      remember,
+    };
 
-        login(datos, setErrores);
-    }
+    login(datos, setErrores);
+  };
 
-    useEffect(() => {
-        const listNode = listRef.current;
-        const imgNode = listNode.querySelectorAll("li")[currentIndex];
-    
-        if (imgNode) {
-          imgNode.scrollIntoView({
-            behavior: "smooth"
-          });
-        }
-    
-      }, [currentIndex]);
+  return (
+    <div className="w-full max-w-md relative p-6 mx-auto font-playfair">
+      <div
+        className="absolute inset-0 w-full h-full bg-no-repeat bg-center bg-contain rounded-lg z-0"
+        style={{ backgroundImage: `url(${baseURL}/backgrounds/loginDeco.png)` }}
+      ></div>
+      <div className="relative  rounded-lg space-y-3 p-4 bg-transparent z-10">
+        <h1 className=" text-center text-4xl font-black text-black my-8">
+          Iniciar Sesión
+        </h1>
 
-    const scrollToImage = (direction) => {
-        if (direction === 'prev') {
-          setCurrentIndex(curr => {
-            const isFirstSlide = currentIndex === 0;
-            return isFirstSlide ? 0 : curr - 1;
-          })
-        } else {
-          const isLastSlide = currentIndex === imgProduct.length - 1;
-          if (!isLastSlide) {
-            setCurrentIndex(curr => curr + 1);
-          }
-        }
-    }
+        <form onSubmit={handleSubmit} noValidate className="flex flex-col items-center">
+          {errores ? errores.map((error, i) => <Alerta key={i}>{error}</Alerta>) : null}
 
-    return (
-
-            <div className="flex flex-row ">
-                <div className="basis-1/3 bg-zinc-300 shadow-md rounded-lg md:h-1/3 md:m-7 md:p-4 ">
-                    <div className="border-solid border-2 border-slate-200 rounded-lg space-y-3 p-4">
-                        <h1 className="font-montserrat text-4xl font-black text-gray-200">Iniciar Sesión</h1>
-
-                        <form 
-                            onSubmit={handleSubmit}
-                            noValidate
-                        >
-
-                        {errores ? errores.map((error, i) => <Alerta key={i}>{error}</Alerta>) : null}
-
-
-                            <div className="mb-4">
-                                <label 
-                                    className="text-slate-800"
-                                    htmlFor="email"
-                                >Email:</label>
-                                <input 
-                                    type="text"
-                                    id="email"
-                                    className="mt-2 w-full p-3 bg-gray-50"
-                                    name="email"
-                                    placeholder="Escribe tu Correo Electronico"
-                                    ref={emailRef}
-                                />
-                            </div>
-                            <div className="mb-4">
-                                <label 
-                                    className="text-slate-800"
-                                    htmlFor="password"
-                                >Contraseña:</label>
-                                <input 
-                                    type="password"
-                                    id="password"
-                                    className="mt-2 w-full p-3 bg-gray-50"
-                                    name="password"
-                                    placeholder="Escribe tu Contraseña"
-                                    ref={passwordRef}
-                                />
-                            </div>
-
-                            <input 
-                                type="submit"
-                                value="Iniciar Sesión"
-                                className="bg-white hover:bg-zinc-700 text-black hover:text-white w-full mt-5 p-0 uppercase font-bold cursor-pointer h-12"
-                            />
-                        </form>
-                    </div>
-                    <nav className="mt-5">
-                        <Link to="/register">¿No tienes cueta?Crea tu cuenta</Link>
-                    </nav>
-                    
-                </div>
-
-                <div className="w-full relative m-0 ">
-                    <div className='absolute top-1/2 transform -translate-y-1/2 left-8 text-5xl font-bold text-green-600 z-10 cursor-pointer' onClick={() => scrollToImage('prev')}>&#10092;</div>
-                    <div className='absolute top-1/2 transform -translate-y-1/2 right-8 text-5xl font-bold text-green-600 z-10 cursor-pointer' onClick={() => scrollToImage('next')}>&#10093;</div>
-                    <div className="border border-solid border-gray-300 overflow-hidden">
-                        <ul ref={listRef}>
-                            {product.map((product, index) => {
-                                if (product.novelty === 1) {
-                                    const imgProductForProducto = imgProduct.find((imgP) => imgP.product_id === product.id);
-                                    const key = imgProductForProducto ? `${product.id}_${imgProductForProducto.img_id}` : '';
-                                    const imgRelacionated = key && idImgProduct[key];
-                                    const imageProduct = imgRelacionated && imgRelacionated.image ? `${clienteAxios.defaults.baseURL}/${imgRelacionated.image}` : null;
-                
-                                    return (
-                                        <li key={index} style={{ display: index === currentIndex ? 'block' : 'none' }}>
-
-                                            <img src={imageProduct} alt={product.name} width="200" height="200" 
-                                                 className="w-screen h-screen object-cover shadow-md"
-                                            />
-                                            
-                                        </li>
-                                    );
-                                }
-                                return null;
-                            })}
-                        </ul>
-                    </div>
-                </div>
-            
-
+          <div className="mb-8 flex items-center w-full justify-center">
+            <div className="w-24 text-left mr-4">
+              <label className="text-slate-800" htmlFor="email">Email:</label>
             </div>
+            <input
+              type="text"
+              id="email"
+              className="bg-slate-300 h-6 p-3 border-b-2 border-gray-400 focus:border-zinc-500 outline-none w-1/2"
+              name="email"
+              placeholder="Correo Electrónico"
+              ref={emailRef}
+            />
+          </div>
+          <div className="mb-8 flex items-center w-full justify-center">
+            <div className="w-24 text-left mr-4">
+              <label className="text-slate-800" htmlFor="password">Contraseña:</label>
+            </div>
+            <input
+              type="password"
+              id="password"
+              className="bg-slate-300 h-6 p-3 border-b-2 border-gray-400 focus:border-zinc-500 outline-none w-1/2"
+              name="password"
+              placeholder="Contraseña"
+              ref={passwordRef}
+            />
+          </div>
 
-        
-    );
+          <div>
+            <input
+              type="checkbox"
+              checked={remember}
+              onChange={(e) => setRemember(e.target.checked)}
+            />
+            <label>Mantener mi sesión abierta</label>
+          </div>
 
+          <input
+            type="submit"
+            value="Iniciar Sesión"
+            className="bg-transparent hover:bg-zinc-700 text-black hover:text-white w-64 mt-5 p-3 uppercase font-bold cursor-pointer h-12"
+          />
+        </form>
+        <nav className="mt-5 ml-8 text-center z-50 ">
+          <Link to="/auth/register">¿No tienes cuenta? Crea tu cuenta</Link>
+        </nav>
+      </div>
+      
+
+
+      
+
+</div>
+  );
 }

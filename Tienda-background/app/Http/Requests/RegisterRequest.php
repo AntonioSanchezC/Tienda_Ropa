@@ -52,7 +52,7 @@ class RegisterRequest extends FormRequest
             'telf' => 'El telefono es obligatorio',
             'email.required' => 'El Email es obligatorio',
             'email.email' => 'El email no es valido',
-            'email.unique' => 'El usuario ya esta registrado',
+            'email.unique' => 'El correo de usuario registrado',
             'value' => 'Selecciona el prefijo',
             'password'=> 'El Password debe contener 8 caracterers, un simbolo y un numero'
         ];

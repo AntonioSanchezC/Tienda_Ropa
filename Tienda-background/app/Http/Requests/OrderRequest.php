@@ -21,7 +21,7 @@ class OrderRequest extends FormRequest
             'products.*.quantity' => 'required|integer|min:1',
             'products.*.name' => 'required|string',
             'products.*.product_code' => 'required|string',
-            'products.*.price' => 'required|integer',
+            'products.*.price' => 'required',
             'products.*.color' => 'required|integer',
             'products.*.size' => 'required|integer',
             'cardNumber' => 'required|string', // Añadir validaciones según sea necesario
@@ -43,7 +43,6 @@ class OrderRequest extends FormRequest
             'products.*.id.exists' => 'El ID del producto no es válido',
             'products.*.quantity.required' => 'La cantidad del producto es obligatoria',
             'products.*.quantity.integer' => 'La cantidad del producto debe ser un número entero',
-            'products.*.price.integer' => 'El precio del producto debe ser un número entero',
             'products.*.color' => 'El color no ha llegado correctamente',
             'products.*.size' => 'La talla no ha llegado correctamente',
             'products.*.quantity.min' => 'La cantidad del producto debe ser al menos 1',

@@ -3,7 +3,7 @@ import { useDropzone } from "react-dropzone";
 import { useAuth } from "../hooks/useAuth";
 import Alerta from "../components/Alerta";
 import useQuisco from "../hooks/useQuiosco";
-import { ChromePicker } from 'react-color';
+import { HexColorPicker } from 'react-colorful';
 import '../styles/detailsProducts.css';
 
 export default function InsertProducts() {
@@ -12,10 +12,15 @@ export default function InsertProducts() {
 
   const [previewImage, setPreviewImage] = useState(null);
   const [acceptedFiles, setAcceptedFiles] = useState([]);
-  const { categories, subCategories, obtenerSubCategoriasPorCategoria, warehouses } = useQuisco();
+  const { obtenerCategorias,obtenerSubCategorias, categories, subCategories, obtenerSubCategoriasPorCategoria, getWarehouses, warehouses } = useQuisco();
   const [selectedSubcategory, setSelectedSubcategory] = useState("");
   const [selectedCategoryId, setSelectedCategoryId] = useState("");
 
+  useEffect(() => {
+    getWarehouses();
+    obtenerCategorias();
+    obtenerSubCategorias();
+},[])
   const handleChangeCategoria = (e) => {
     const tipoCategoriaSeleccionada = e.target.value;
     obtenerSubCategoriasPorCategoria(parseInt(tipoCategoriaSeleccionada));
@@ -32,7 +37,10 @@ export default function InsertProducts() {
   };
 
   const { getRootProps, getInputProps, isDragActive, open, removeFile } = useDropzone({
-    accept: [".png", ".jpg", ".jpeg", ".gif"],
+    accept: {
+      'image/*': ['.jpeg', '.jpg', '.png'],
+      'application/pdf': ['.pdf']
+    },
     maxFiles: 1,
     onDrop: (acceptedFiles) => {
       if (acceptedFiles.length > 0) {
@@ -129,7 +137,7 @@ export default function InsertProducts() {
   };
 
   return (
-    <>
+    <div className="w-full ">
         <div className='mt-8 p-6 shadow-2xl rounded-lg md:m-5 overflow-hidden'>
             <h2 className="text-4xl text-gray-500 font-black pb-4">Productos de tienda</h2>
             <div className="bg-gradient-to-r from-slate-500 to-cyan-500 h-px md:mt-4 md:mb-6"></div>
@@ -264,12 +272,12 @@ export default function InsertProducts() {
                     />
                   </div>
                   <div className="color-picker-container rounded-lg overflow-hidde flex justify-center items-center">
-                  <ChromePicker
+                  <HexColorPicker
                     color={color}
                     className="rounded-lg"
                     onChange={(newColor) => {
-                      setColor(newColor.hex); // Actualiza el estado del color cuando cambia
-                      setCodeColor(newColor.hex); // Actualiza el estado del código de color
+                      setColor(newColor); // Actualiza el estado del color cuando cambia
+                      setCodeColor(newColor); // Actualiza el estado del código de color
                     }}
                   />
                 </div>
@@ -281,7 +289,7 @@ export default function InsertProducts() {
                       htmlFor="category"
                       onChange={handleChangeCategoria}
                     >
-                      <option value="" disabled selected>
+                      <option value="" disabled >
                         Seleccione una categoría
                       </option>
                       {categories.map((category) => (
@@ -300,7 +308,7 @@ export default function InsertProducts() {
                       ref={subCateRef}
                       onChange={handleChangeSubcategory}
                     >
-                      <option value="" disabled selected>
+                      <option value="" disabled >
                         Seleccione una subcategoría
                       </option>
                       {subCategories
@@ -320,9 +328,8 @@ export default function InsertProducts() {
                       htmlFor="warehouse"
                       ref={warehousesRef}
                       onChange={handleChangeSubcategory}
-                      defaultValue=""
                     >
-                      <option value="" disabled selected>
+                      <option value="" disabled >
                         Seleccione el almacen donde es guardado
                       </option>
                       {warehouses.map((warehouse) => (
@@ -364,6 +371,6 @@ export default function InsertProducts() {
                 ))}
             </div>
         )}
-    </>
+    </div>
 );
 }

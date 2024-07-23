@@ -4,11 +4,8 @@ import { useAuth } from "../hooks/useAuth";
 import ResumenProducto from "./ResumenProducto";
 import { useState } from "react";
 
-
-
 export default function Resumen() {
-
-  const {order, total, handleSubmitNewOrder, arrivals} = useQuisco();
+  const { cartState, setCartState, order, total, handleSubmitNewOrder, arrivals } = useQuisco();
   const [selectedArrival, setSelectedArrival] = useState("");
 
   const handleArrivalChange = (e) => {
@@ -16,18 +13,31 @@ export default function Resumen() {
   }
 
   console.log("El valor de arrivals en Resumen es ", arrivals);
-  const {logout} = useAuth({})
+  const { logout } = useAuth({})
   const checkOrder = () => order.length === 0;
   const handleSubmit = e => {
     e.preventDefault();
     handleSubmitNewOrder(selectedArrival);
   }
 
+  const handleBadgeClick = (event) => {
+    event.stopPropagation();
+    setCartState((prevCartState) => !prevCartState);
+  };
+
   return (
     <aside className="md:w-72 z-40 h-screen absolute overflow-y-scroll bg-indigo-100 md:top-32 right-0 p-5 mx-auto">
-    <h1 className="text-4xl font-black">
+      <h1 className="text-4xl font-black">
         Mi pedido
       </h1>
+
+      <div
+        className="flex items-center justify-center bg-red-500 text-white rounded-lg text-xs"
+        onClick={handleBadgeClick}
+      >
+        Cerrar
+      </div>
+
       <p className="text-lg my-5">
         Aqui podra ver el resumen y totales
       </p>
@@ -39,7 +49,7 @@ export default function Resumen() {
           </p>
         ) : (
           order.map(product => (
-            <ResumenProducto 
+            <ResumenProducto
               key={product.id}
               product={product}
             />
@@ -48,50 +58,42 @@ export default function Resumen() {
       </div>
 
       <p className="text-xl mt-10">
-          Total:{''}
-          {formatearDinero(total)}
+        Total:{''}
+        {formatearDinero(total)}
       </p>
 
-      <form 
+      <form
         className="w-full"
         onSubmit={handleSubmit}
       >
-
-      <select
-      id="arrival"
-      className="mt-2 w-full p-3 bg-gray-50"
-      name="arrival"
-      htmlFor="arrival"
-      value={selectedArrival} 
-      onChange={handleArrivalChange} 
-    >
-      <option value="" disabled selected >
-        Seleccione el punto de entrega
-      </option>
-
-
-        {arrivals.map(arrival => (
-          
-          <option 
-            key={arrival.id} 
-            value={arrival.id}
-
-          >
-            {arrival.address}
+        <select
+          id="arrival"
+          className="mt-2 w-full p-3 bg-gray-50"
+          name="arrival"
+          value={selectedArrival}
+          onChange={handleArrivalChange}
+        >
+          <option value="" disabled>
+            Seleccione el punto de entrega
           </option>
-        ))}
-    </select>
+          {arrivals.map(arrival => (
+            <option
+              key={arrival.id}
+              value={arrival.id}
+            >
+              {arrival.address}
+            </option>
+          ))}
+        </select>
 
-
-
-          <div className="mt-5">
-            <input
-              type="submit"
-              className={`${checkOrder() ? 'bg-indigo-100' : ' bg-indigo-600 hover:bg-indigo-800 '}px-5 py-2 rounded uppercase font-bold text-white text-center w-full cursor-pointer`}
-              value="Confirmar Pedido"
-              disabled={checkOrder()}
-            />
-          </div>
+        <div className="mt-5">
+          <input
+            type="submit"
+            className={`${checkOrder() ? 'bg-indigo-100' : ' bg-indigo-600 hover:bg-indigo-800 '} px-5 py-2 rounded uppercase font-bold text-white text-center w-full cursor-pointer`}
+            value="Confirmar Pedido"
+            disabled={checkOrder()}
+          />
+        </div>
       </form>
     </aside>
   )

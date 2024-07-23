@@ -58,27 +58,30 @@ class AuthController extends Controller
     {
         $data = $request->validated();
 
-        //Revisar el password
-        if (!Auth::attempt($data))
-            {
-                return response([
-                    'errors' => ['El email o el password son incorrectos']
-                ], 422);
-            }
-        //Autenticar al usuario (con un token)
+        // Revisar el password y el campo remember
+        if (!Auth::attempt($data, $request->remember)) {
+            return response([
+                'errors' => ['El email o el password son incorrectos']
+            ], 422);
+        }
 
+        // Autenticar al usuario (con un token)
         $user = Auth::user();
 
         return [
             'token' => $user->createToken('token')->plainTextToken,
             'user' => $user
         ];
-
     }
 
     public function logout(Request $request)
     {
         $user = $request->user();
+
+        // Borrar el remember_token
+        $user->forceFill([
+            'remember_token' => null,
+        ])->save();
         $user->currentAccessToken()->delete();
 
         return[

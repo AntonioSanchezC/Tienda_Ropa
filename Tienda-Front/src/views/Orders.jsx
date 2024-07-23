@@ -1,10 +1,16 @@
 import useQuisco from "../hooks/useQuiosco";
 import { useAuth } from "../hooks/useAuth";
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { Link } from "react-router-dom";
 
 export default function Orders() {
-  const { orders } = useQuisco();
+  const { getOrders,orders } = useQuisco();
+
+  useEffect(() => {
+      getOrders();
+  }, []);
+
+  console.log("El valor de orders en Orders es de ", orders);
 
   return (
     <>
@@ -21,9 +27,11 @@ export default function Orders() {
           <div className="flex flex-col">
             {Array.isArray(orders) &&
               orders.map((order) => (
+                
                 <div key={order.id} className="flex flex-nowrap items-center justify-between bg-white p-4 shadow-md hover:bg-slate-400 hover:text-white mb-4 rounded-md">
                   <div className="flex flex-col md:flex-row md:items-center w-full">
-                    <Link to={{ pathname: `/admin/detailsOrder`, state: { orderD: order } }} className="text-lg md:mr-3">
+                    <Link to={`/admin/detailsOrder`} state={{ orderD: order }} className="bg-white hover:bg-slate-400 text-gray-800 hover:text-white border border-gray-400 hover:border-transparent rounded-md py-1 px-2 mr-2">
+
                       Total de productos: {order.total}
                     </Link>
                     <p className="hidden md:block">Código de pedido: {order.code}</p>

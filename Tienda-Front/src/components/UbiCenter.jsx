@@ -4,15 +4,23 @@ import 'leaflet/dist/leaflet.css';
 import L from 'leaflet'; 
 
 export default function UbiCenter() {
-    const [arrival, setArrival] = useState(null);
+    const [arrival, setArrival] = useState({ lat: 36.593423, lng: -6.238616 }); // Inicializa con coordenadas de ejemplo
     const baseURL = 'http://localhost'; 
 
     // Define el icono personalizado
     const myIcon = L.icon({
-        iconUrl: `${baseURL}/public/icon/point.png`, 
-        iconSize: [32, 32], 
-        iconAnchor: [16, 32], 
+        iconUrl: `${baseURL}/icon/shopUbi.png`, 
+        iconSize: [50, 50], 
+        iconAnchor: [50, 50], 
     });
+
+    // Actualiza el estado de 'arrival' si es necesario
+    useEffect(() => {
+        // Simulación de la llegada de datos
+        setTimeout(() => {
+            setArrival({ lat: 36.593423, lng: -6.238616 });
+        }, 1000);
+    }, []);
 
     return (
         <div className="flex flex-col items-center p-6 mb-12">

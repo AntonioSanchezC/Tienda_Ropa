@@ -10,14 +10,14 @@ const clienteAxios = axios.create({
 });
 
 // Interceptor para agregar el token de autorización a cada solicitud
-// clienteAxios.interceptors.request.use(config => {
-//     const token = localStorage.getItem('AUTH_TOKEN');
-//     if (token) {
-//         config.headers.Authorization = `Bearer ${token}`;
-//     }
-//     return config;
-// }, error => {
-//     return Promise.reject(error);
-// });
+clienteAxios.interceptors.request.use(config => {
+    const token = localStorage.getItem('AUTH_TOKEN');
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+}, error => {
+    return Promise.reject(error);
+});
 
 export default clienteAxios;

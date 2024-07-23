@@ -3,7 +3,7 @@ import { formatearDinero } from "../helpers";
 export default function TrolleyProducts({product}) {
 
 
-  const {handleEditarCantidad, handleEliminarProductoPedido} = useQuisco();
+  const {handleClickModal, handleEditarCantidad, handleEliminarProductoPedido} = useQuisco();
   const {id, name, price, quantity} = product
   const baseURL = 'http://localhost'; 
 
@@ -35,7 +35,10 @@ export default function TrolleyProducts({product}) {
           <button
             type="button"
             className="bg-sky-700 p-2 text-white rounded-md font-bold uppercase shadow-md text-center"
-            onClick={() => handleEditarCantidad(id)}
+            onClick={() => [handleEditarCantidad(id),
+              
+              handleClickModal()
+            ]}
             >
             <svg
               xmlns="http://www.w3.org/2000/svg"

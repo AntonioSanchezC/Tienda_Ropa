@@ -1,10 +1,17 @@
 import useQuisco from "../hooks/useQuiosco";
 import { useAuth } from "../hooks/useAuth";
-import { useState } from "react";
+import { useState,useEffect } from "react";
+
 import { Link } from "react-router-dom";
 
 export default function AdminUsers() {
-  const { users, phone } = useQuisco();
+  const { getUsers,getPhone,users, phone } = useQuisco();
+
+
+  useEffect(() => {
+      getUsers();
+      getPhone();
+  }, []);
   console.log("El valor de users en AdminUsers es ", users);
   const [errores, setErrores] = useState([]);
   const { deleteUser } = useAuth({

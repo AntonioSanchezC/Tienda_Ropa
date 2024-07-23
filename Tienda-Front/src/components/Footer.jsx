@@ -6,7 +6,7 @@ export default function Footer() {
   const baseURL = 'http://localhost'; 
 
   return (
-    <footer className="bg-zinc-100 text-zinc-500 p-12">
+    <footer className="bg-zinc-100 text-zinc-500 font-playfair p-12">
       <div className="container mx-auto px-4">
         <div className="flex flex-wrap justify-center text-center">
           {/* Sección de cuenta */}

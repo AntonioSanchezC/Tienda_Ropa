@@ -7,9 +7,9 @@ export default function DetailsProduct() {
   const location = useLocation();
   const { product, imageProduct } = location.state || {};
   const [showComment, setShowComment] = useState(false);
-  const [firstSearch, setFirstSearch] = useState(false);
 
-  const { handleQuantityCustomers, user } = useQuisco();
+  const { handleQuantityCustomers, handleClickModal, modal } = useQuisco();
+  console.log("El valor de modal al pulsar el boton de comprar es ", modal);
   const [quantityDP, setQuantityDP] = useState(1);
   const [comments, setComments] = useState([]);
   const [products, setProducts] = useState([]);
@@ -19,9 +19,11 @@ export default function DetailsProduct() {
   const [selectedColor, setSelectedColor] = useState(null);
   const [errores, setErrores] = useState([]);
 
-  const { commentInsert, commentGet, GetSizesAndColors, GetProductsByCode } = useAuth({
-    middleware: 'auth',
-    url: '/'
+  const { user, commentInsert, commentGet, GetSizesAndColors, GetProductsByCode,
+    commentComprobant,
+    setCommentComprobant } = useAuth({
+      middleware: 'auth',
+      url: '/'
   });
 
   const handleChangeQuantity = (event) => {
@@ -63,7 +65,7 @@ export default function DetailsProduct() {
 
     fetchComments();
     fetchSizesAndColors();
-  }, [productCode, firstSearch]);
+  }, [productCode]);
 
   useEffect(() => {
     if (selectedSize) {
@@ -76,6 +78,18 @@ export default function DetailsProduct() {
     }
   }, [selectedSize, products]);
 
+  useEffect(() => {
+    const fetchComments = async () => {
+      const comments = await commentGet(product.id, setErrores);
+      setComments(comments);
+    };
+
+    if (commentComprobant) {
+      fetchComments();
+      setCommentComprobant(false);
+    }
+  }, [commentComprobant]);
+
   const commentRef = useRef();
 
   const handleSubmit = async (e) => {
@@ -85,7 +99,11 @@ export default function DetailsProduct() {
       product_id: product.id,
       comment: commentRef.current.value,
     };
-    commentInsert(datos, setErrores);
+    await commentInsert(datos, setErrores);
+
+    // Close the comment box and clear the textarea
+    setShowComment(false);
+    commentRef.current.value = '';
   };
 
   const handleSizeSelect = (sizeId) => {
@@ -99,13 +117,13 @@ export default function DetailsProduct() {
 
   return (
     <>
-      <div className="flex text-zinc-500 p-3 bg-white">
+      <div className="flex text-zinc-500 p-3 bg-white font-playfair">
         <div className="w-1/2 p-2">
           <h3 className="text-4xl font-black md:m-12">{product.name}</h3>
           <div className="relative w-full h-[40rem] max-w-[33rem] mx-auto">
-            <img 
-              src={imageProduct} 
-              className="w-full h-full object-cover object-top" 
+            <img
+              src={imageProduct}
+              className="w-full h-full object-cover object-top"
               alt={product.name}
             />
           </div>
@@ -119,7 +137,7 @@ export default function DetailsProduct() {
               <label htmlFor="size" className="block font-bold">Tallas disponibles:</label>
               <div className="flex space-x-2">
                 {sizes.map((size) => (
-                  <button 
+                  <button
                     key={size.id}
                     className={`px-4 py-2 border-2 ${selectedSize === size.id ? 'border-black' : 'border-gray-300'}`}
                     onClick={() => handleSizeSelect(size.id)}
@@ -133,7 +151,7 @@ export default function DetailsProduct() {
               <label htmlFor="color" className="block font-bold">Colores disponibles:</label>
               <div className="flex space-x-2">
                 {colors.map((color) => (
-                  <button 
+                  <button
                     key={color.id}
                     className={`w-8 h-8 border-2 ${selectedColor === color.id ? 'border-black' : 'border-gray-300'}`}
                     style={{ backgroundColor: color.code_color }}
@@ -185,25 +203,31 @@ export default function DetailsProduct() {
         </div>
 
         {showComment && (
-          <div className='w-full bg-gray-100 p-4 rounded mb-6 max-w-3xl mx-auto'>
-            <form onSubmit={handleSubmit} noValidate>
-              <div className='flex flex-col'>
-                <textarea
-                  id="comment"
-                  className="bg-white p-3 border border-gray-400 focus:border-zinc-500 outline-none rounded mb-2"
-                  name="comment"
-                  placeholder="Escribe tu comentario aquí"
-                  ref={commentRef}
-                  rows="4"
-                />
-                <input
-                  type="submit"
-                  value="Enviar"
-                  className="bg-gray-800 hover:bg-gray-700 text-white rounded-lg text-xs font-bold cursor-pointer py-3 px-6 mx-auto"
-                />
-              </div>
-            </form>
-          </div>
+          user ? (
+            <div className='w-full bg-gray-100 p-4 rounded mb-6 max-w-3xl mx-auto'>
+              <form onSubmit={handleSubmit} noValidate>
+                <div className='flex flex-col'>
+                  <textarea
+                    id="comment"
+                    className="bg-white p-3 border border-gray-400 focus:border-zinc-500 outline-none rounded mb-2"
+                    name="comment"
+                    placeholder="Escribe tu comentario aquí"
+                    ref={commentRef}
+                    rows="4"
+                  />
+                  <input
+                    type="submit"
+                    value="Enviar"
+                    className="bg-gray-800 hover:bg-gray-700 text-white rounded-lg text-xs font-bold cursor-pointer py-3 px-6 mx-auto"
+                  />
+                </div>
+              </form>
+            </div>
+          ) : (
+            <div className='w-full bg-gray-100 p-4 rounded mb-6 max-w-3xl mx-auto text-center'>
+              <p className="text-red-600">Por favor, inicia sesión para dejar un comentario.</p>
+            </div>
+          )
         )}
 
         {comments.length > 0 ? (

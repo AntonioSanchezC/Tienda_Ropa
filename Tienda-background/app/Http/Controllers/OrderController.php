@@ -54,6 +54,11 @@ class OrderController extends Controller
         }
     }
 
+
+
+
+
+
     public function getUserOrders(Request $request)
     {
         $user = auth()->user();
@@ -61,7 +66,8 @@ class OrderController extends Controller
         $orders = Order::where('user_id', $user->id)
             ->with([
                 'deliveries.warehouse', // Asegura que se incluye el warehouse
-                'deliveries.arrival'    // Asegura que se incluye el arrival
+                'deliveries.arrival',    // Asegura que se incluye el arrival
+                'products'
             ])
             ->get();
 

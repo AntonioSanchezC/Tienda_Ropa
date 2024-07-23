@@ -1,18 +1,13 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
 import { ToastContainer } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css"; 
-import Sidebar from '../components/Sidebar';
-import Resumen from '../components/Resumen';
 import useQuisco from '../hooks/useQuiosco';
-import ModalProducto from '../components/ModalProducto';
 import Head from '../components/Head';
 import { useAuth } from "../hooks/useAuth";
-import '../styles/style.css';
 import Footer from '../components/Footer';
-import { useEffect } from 'react';
-import {useNavigate} from 'react-router-dom'
-
+import { useEffect, useState } from 'react';
+import ModalProducto from '../components/ModalProducto';
 
 const customStyles = {
   content: {
@@ -25,42 +20,60 @@ const customStyles = {
   },
 };
 
-Modal.setAppElement('#root')
+Modal.setAppElement('#root');
 
 export default function Layout() {
   const { user, error } = useAuth({ middleware: 'auth' });
-  const {  gender, getProducts, getPromotion } = useQuisco();
+  const { gender,modal, getProducts, getPromotion, throttledGetProducts,throttledGetPromotion,isGenderResolved} = useQuisco();
   const navigate = useNavigate();
+  const [resolvedGender, setResolvedGender] = useState(null);
 
   useEffect(() => {
-    if(!gender){
-      navigate('/auth/ini')
-    }else{
-      
-      if (gender) {
-          getProducts(gender);
-          getPromotion(gender);
+    const fetchData = async () => {
+      try {
+        const genderValue = await gender;
+        setResolvedGender(genderValue);
+        console.log("El valor de gender es ", genderValue);
+          if (isGenderResolved) {
+        if (!genderValue) {
+          navigate('/public/ini');
+        } else {
+          await throttledGetProducts(genderValue);
+          await throttledGetPromotion(genderValue);
+        }
       }
-    }
-  }, [gender]);
-  
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, [gender, navigate]);
+
+  if (resolvedGender === null) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <>
-      <div > 
-        <Head className=" z-20" />
-        <div >
-          <div >
-            <Outlet className="z-10 "/>
+      <div> 
+        <Head className="z-20" />
+        <div>
+          <div>
+            <Outlet  />
           </div>
-
-          <div className="flex-grow">
-
-          </div>
+          <div className="flex-grow"></div>
         </div>
-
-        <Footer/>
+        <Footer />
       </div>
       <ToastContainer />
+
+    {modal && (
+      <Modal isOpen={modal} style={customStyles}>
+        <ModalProducto/>
+      </Modal>
+    )}
+
     </>
-  )
+  );
 }

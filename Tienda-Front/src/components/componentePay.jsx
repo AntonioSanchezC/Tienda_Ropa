@@ -21,9 +21,6 @@ const ComponentePay = ({ orderData }) => {
           });
           console.log('Order captured successfully:', data.validated);
 
-          setTimeout(() => {
-            localStorage.removeItem('AUTH_TOKEN');
-          }, 1000);
         } catch (error) {
           console.log(error);
           if (error.response && error.response.data.errors) {

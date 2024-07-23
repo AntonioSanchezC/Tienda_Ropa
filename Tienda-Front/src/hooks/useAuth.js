@@ -1,29 +1,32 @@
-import {useEffect} from 'react'
 import useSWR from 'swr'
 import {useNavigate} from 'react-router-dom'
 import clienteAxios from "../config/axios";
 import useQuiosco from "../hooks/useQuiosco";
 import { toast } from "react-toastify"; 
+import { useState, useEffect, } from "react";
 
 
 export const useAuth = () => {
 
-    const { setError,gender, setGender, product, init, setInit, setUser } = useQuiosco();
+    const {  gender,setGender, setUser, imgComprobant, setImgComprobant } = useQuiosco();
 
     const token = localStorage.getItem('AUTH_TOKEN')
     const navigate = useNavigate();
+    
+    const [commentComprobant, setCommentComprobant] = useState(false);
 
-    const {data: user, fetchedUser, error, mutate} = useSWR('/api/user', () =>
-      clienteAxios('/api/user', {
-          headers: {
-              Authorization: `Bearer ${token}`
-          }
-      })
-      .then(res => res.data)
-      .catch(error => {
-          throw Error(error?.response?.data?.errors)
-      })
-  )
+  // Obtener la información del usuario usando SWR
+  const { data: user,authUser , error, mutate } = useSWR(token ? '/api/user' : null, () =>
+    clienteAxios('/api/user', {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+    .then(res => res.data)
+    .catch(error => {
+      throw Error(error?.response?.data?.errors);
+    })
+  );
 
 
     
@@ -37,7 +40,6 @@ export const useAuth = () => {
             // Guardar el usuario en el estado o en un contexto global
             const user = data.user;
 
-            setUser(user);
             // Redirigir según el rol del usuario
             if (user.admin === 1) {
                 navigate('/admin/Orders');
@@ -51,6 +53,7 @@ export const useAuth = () => {
         }
         
     }
+
 
 
     const instanceProduct = async (gender, setErrores) => {
@@ -114,8 +117,9 @@ const insetProduct = async (formData, setErrores) =>
                          };
                console.log('Datos del producto:', datosP); 
            const { data } = await clienteAxios.post('/api/insertProduct', datosP);
+           toast.success(data.message);
+           setImgComprobant(!imgComprobant);
                console.log('Respuesta del servidor:', data); // Agregar esta línea
-               localStorage.setItem('AUTH_TOKEN', data.token); // Cambiar a 'data' en lugar de 'response.data'
                setErrores([]);
                await mutate();
                return null; // Return null for successful registration
@@ -178,7 +182,7 @@ const insetProduct = async (formData, setErrores) =>
           localStorage.setItem('AUTH_TOKEN', data.token);
           setErrores([]);
           await mutate();
-          navigate('/verify');
+          navigate('/auth/verify');
           return null; // Return null for successful registration
       } catch (error) {
           setErrores(Object.values(error?.response?.data?.errors));
@@ -190,7 +194,7 @@ const insetProduct = async (formData, setErrores) =>
         const { data } = await clienteAxios.post('/api/updateUser', user);
         localStorage.setItem('AUTH_TOKEN', data.token);
         setErrores([]);
-        return null; // Return null for successful registration
+        return null; 
       } catch (error) {
           setErrores(["Error with the product to delete"]);
           return null;
@@ -243,7 +247,6 @@ const insetProduct = async (formData, setErrores) =>
           image: formData.get('image'), 
         };
         const { data } = await clienteAxios.post('/api/updateProduct', datosP);
-        localStorage.setItem('AUTH_TOKEN', data.token); 
         setErrores([]);
         await mutate();
         return null; 
@@ -268,7 +271,7 @@ const verifyEmail = async (code, setErrores) => {
           localStorage.setItem('AUTH_TOKEN', response.data.token);
           setErrores([]);
         
-          navigate('/code');
+          navigate('/auth/code');
           return null; // Return null for successful registration
         } catch (error) {
           if (error.response && error.response.data && error.response.data.errors) {
@@ -288,12 +291,9 @@ const verifyEmail = async (code, setErrores) => {
             Authorization: `Bearer ${token}`,
           };
           const response = await clienteAxios.post('/api/code', code , { headers });
-        
-        
-          localStorage.setItem('AUTH_TOKEN', response.data.token);
           setErrores([]);
         
-          navigate('/login');
+          navigate('/auth/login');
           return null; 
         } catch (error) {
           setErrores(Object.values(error.response.data.errors));
@@ -322,7 +322,6 @@ const verifyEmail = async (code, setErrores) => {
           const { data } = await clienteAxios.post('/api/insertPromotion', datosP);
           toast.success(data.message);
 
-              localStorage.setItem('AUTH_TOKEN', data.token); // Cambiar a 'data' en lugar de 'response.data'
               setErrores([]);
               return null; // Return null for successful registration
 
@@ -378,8 +377,7 @@ const verifyEmail = async (code, setErrores) => {
     try {
 
       const {data} = await clienteAxios.post('/api/insertComments', datos)
-      localStorage.setItem('AUTH_TOKEN', data.token);
-      
+      setCommentComprobant(!commentComprobant);
       toast.success(data.message);
         setErrores([]);
         return null;
@@ -405,20 +403,24 @@ const commentGet = async(product_id, setErrores) =>{
 }
 
 
+
 const logout = async () => {
   try {
-      await clienteAxios.post('/api/logout', null, {
-          headers:{
-              Authorization: `Bearer ${token}`
-          }
-      });
-      localStorage.removeItem('AUTH_TOKEN');
-      await mutate(undefined);
-      window.location.reload(); // Forzar recarga de la página
+    const token = localStorage.getItem('AUTH_TOKEN');
+    await clienteAxios.post('/api/logout', null, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    localStorage.removeItem('AUTH_TOKEN');
+    await mutate(undefined);
+    navigate('/')
   } catch (error) {
-      throw Error(error?.response?.data?.errors);
+    console.error('Error al cerrar sesión:', error);
+    throw Error(error?.response?.data?.errors);
   }
 };
+
 
 
 
@@ -428,7 +430,7 @@ const logout = async () => {
         login, 
         register, 
         logout,
-        user,
+        user: authUser || user,
         error,
         insetImg,
         insetProduct,
@@ -445,7 +447,9 @@ const logout = async () => {
         commentInsert,
         commentGet,
         GetSizesAndColors,
-        GetProductsByCode
+        GetProductsByCode,
+        commentComprobant, 
+        setCommentComprobant
       
     }
 }

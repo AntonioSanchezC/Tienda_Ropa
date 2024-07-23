@@ -5,7 +5,7 @@ export default function AdminSidebar() {
   const { logout } = useAuth({ middleware: 'auth' });
 
   return (
-    <aside className="md:w-72 h-screen p-2 shadow-2xl rounded-lg md:m-5">
+    <aside className="md:w-72 h-screen overflow-y-scroll p-2 shadow-2xl rounded-lg md:m-5">
       <nav className="flex flex-col">
         <Link 
           to="/admin/Orders" 

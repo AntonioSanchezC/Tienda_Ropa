@@ -1,8 +1,8 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect, useRef, useCallback  } from "react";
 import { toast } from "react-toastify"; 
 import clienteAxios from "../config/axios";
 import personalAxios from "../config/axios";
-import { Navigate, useNavigate } from "react-router-dom";
+import _ from 'lodash';
 
 
 
@@ -37,6 +37,7 @@ const QuioscoProvider = ({children}) =>{
     const [promotions, setPromotion] = useState([]);
 
     const [img, setImg] = useState([]);
+    const [imgComprobant, setImgComprobant] = useState(false);
     // constantes de datos de imagenes de productos
     const [imgProduct, setImgProduct] = useState([]);
     const [idImgProduct, setIdImgProduct] = useState([]);
@@ -75,7 +76,27 @@ const QuioscoProvider = ({children}) =>{
 
 
     //Declarar datos para la cookie
-    const [gender, setGender] = useState("");
+    const [gender, setGender] = useState(localStorage.getItem('gender') || '');
+    const [isGenderResolved, setIsGenderResolved] = useState(false);
+
+    // Guardar gender en localStorage cuando cambie
+    // useEffect(() => {
+    //     localStorage.setItem('gender', gender);
+    // }, [gender]);
+    useEffect(() => {
+        const storedGender = localStorage.getItem('gender');
+        if (storedGender) {
+          setGender(storedGender);
+          setIsGenderResolved(true);
+        } else {
+          setIsGenderResolved(true); 
+        }
+      }, []);
+      useEffect(() => {
+        if (gender) {
+          localStorage.setItem('gender', gender);
+        }
+      }, [gender]);
 
     // Funciones auxiliares para manejar cookies
     const setCookie = async (name, value, days) => {
@@ -149,9 +170,7 @@ const QuioscoProvider = ({children}) =>{
         }
     };
     
-    useEffect(() => {
-        obtenerCategorias();
-    },[])
+
     
     const obtenerSubCategorias = async () => {
         try {
@@ -164,10 +183,6 @@ const QuioscoProvider = ({children}) =>{
             console.log(error);
         }
     };
-    
-    useEffect(() => {
-        obtenerSubCategorias();
-    },[])
 
 
     
@@ -177,39 +192,19 @@ const QuioscoProvider = ({children}) =>{
         const token = localStorage.getItem('AUTH_TOKEN');
         try {
 
-            if (!product.length) {
                 const { data } = await clienteAxios.get('/api/productsAdmin', {
                     headers: {
                       Authorization: `Bearer ${token}`
                     }
                   });
-                  setTimeout(() => {
-                    localStorage.removeItem('AUTH_TOKEN');
-                  }, 1000);
+
                 setProductAll(data.data);
-            }
+            
 
         } catch (error) {
             console.log(error);
         }
     };    
-
-       
-
- 
-    const getProducts = async (gender) => {
-        try {
-            const { data } = await clienteAxios.get(`/api/products/${gender}`);
-            setProduct(data.data);
-        } catch (error) {
-            console.log(error);
-        }
-    };
-
-
- 
-
- 
 
 
             
@@ -241,9 +236,7 @@ const QuioscoProvider = ({children}) =>{
                   });
                   const userData = response.data.data;
                   setUsers(userData);
-                  setTimeout(() => {
-                    localStorage.removeItem('AUTH_TOKEN');
-                  }, 1000);
+ 
                 console.log("El valor de response en getUsers es ", response);
             } catch (error) {
                 console.error('Error al obtener los usuarios:', error);
@@ -278,7 +271,7 @@ const QuioscoProvider = ({children}) =>{
         
 
     
-    //Obtener los promociones
+    //Obtener los promociones por genero
 
     const getPromotion = async (gender) => {
         try {
@@ -289,12 +282,38 @@ const QuioscoProvider = ({children}) =>{
         }
     };
 
-
+           
+    //Obtener los productos por genero
  
-    useEffect(() => {
-        getPromotion();
-    },[])
-    
+    const getProducts = async (gender) => {
+        try {
+            const { data } = await clienteAxios.get(`/api/products/${gender}`);
+            setProduct(data.data);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+
+    const throttledGetProducts = useCallback(_.throttle(async (gender) => {
+        try {
+          const { data } = await clienteAxios.get(`/api/products/${gender}`);
+          setProduct(data.data);
+        } catch (error) {
+          console.log(error);
+        }
+      }, 1000), []);
+      
+      const throttledGetPromotion = useCallback(_.throttle(async (gender) => {
+        try {
+          const { data } = await clienteAxios(`/api/promo/${gender}`);
+          setPromotion(data.data);
+        } catch (error) {
+          console.log(error);
+        }
+      }, 1000), []);
+
+
     //Obtener los datos de promotion_productos
     const getPromoProducts = async () => {
         try {
@@ -309,7 +328,7 @@ const QuioscoProvider = ({children}) =>{
     
     useEffect(() => {
         getPromoProducts();
-    },[])
+    },[promotions])
     
 
     
@@ -323,6 +342,9 @@ const QuioscoProvider = ({children}) =>{
             console.log(error);
         }
     };
+    useEffect(() => {
+        obtenImg();
+    },[gender, imgComprobant]);
 
 
     //Obtener las los alamcenes (warehouses) de base de datos
@@ -334,14 +356,10 @@ const QuioscoProvider = ({children}) =>{
             console.log(error);
         }
     };
-    useEffect(() => {
-        getWarehouses();
-    },[])
+
     
     
-    useEffect(() => {
-        obtenImg();
-    },[])
+
 
     //Obtener las los alamcenes (warehouses) de base de datos
     const getArrivals = async () => {
@@ -352,11 +370,7 @@ const QuioscoProvider = ({children}) =>{
             console.log(error);
         }
     };
-    useEffect(() => {
-        getArrivals();
-    },[])
-    
-    
+
 
         
     //Obtener las id de imgProduct(tabla intermedia entre imgs y Productos)
@@ -372,7 +386,7 @@ const QuioscoProvider = ({children}) =>{
     
     useEffect(() => {
         obtenImgProduct();
-    }, []);
+    }, [product, imgComprobant]);
 
     //Obtener las prefijos
 
@@ -401,6 +415,9 @@ const QuioscoProvider = ({children}) =>{
         }
     };
 
+    const handleClickModal = () =>{
+        setModal(!modal);
+    }
     const handleClickCategoria = id => {
         console.log("El valor de id en handleClickCategoria es ", id);
         const category = categories.filter(category => category.id === id)[0]
@@ -491,7 +508,6 @@ const QuioscoProvider = ({children}) =>{
            toast.success(data.message);
             setTimeout(() => {
               setOrder([]);
-              localStorage.removeItem('AUTH_TOKEN');
             }, 1000);
           } catch (error) {
             console.log(error);
@@ -680,7 +696,16 @@ const QuioscoProvider = ({children}) =>{
         }
     };
     
-
+    const handleAgregarPedido = ({categoria_id, ...product}) => {
+        if(order.some( pedidoState => pedidoState.id === product.id )) {
+            const pedidoActualizado = order.map( pedidoState => pedidoState.id === product.id ? product : pedidoState)
+            setOrder(pedidoActualizado)
+            toast.success('Guardado Correctamente')
+        } else {
+            setPedido([...order, product])
+            toast.success('Agregado al Pedido')
+        }
+    }
 
     
     return (
@@ -726,6 +751,11 @@ const QuioscoProvider = ({children}) =>{
                 selectedArrival, 
                 setSelectedArrival,
                 handleArriveId,
+                throttledGetProducts,
+                throttledGetPromotion,
+                isGenderResolved,
+                imgComprobant, 
+                setImgComprobant,
 
                 
                 handleClickCategoria,
@@ -749,7 +779,13 @@ const QuioscoProvider = ({children}) =>{
                 getOrders,
                 getProducts, 
                 getPromotion,
+                getArrivals,
+                getWarehouses,
                 handleSubmitNewOrderSuccess,
+                obtenerCategorias,
+                obtenerSubCategorias,
+                handleClickModal,
+                handleAgregarPedido
 
             }}
         >

@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from "react";
 import useQuiosco from "../hooks/useQuiosco";
+import { useAuth } from "../hooks/useAuth";
 import { formatearDinero } from "../helpers";
 import PayPalPayment from "../components/PayPalPayment";
-import ComponentePay from "../components/componentePay";
 import Alerta from "../components/Alerta";
 
 export default function Checkout() {
-  const { order, total, arrivals, handleSubmitNewOrder, handleSubmitNewOrderSuccess, user} = useQuiosco();
+  const { order, total, getArrivals ,arrivals, handleSubmitNewOrder} = useQuiosco();
 
+      useEffect(() => {
+        getArrivals();
+    }, []);
+  const { user } = useAuth({ middleware: 'auth' }); 
 
 const [arrivalId, setarrivalId] = useState();
 
@@ -55,7 +59,7 @@ const [arrivalId, setarrivalId] = useState();
 
 
   return (
-    <div className="container mx-auto p-12">
+    <div className="container mx-auto p-12 font-playfair">
       <h1 className="text-4xl font-black">Finalizar Compra</h1>
       <p className="text-lg my-5">Revise su pedido y complete sus datos de pago</p>
 
@@ -154,40 +158,35 @@ const [arrivalId, setarrivalId] = useState();
               <div className="mt-5 text-center">
                 <input
                   type="submit"
-                  className="bg-blue-600 hover:bg-blue-800 text-white font-bold py-2 px-4 rounded cursor-pointer"
+                  className="bg-blue-600 hover:bg-blue-800 text-white font-bold py-2 px-4 rounded cursor-pointer mb-8"
                   value="Confirmar Pedido"
                   disabled={order.length === 0}
                 />
+                <PayPalPayment 
+                orderData={{ 
+                  total, 
+                  arrivalId:arrivalId,
+                  products: order.map((product) => ({
+                    id: product.id,
+                    quantity: product.quantity,
+                    name: product.name,
+                    price: product.price,
+                    color: product.selectedColor,
+                    size: product.selectedSize,
+                    product_code: product.product_code,
+                  })),
+                }} 
+              />
+
+
               </div>
+
             ) : (
               <p className="text-red-500 mt-5 text-center">Inicie sesión y verifique su correo para confirmar el pedido.</p>
             )}
           </form>
         </div>
       </div>
-
-
-
-      {/* Componente de PayPalPayment */}
-      {order.length > 0 && (
-        <div className="mt-4">
-        <PayPalPayment 
-          orderData={{ 
-            total, 
-            arrivalId:arrivalId,
-            products: order.map((product) => ({
-              id: product.id,
-              quantity: product.quantity,
-              name: product.name,
-              price: product.price,
-              color: product.selectedColor,
-              size: product.selectedSize,
-              product_code: product.product_code,
-            })),
-          }} 
-        />
-      </div>
-      )}
     </div>
   );
 }

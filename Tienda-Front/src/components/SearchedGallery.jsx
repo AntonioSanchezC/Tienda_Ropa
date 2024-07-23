@@ -6,7 +6,7 @@ import useQuisco from '../hooks/useQuiosco';
 export default function SearchedGallery() {
   const { genderProducts, imgProduct, idImgProduct,product } = useQuisco();
 
-  if (!product || product.length === 0) {
+  if (!Array.isArray(product) || product.length === 0) {
     return <div>No hay productos disponibles.</div>;
   }
 
@@ -25,7 +25,7 @@ export default function SearchedGallery() {
   };
 
   return (
-    <div className="flex flex-row md:mt-6 md:mb-20">
+    <div className="flex flex-row md:mt-6 md:mb-20 font-playfair">
         {/* Imagen grande a la izquierda */}
         <div className="basis-1/2  p-5">
           <h1 className='text-2xl ml-4 text-slate-400'>Más buscados</h1>

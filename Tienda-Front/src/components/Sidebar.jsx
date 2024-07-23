@@ -6,7 +6,7 @@ export default function Sidebar() {
 
   const [showSidebar, setShowSidebar] = useState(false);
   const [isAnimatingOut, setIsAnimatingOut] = useState(false);
-  const { selectGender } = useQuiosco();
+  const { selectGender, setGender } = useQuiosco();
 
 
   const handleGenderClick = (gender) => {

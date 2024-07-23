@@ -8,11 +8,10 @@ import IneraccionesAdmin from './views/IneraccionesAdmin'
 import Products from './views/Products'
 import AdminUsers from './views/AdminUsers'
 import InsertProducts from './views/InsertProducts'
-import Subirimagen from './views/Subirimagen'
+import SubirImagen from './views/SubirImagen'
 import DetailsProductCustomer from './views/DetailsProductCustomer'
 import Verify from './views/Verify'
 import Code from './views/Code'
-import Head from './components/Head'
 import ProductsList from './views/ProductsList'
 import InsertPromotion from './views/InsertPromotion'
 import PromotionProduct from './views/PromotionProduct'
@@ -29,6 +28,7 @@ import PromotionSaleView from './views/PromotionSaleView'
 import InitialGender from './views/InitialGender'
 import AboutOus from './views/AboutOus'
 import ContactUs from './views/ContactUs'
+import UserLayout from './layouts/UserLayout'
 
 const router = createBrowserRouter([
     {
@@ -38,12 +38,14 @@ const router = createBrowserRouter([
             path: '/productsList',
             element:<ProductsList/>
         },{
-            path: '/details',
-            element:<DetailsProductCustomer/>
-        },{
             path: '/',
             element:<InitialA />
-        },    {
+        },  
+        {
+            path: '/details',
+            element: <DetailsProductCustomer />
+        },   
+        {
             path: '/trolley',
             element: <Trolley />
         },    {
@@ -81,7 +83,7 @@ const router = createBrowserRouter([
      },
      {
         path:'/auth',
-        element:<AuthLayout />,
+        element:<UserLayout />,
         children:[
             {
                 path: '/auth/login',
@@ -89,17 +91,25 @@ const router = createBrowserRouter([
             },     {
                 path: '/auth/register',
                 element: <Register />
-            },  {
-                path: '/auth/details',
-                element: <DetailsProductCustomer />
             },     {
                 path: '/auth/verify',
                 element: <Verify />
             },     {
                 path: '/auth/code',
                 element: <Code />
+            },  
+
+        ]
+     },
+     {
+        path:'/public',
+        element:<AuthLayout />,
+        children:[
+            {
+                path: '/public/details',
+                element: <DetailsProductCustomer />
             },      {
-                path: '/auth/ini',
+                path: '/public/ini',
                 element: <InitialGender />
             }, 
 
@@ -128,7 +138,7 @@ const router = createBrowserRouter([
                 element: <InsertProducts/>
             },     {
                 path: '/admin/subirImg',
-                element: <Subirimagen />
+                element: <SubirImagen />
             },     {
                 path: '/admin/promotion',
                 element: <InsertPromotion />

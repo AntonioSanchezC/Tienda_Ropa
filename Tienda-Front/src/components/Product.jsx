@@ -1,8 +1,11 @@
 import clienteAxios from "../config/axios";
 import { Link } from "react-router-dom";
+import useQuisco from "../hooks/useQuiosco";
 
 export default function Product({ product, img }) {
+
     const { name, price, discountedPrice } = product;
+    const { handleClickModal } = useQuisco();
 
     const parsedPrice = parseFloat(price);
     const parsedDiscountedPrice = discountedPrice !== undefined ? parseFloat(discountedPrice) : undefined;

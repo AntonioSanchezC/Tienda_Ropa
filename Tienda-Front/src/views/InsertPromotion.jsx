@@ -10,8 +10,11 @@ export default function InsertPromotion() {
     const [status, setStatus] = useState("");
     const [acceptedFiles, setAcceptedFiles] = useState([]);
     const { getRootProps, getInputProps, isDragActive, open, removeFile } = useDropzone({
-        accept: ['.png', '.jpg', '.jpeg', '.gif'],
-        maxFiles: 1,
+        accept: {
+            'image/*': ['.jpeg', '.jpg', '.png'],
+            'application/pdf': ['.pdf']
+          },        
+          maxFiles: 1,
         onDrop: (acceptedFiles) => {
             if (acceptedFiles.length > 0) {
                 const file = acceptedFiles[0];

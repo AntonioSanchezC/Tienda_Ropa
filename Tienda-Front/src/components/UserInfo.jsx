@@ -5,9 +5,12 @@ import { useAuth } from "../hooks/useAuth";
 import clienteAxios from '../config/axios';
 
 const UserInfo = ({ onShowOrders, showOrders }) => {
-  const { loading, error, user, setUser } = useQuiosco();
+  const { getArrivals,getWarehouses, loading, error } = useQuiosco();
+  const { logout, user } = useAuth({ middleware: 'auth' }); 
+
   console.log("El valor de user es ", user);
-  const { logout } = useAuth({ middleware: 'auth' }); 
+
+
    const navigate = useNavigate();
   const [phoneNumbers, setPhoneNumbers] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
@@ -38,7 +41,9 @@ const UserInfo = ({ onShowOrders, showOrders }) => {
       // Redireccionar si el usuario es administrador
       if (user.admin === 1) {
         navigate('/admin/Orders');
-      }
+      };
+      getArrivals();
+      getWarehouses();
     }
   }, [user, navigate]);
 
@@ -60,7 +65,6 @@ const UserInfo = ({ onShowOrders, showOrders }) => {
         },
       });
       alert('Datos actualizados exitosamente');
-      setUser(response.data.user);
       setIsEditing(false);
     } catch (error) {
       console.error('Error updating user:', error);
@@ -115,7 +119,7 @@ const UserInfo = ({ onShowOrders, showOrders }) => {
   if (error) return <p>Error: {error.message}</p>;
 
   return (
-    <div className="h-full p-8">
+    <div className="h-full font-playfair p-8">
       {user ? (
         <div className="flex space-x-4">
           <div className="w-1/2 shadow-lg p-5 pl-8 bg-slate-100">

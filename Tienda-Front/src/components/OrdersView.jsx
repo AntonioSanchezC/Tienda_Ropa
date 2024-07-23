@@ -6,8 +6,10 @@ import L from 'leaflet';
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
+const baseURL = 'http://localhost'; 
 
-const pointIconUrl = '/icons/point.png'; // Ruta desde la carpeta 'public' de Laravel
+const pointIconUrlGo = './public/icon/Go.png';
+const pointIconUrlArrive = './public/icon/Arrive.png'; // Ruta desde la carpeta 'public' de Laravel
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -19,6 +21,8 @@ L.Icon.Default.mergeOptions({
 const OrdersView = () => {
   const [orders, setOrders] = useState([]);
   const [mapVisible, setMapVisible] = useState({});  // Estado para controlar la visibilidad del mapa
+  const [currentPage, setCurrentPage] = useState(1);
+  const ordersPerPage = 3;
 
   useEffect(() => {
     const token = localStorage.getItem('AUTH_TOKEN');
@@ -39,19 +43,8 @@ const OrdersView = () => {
 
     fetchOrders();
   }, []);
+  console.log("El valor de orders en Orders es de ", orders);
 
-  if (orders.length === 0) {
-    return <div>No orders available</div>;
-  }
-
-  const customIcon = new L.Icon({
-    iconUrl: pointIconUrl,
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
-    shadowUrl: markerShadow,
-    shadowSize: [41, 41],
-  });
 
   const handleMapVisibility = (orderId) => {
     setMapVisible(prevState => ({
@@ -60,47 +53,79 @@ const OrdersView = () => {
     }));
   };
 
-  return (
-    <div className="md:m-5 bg-slate-400 ">
-      <h3 className="text-4xl font-black md:my-6">Tus Pedidos</h3>
-      {orders.map(order => (
-        <div key={order.id} className="mb-8">
-          <h4 className="text-2xl font-bold">Pedido {order.code}</h4>
-          <p>Total: {order.total}</p>
-          <p>Status: {order.status}</p>
-          <p>Created At: {order.created_at}</p>
-          <p>Updated At: {order.updated_at}</p>
+  const indexOfLastOrder = currentPage * ordersPerPage;
+  const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
+  const currentOrders = orders.slice(indexOfFirstOrder, indexOfLastOrder);
 
-          {order.products && order.products.length > 0 && (
-            <>
-              <h5 className="font-bold text-xl mt-3">Productos</h5>
-              <ul>
-                {order.products.map(product => (
-                  <li key={product.id}>
-                    {product.name} - Quantity: {product.quantity} - Price: {product.price}
-                  </li>
-                ))}
-              </ul>
-            </>
-          )}
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  if (orders.length === 0) {
+    return <div>No orders available</div>;
+  }
+
+  const customIconGo = new L.Icon({
+    iconUrl: pointIconUrlGo,
+    iconSize: [18, 18],  
+    iconAnchor: [12, 12],  
+    popupAnchor: [0, -10],
+    shadowUrl: markerShadow,
+    shadowSize: [41, 41],
+  });
+  const customIconArrive = new L.Icon({
+    iconUrl: pointIconUrlArrive,
+    iconSize: [18, 18],  
+    iconAnchor: [12, 12],  
+    popupAnchor: [0, -10],
+    shadowUrl: markerShadow,
+    shadowSize: [41, 41],
+  });
+
+  return (
+    <div className="md:m-5 bg-white font-playfair p-12 rounded-lg">
+      <h3 className="text-4xl font-black md:my-6">Tus Pedidos</h3>
+      {currentOrders.map(order => (
+        <div key={order.id} className="mb-8">
+          <div className="flex flex-col md:flex-row">
+            <div className="md:w-1/2">
+              <h4 className="text-2xl font-bold">Pedido {order.code}</h4>
+              <p>Total: {order.total}</p>
+              <p>Status: {order.status}</p>
+              <p>Created At: {order.created_at}</p>
+              <p>Updated At: {order.updated_at}</p>
+            </div>
+            <div className="md:w-1/2">
+              {order.products && order.products.length > 0 && (
+                <>
+                  <h5 className="font-bold text-xl mt-3">Productos</h5>
+                  <ul>
+                    {order.products.map(product => (
+                      <li key={product.id}>
+                        {product.name} - Quantity: {product.pivot.quantity} - Price: {product.price}
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
+            </div>
+          </div>
 
           <p 
-            className="text-blue-500 cursor-pointer mt-5" 
+            className="text-blue-500 cursor-pointer my-12" 
             onClick={() => handleMapVisibility(order.id)}
           >
             {mapVisible[order.id] ? 'Ocultar mapa de entregas' : 'Mostrar mapa de entregas'}
           </p>
 
           {mapVisible[order.id] && order.deliveries && order.deliveries.length > 0 && (
-            <div className="flex flex-col md:flex-row mt-5">
+            <div className="flex flex-col md:flex-row mt-5 justify-center items-center">
               <div className="w-full md:w-1/2">
-                <MapContainer 
+                <MapContainer
                   center={[
                     order.deliveries[0].warehouse.latitude, 
                     order.deliveries[0].warehouse.longitude
                   ]} 
                   zoom={13} 
-                  style={{ height: "400px", width: "100%" }}
+                  style={{ height: "300px", width: "75%", marginLeft: "18%" }}
                 >
                   <TileLayer
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -112,6 +137,7 @@ const OrdersView = () => {
                           delivery.warehouse.latitude, 
                           delivery.warehouse.longitude
                         ]}
+                        icon={customIconGo}
                       >
                         <Popup>
                           {delivery.departure}
@@ -122,7 +148,7 @@ const OrdersView = () => {
                           delivery.arrival.latitude, 
                           delivery.arrival.longitude
                         ]}
-                        icon={customIcon}
+                        icon={customIconArrive}
                       >
                         <Popup>
                           {delivery.arrival.address}
@@ -153,6 +179,18 @@ const OrdersView = () => {
           )}
         </div>
       ))}
+
+      <div className="flex justify-center my-6">
+        {Array.from({ length: Math.ceil(orders.length / ordersPerPage) }, (_, index) => (
+          <button
+            key={index}
+            onClick={() => paginate(index + 1)}
+            className={`mx-2 px-4 py-2 border ${currentPage === index + 1 ? 'bg-blue-500 text-white' : 'bg-white text-blue-500'}`}
+          >
+            {index + 1}
+          </button>
+        ))}
+      </div>
     </div>
   );
 };

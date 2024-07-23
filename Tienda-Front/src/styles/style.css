@@ -1,4 +1,26 @@
-.container {
-  max-width: 90vw; /* Establece el ancho máximo al 90% del ancho de la ventana del navegador */
-  overflow: auto; /* Agrega un desplazamiento si el contenido excede el tamaño máximo */
+/* styles.css */
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(5%);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(5%);
+  }
+  to {
+    transform: translateY(-100%);
+  }
+}
+
+.slide-down {
+  animation: slideDown 1s forwards;
+}
+
+.slide-up {
+  animation: slideUp 0.3s forwards;
 }

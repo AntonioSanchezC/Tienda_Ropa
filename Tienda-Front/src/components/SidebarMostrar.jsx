@@ -7,6 +7,9 @@ import "../styles/sidebar.css"; // Importa tu archivo CSS donde defines las anim
 
 export default function SidebarMostrar({ onClose, isAnimatingOut }) {
   const {
+
+  obtenerCategorias,
+  obtenerSubCategorias,
     categories,
     subCategories,
     currentCategory,
@@ -18,6 +21,10 @@ export default function SidebarMostrar({ onClose, isAnimatingOut }) {
     middleware: "guest",
     url: "/",
   });
+  useEffect(() => {
+    obtenerCategorias();
+    obtenerSubCategorias();
+},[])
 
   useEffect(() => {
     if (isAnimatingOut) {
