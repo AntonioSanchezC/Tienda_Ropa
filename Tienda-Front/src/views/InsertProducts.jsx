@@ -342,8 +342,8 @@ export default function InsertProducts() {
                 </div>
                 <input
                   type="hidden"
-                  name="promotion"
-                  value="promotion"
+                  name="product"
+                  value="product"
                   ref={entityRef}
               
               />

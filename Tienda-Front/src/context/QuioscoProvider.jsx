@@ -464,6 +464,7 @@ const QuioscoProvider = ({children}) =>{
     
     
     
+    
       
     const handleSubmitNewOrder = async (orderData, setErrores) => {
         console.log("El valor de orderData desde handleSubmitNewOrder es", orderData);
@@ -478,7 +479,6 @@ const QuioscoProvider = ({children}) =>{
           toast.success(data.message);
           setTimeout(() => {
             setOrder([]);
-            localStorage.removeItem('AUTH_TOKEN');
           }, 1000);
         } catch (error) {
           console.log(error);
@@ -597,8 +597,7 @@ const QuioscoProvider = ({children}) =>{
             // Cerrar la sesión del usuario
             setTimeout(() => {
                 setOrder([]);
-                localStorage.removeItem('AUTH_TOKEN');
-                logaut();
+
             }, 1000);
         } catch (error) {
             console.log(error)

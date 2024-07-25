@@ -1,20 +1,21 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useQuiosco from '../hooks/useQuiosco';
 import { useAuth } from "../hooks/useAuth";
 import clienteAxios from '../config/axios';
 
 const UserInfo = ({ onShowOrders, showOrders }) => {
-  const { getArrivals,getWarehouses, loading, error } = useQuiosco();
-  const { logout, user } = useAuth({ middleware: 'auth' }); 
 
-  console.log("El valor de user es ", user);
+  const { getArrivals, getWarehouses, loading, error } = useQuiosco();
+  const { logout, user } = useAuth({ middleware: 'auth' });
+  console.log("El valor de user en UserInfo es ", user);
 
+  const navigate = useNavigate();
 
-   const navigate = useNavigate();
   const [phoneNumbers, setPhoneNumbers] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
+
   const [formData, setFormData] = useState({
     name: '',
     lastName: '',
@@ -23,8 +24,11 @@ const UserInfo = ({ onShowOrders, showOrders }) => {
     email: '',
     password: '',
     newPassword: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    image: null, // Añadido para manejar la imagen
   });
+
+  const entityRef = useRef();
 
   useEffect(() => {
     if (user) {
@@ -36,34 +40,67 @@ const UserInfo = ({ onShowOrders, showOrders }) => {
         email: user.email || '',
         password: '',
         newPassword: '',
-        confirmPassword: ''
+        confirmPassword: '',
+        image: null, // Reseteo de la imagen
       });
-      // Redireccionar si el usuario es administrador
+
       if (user.admin === 1) {
         navigate('/admin/Orders');
-      };
+      }
       getArrivals();
       getWarehouses();
     }
   }, [user, navigate]);
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, files } = e.target;
     setFormData((prevData) => ({
       ...prevData,
-      [name]: value,
+      [name]: name === 'image' ? files[0] : value,
     }));
   };
 
   const handleUpdateUser = async () => {
     if (!user) return;
+
     const token = localStorage.getItem('AUTH_TOKEN');
+
+    // FormData para manejar la imagen y otros datos
+    const formDataToSend = new FormData();
+    formDataToSend.append('name', formData.name);
+    formDataToSend.append('lastName', formData.lastName);
+    formDataToSend.append('gender', formData.gender);
+    formDataToSend.append('address', formData.address);
+    formDataToSend.append('email', formData.email);
+    if (formData.image) {
+      formDataToSend.append('file', formData.image);
+    }
+    formDataToSend.append('entity', 'user');
+
     try {
-      const response = await clienteAxios.put(`/api/user/${user.id}`, formData, {
+      // Enviar la imagen y obtener la ruta
+      const imageResponse = formData.image
+        ? await clienteAxios.post('/api/saveImage', formDataToSend)
+        : { data: { imagen: null } };
+
+      const imageUrl = imageResponse.data.imagen;
+
+      console.log("El valor de imageUrl es ", imageUrl);
+
+      // Actualizar el usuario con la ruta de la imagen
+      const userUpdateData = {
+        ...formData,
+        image: imageUrl,
+      };
+      console.log("El valor de userUpdateData es ", userUpdateData);
+
+      const { data } = await clienteAxios.put(`/api/user/${user.id}`, userUpdateData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
+      console.log("El valor de data es ", data.user);
+
       alert('Datos actualizados exitosamente');
       setIsEditing(false);
     } catch (error) {
@@ -125,6 +162,11 @@ const UserInfo = ({ onShowOrders, showOrders }) => {
           <div className="w-1/2 shadow-lg p-5 pl-8 bg-slate-100">
             <h1 className="text-2xl font-bold mb-2">Hola</h1>
             <p className='md:mb-8'>{user.email}</p>
+            {user.imgs && (
+              <div>
+                <img src={`http://localhost/${user.imgs.image}`} alt="Imagen de perfil" className="w-32 h-32 object-cover rounded-full" />
+              </div>
+            )}
             <p className={`w-full font-bold truncate mt-4 cursor-pointer text-gray-500 hover:text-black`} onClick={onShowOrders}>
               {showOrders ? 'Ocultar Pedidos' : 'Mostrar Pedidos'}
             </p>
@@ -172,29 +214,35 @@ const UserInfo = ({ onShowOrders, showOrders }) => {
                       </label>
                     </div>
                   </div>
-                  <button type="button" onClick={handleUpdateUser} className="mt-4 bg-green-500 text-white p-2 rounded">
-                    Guardar Cambios
-                  </button>
-                  <button type="button" onClick={() => setIsEditing(false)} className="mt-4 ml-4 bg-gray-500 text-white p-2 rounded">
-                    Cancelar
+                  <div>
+                    <label className="block text-gray-700">Imagen:</label>
+                    <input type="file" name="image" onChange={handleInputChange} className="w-full border border-gray-300 p-2" />
+                  </div>
+                  <input
+                    type="hidden"
+                    name="entity"
+                    value="user"
+                    ref={entityRef}
+                  />
+                  <button type="button" onClick={handleUpdateUser} className="mt-4 bg-blue-500 text-white px-4 py-2 rounded">
+                    Actualizar
                   </button>
                 </>
               ) : (
                 <>
-                  <p><strong>Nombre:</strong> {user.name}</p>
-                  <p><strong>Apellido:</strong> {user.lastName}</p>
-                  <p><strong>Dirección:</strong> {user.address}</p>
-                  <p><strong>Email:</strong> {user.email}</p>
-                  <p><strong>Género:</strong> {user.gender === 'F' ? 'Femenino' : 'Masculino'}</p>
-                  <p><strong>Verificado:</strong> {user.email_verified_at ? 'Sí' : 'No'}</p>
-                  <button type="button" onClick={() => setIsEditing(true)} className="mt-4 bg-blue-500 text-white p-2 rounded">
+                  <p>Nombre: {user.name}</p>
+                  <p>Apellido: {user.lastName}</p>
+                  <p>Dirección: {user.address}</p>
+                  <p>Email: {user.email}</p>
+                  <p>Género: {user.gender}</p>
+   
+                  <button type="button" onClick={() => setIsEditing(true)} className="mt-4 bg-blue-500 text-white px-4 py-2 rounded">
                     Editar
                   </button>
                 </>
               )}
               {isChangingPassword && (
-                <div className="mt-4">
-                  <h2 className="text-xl font-bold mb-2">Cambiar Contraseña</h2>
+                <div>
                   <div>
                     <label className="block text-gray-700">Contraseña Actual:</label>
                     <input type="password" name="password" value={formData.password} onChange={handleInputChange} className="w-full border border-gray-300 p-2" />
@@ -207,11 +255,8 @@ const UserInfo = ({ onShowOrders, showOrders }) => {
                     <label className="block text-gray-700">Confirmar Nueva Contraseña:</label>
                     <input type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleInputChange} className="w-full border border-gray-300 p-2" />
                   </div>
-                  <button type="button" onClick={handleChangePassword} className="mt-4 bg-green-500 text-white p-2 rounded">
-                    Guardar Contraseña
-                  </button>
-                  <button type="button" onClick={() => setIsChangingPassword(false)} className="mt-4 ml-4 bg-gray-500 text-white p-2 rounded">
-                    Cancelar
+                  <button type="button" onClick={handleChangePassword} className="mt-4 bg-blue-500 text-white px-4 py-2 rounded">
+                    Cambiar Contraseña
                   </button>
                 </div>
               )}
@@ -219,7 +264,7 @@ const UserInfo = ({ onShowOrders, showOrders }) => {
           </div>
         </div>
       ) : (
-        <p>No hay datos de usuario disponibles</p>
+        <p>No hay usuario autenticado.</p>
       )}
     </div>
   );

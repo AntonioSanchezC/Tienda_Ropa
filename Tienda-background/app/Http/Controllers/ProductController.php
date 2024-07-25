@@ -121,6 +121,18 @@ class ProductController extends Controller
         ]);
     }
 
+    public function getProductSizesColorsImages($productCode)
+    {
+        $products = Product::where('product_code', $productCode)
+            ->with(['sizes', 'colors', 'imgs'])
+            ->get();
+
+        return response()->json([
+            'products' => $products,
+        ]);
+    }
+
+
 
 
     public function searchCount(Request $request)

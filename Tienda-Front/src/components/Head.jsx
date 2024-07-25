@@ -65,7 +65,11 @@ export default function Head() {
             <Sidebar />
           </div>
           <div ref={userIconRef} className="w-12 h-12 relative cursor-pointer" onClick={handleUserIconClick}>
-            <img src={`${baseURL}/icon/userIcon.png`} alt="user icon" />
+            <img 
+              src={user && user.imgs && user.imgs.image ? `${baseURL}/${user.imgs.image}` : `${baseURL}/icon/userIcon.png`} 
+              alt="user icon" 
+              className="w-12 h-12 object-cover rounded-full" 
+            />
           </div>
           <div className="w-12 h-12 relative">
             <Link to={`/trolley`}>

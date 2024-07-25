@@ -8,8 +8,8 @@ import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 
-// Ruta del icono personalizado en el servidor Laravel
-const pointIconUrl = '/icon/point.png'; // Ruta desde la carpeta 'public' de Laravel
+const pointIconUrlGo = '/icon/Go.png';
+const pointIconUrlArrive = '/icon/Arrive.png';
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -53,14 +53,22 @@ export default function DetailsOrder() {
     return <div>No user data available</div>;
   }
 
-  // Crear el icono personalizado
-  const customIcon = new L.Icon({
-    iconUrl: pointIconUrl,
-    iconSize: [25, 41], // Tamaño del icono
-    iconAnchor: [12, 41], // Punto de anclaje del icono
-    popupAnchor: [1, -34], // Punto de anclaje del popup
+  const customIconGo = new L.Icon({
+    iconUrl: pointIconUrlGo,
+    iconSize: [18, 18],  
+    iconAnchor: [12, 12],  
+    popupAnchor: [0, -10],
     shadowUrl: markerShadow,
-    shadowSize: [41, 41], // Tamaño de la sombra
+    shadowSize: [41, 41],
+  });
+
+  const customIconArrive = new L.Icon({
+    iconUrl: pointIconUrlArrive,
+    iconSize: [18, 18],  
+    iconAnchor: [12, 12],  
+    popupAnchor: [0, -10],
+    shadowUrl: markerShadow,
+    shadowSize: [41, 41],
   });
 
   return (
@@ -114,29 +122,31 @@ export default function DetailsOrder() {
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               />
               {deliveries.map(delivery => (
-                <Marker 
-                  key={delivery.id} 
-                  position={[delivery.warehouse.latitude, delivery.warehouse.longitude]}
-                >
-                  <Popup>
-                    {delivery.warehouse.address}
-                  </Popup>
-                </Marker>
+                <React.Fragment key={delivery.id}>
+                  <Marker 
+                    position={[delivery.warehouse.latitude, delivery.warehouse.longitude]}
+                    icon={customIconGo} // Usar el icono personalizado para el punto de partida
+                  >
+                    <Popup>
+                      {delivery.warehouse.address}
+                    </Popup>
+                  </Marker>
+                  <Marker 
+                    position={[delivery.arrival.latitude, delivery.arrival.longitude]}
+                    icon={customIconArrive} // Usar el icono personalizado para el punto de entrega
+                  >
+                    <Popup>
+                      {delivery.arrival.address}
+                    </Popup>
+                  </Marker>
+                  <Polyline
+                    positions={[
+                      [delivery.warehouse.latitude, delivery.warehouse.longitude],
+                      [delivery.arrival.latitude, delivery.arrival.longitude]
+                    ]}
+                  />
+                </React.Fragment>
               ))}
-              <Marker 
-                position={[deliveries[0].arrival.latitude, deliveries[0].arrival.longitude]}
-                icon={customIcon} // Usar el icono personalizado para el punto de entrega
-              >
-                <Popup>
-                  {deliveries[0].arrival.address}
-                </Popup>
-              </Marker>
-              <Polyline
-                positions={deliveries.map(delivery => [
-                  [delivery.warehouse.latitude, delivery.warehouse.longitude],
-                  [delivery.arrival.latitude, delivery.arrival.longitude]
-                ])}
-              />
             </MapContainer>
           </div>
           <div className="w-full md:w-1/2 md:pl-5">

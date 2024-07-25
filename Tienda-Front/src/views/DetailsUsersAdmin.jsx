@@ -8,10 +8,17 @@ import { useAuth } from "../hooks/useAuth";
 export default function DetailsUsersAdmin() {
     const location = useLocation();
     const { user } = location.state || {};
-    const { obtenerPrefijos,setEmailValue, prefixes, phone } = useQuisco();
+    console.log("El valor de user en DetailsUsersAdmin es ", user);
+
+    if (!user) {
+        return <div>Error: No se encontró el usuario.</div>;
+    }
+
+    const { getPrefixes, getPhone,setEmailValue, prefixes, phone } = useQuisco();
 
     useEffect(() => {
-        obtenerPrefijos();
+        getPrefixes();
+        getPhone();
     },[])
 
 
@@ -59,7 +66,8 @@ export default function DetailsUsersAdmin() {
         if (phone && phone.length > 0) {
             // Buscar el número de teléfono asociado al user_id del usuario actual
             const selectedPhone = phone.find(item => item.user_id === user.id);
-    
+            console.log("El valor de selectedPhone en DetailsUsersAdmin es ", selectedPhone);
+
             // Si se encuentra un número de teléfono, establecerlo en selectPhone
             if (selectedPhone) {
                 setSelectPhone(selectedPhone);
@@ -181,7 +189,6 @@ export default function DetailsUsersAdmin() {
                                     <option
                                         key={selectPrefix.id}
                                         value={selectPrefix.value}
-                                        selected
                                         >
                                         {selectPrefix.number}
                                     </option>
@@ -221,12 +228,14 @@ export default function DetailsUsersAdmin() {
                         <div className="mb-4">
                           <label className="text-slate-800">Sexo desigando:</label>
                           <div>
-                            <label>
-                              <input type="radio" name="gender" value="F" ref={genderRef} />{" "} Femenino
-                            </label>
-                            <label>
-                              <input type="radio" name="gender" value="M" ref={genderRef} />{" "} Masculino
-                            </label>
+                            <div>
+                                <label>
+                                    <input type="radio" name="gender" value="F" defaultChecked={user.gender === 'F'} /> Femenino
+                                </label>
+                                <label>
+                                    <input type="radio" name="gender" value="M" defaultChecked={user.gender === 'M'} /> Masculino
+                                </label>
+                            </div>
                           </div>
                         </div>
                             <div >

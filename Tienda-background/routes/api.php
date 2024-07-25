@@ -48,9 +48,8 @@ Route::middleware(['auth:sanctum', 'admin'])->group(function () {
 
 });
 Route::middleware('auth:sanctum')->group(function() {
-    Route::get('/user', function(Request $request){
-        return $request->user();
-    });
+    Route::get('/user', [UserController::class, 'getUserInfo']);
+
     Route::get('/productsAdmin', [ProductController::class, 'indexAdmin']);
     Route::post('/verifyEmail', [EmailController::class, 'verifyEmail']);
     Route::post('/code', [EmailController::class, 'code']);
@@ -87,6 +86,8 @@ Route::get('/products/{gender}', [ProductController::class, 'index']);
 
 Route::post('/products/filter', [ProductController::class, 'filter']);
 Route::get('/products/{product_code}/sizes-colors', [ProductController::class, 'getSizesAndColors']);
+Route::get('/products/{product_code}/sizes-colors-img', [ProductController::class, 'getProductSizesColorsImages']);
+
 Route::get('/products/{productCode}/sizes-colors-filter', [ProductController::class, 'getProductsByCode']);
 
 Route::get('/promo/{gender}', [PromotionController::class, 'getPromotionsByGender']);

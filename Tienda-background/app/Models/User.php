@@ -29,6 +29,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'email',
         'password',
         'code',
+        'img_id'
     ];
 
     /**
@@ -72,10 +73,11 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Comment::class);
     }
 
-    public function image()
+    public function imgs()
     {
-        return $this->belongsTo(Img::class);
+        return $this->belongsTo(Img::class, 'img_id');
     }
+
 
 
 }

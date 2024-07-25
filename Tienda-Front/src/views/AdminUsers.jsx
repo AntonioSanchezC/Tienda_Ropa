@@ -41,11 +41,11 @@ export default function AdminUsers() {
               users.map((user) => (
                 <div key={user.id} className="flex flex-nowrap items-center justify-between bg-white p-4 shadow-md hover:bg-slate-400 hover:text-white mb-4 rounded-md">
                   <div className="flex flex-col md:flex-row md:items-center w-full">
-                    <Link to={{ pathname: `/admin/detailsUsers`, state: { user: user } }} className="text-lg md:mr-3">
-                      {user.name} {user.lastName}
-                    </Link>
                     <p className="hidden md:block">Dirección: {user.address}</p>
                   </div>
+                  <Link to={`/admin/detailsUsers`} state={{ user: user }} className="bg-white hover:bg-slate-400 text-gray-800 hover:text-white border border-gray-400 hover:border-transparent rounded-md py-1 px-2 mr-2">
+                  Detalles usuario
+                  </Link>
                   <button onClick={() => handleDelete(user.id)} className="bg-red-500 hover:bg-red-700 text-white py-1 px-2 rounded-md">
                     Borrar usuario
                   </button>

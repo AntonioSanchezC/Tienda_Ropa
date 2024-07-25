@@ -16,7 +16,7 @@ export const useAuth = () => {
     const [commentComprobant, setCommentComprobant] = useState(false);
 
   // Obtener la información del usuario usando SWR
-  const { data: user,authUser , error, mutate } = useSWR(token ? '/api/user' : null, () =>
+  const { data: user, authUser, error, mutate } = useSWR(token ? '/api/user' : null, () =>
     clienteAxios('/api/user', {
       headers: {
         Authorization: `Bearer ${token}`
@@ -150,14 +150,25 @@ const insetProduct = async (formData, setErrores) =>
     }
 }
 
-    const GetSizesAndColors = async (productCode, setErrores) => {
-      try {
-        const { data } = await clienteAxios.get(`/api/products/${productCode}/sizes-colors`);
-        return data;
-      } catch (error) {
-        setErrores(["Error with the product to fetch sizes and colors"]);
-      }
-    };
+const GetSizesAndColors = async (productCode, setErrores) => {
+  try {
+    const { data } = await clienteAxios.get(`/api/products/${productCode}/sizes-colors`);
+    console.log("El valor de data en GetSizesAndColors es ", data);
+    return data;
+  } catch (error) {
+    setErrores(["Error with the product to fetch sizes and colors"]);
+  }
+};
+
+const GetSizesColorsImages = async (productCode, setErrores) => {
+  try {
+    const { data } = await clienteAxios.get(`/api/products/${productCode}/sizes-colors-img`);
+    console.log("El valor de data en GetSizesAndColors es ", data);
+    return data;
+  } catch (error) {
+    setErrores(["Error with the product to fetch sizes and colors"]);
+  }
+};
     
     const GetProductsByCode = async (productCode, setError, filters = {}) => {
       try {
@@ -449,7 +460,8 @@ const logout = async () => {
         GetSizesAndColors,
         GetProductsByCode,
         commentComprobant, 
-        setCommentComprobant
+        setCommentComprobant,
+        GetSizesColorsImages
       
     }
 }

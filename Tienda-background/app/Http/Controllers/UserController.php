@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\UserColletion;
+use App\Models\Img;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
@@ -14,18 +16,21 @@ class UserController extends Controller
         return new UserColletion(User::all());
     }
 
-    public function getUserInfo(Request $request)
-    {
-        $user = $request->user();
+// En UserController.php
+public function getUserInfo(Request $request)
+{
+    // Obtener el usuario autenticado
+    $user = $request->user();
 
-        // Obtén la información del usuario junto con los números de teléfono
-        $user->load('phoneNumbers');
+    // Cargar la relación de la imagen si existe
+    $user->load('imgs');
 
-        return response()->json([
-            'message' => 'User info fetched successfully',
-            'user' => $user,
-        ]);
-    }
+    return response()->json(
+        $user
+    );
+}
+
+
 
     public function update(Request $request, $id)
     {
@@ -38,12 +43,45 @@ class UserController extends Controller
             'gender' => 'nullable|string|max:255',
             'address' => 'nullable|string|max:255',
             'email' => 'required|email|max:255|unique:users,email,' . $id,
+            'image' => 'nullable|string|max:255',
         ]);
 
-        // Actualizar el usuario con los nuevos datos
-        $user->update($data);
+        // Actualizar los campos del usuario manualmente
+        $user->name = $data['name'];
+        $user->lastName = $data['lastName'] ?? $user->lastName; // Usa el valor actual si no se proporciona uno nuevo
+        $user->gender = $data['gender'] ?? $user->gender;
+        $user->address = $data['address'] ?? $user->address;
+        $user->email = $data['email'];
 
-        return response()->json(['user' => $user], 200);
+        // Guarda los cambios en el usuario
+        $user->save();
+
+        // Manejar la subida de la imagen si existe
+        $image = $data['image'];
+
+        if ($image) {
+
+            // Si el usuario ya tiene un `img_id`, actualiza el registro correspondiente
+            if ($user->img_id) {
+                $img = Img::find($user->img_id);
+                if ($img) {
+                    $img->update(['image' => $image]);
+                }
+            } else {
+                // Si el usuario no tiene `img_id`, crea un nuevo registro de imagen
+                $img = Img::create([
+                    'image' => $image,
+                    'entity' => 'user'
+                ]);
+
+                $user->img_id = $img->id;
+                $user->save();
+            }
+
+        return response()->json(['user' => $image], 200);
+    }
+
+
     }
 
 
