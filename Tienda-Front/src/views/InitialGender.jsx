@@ -1,10 +1,9 @@
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth";
 import useQuisco from "../hooks/useQuiosco";
 
 export default function InitialGender() {
 
-    const baseURL = 'http://localhost';
+    const baseURL = import.meta.env.VITE_API_URL;
     const { 
         gender,
         selectGender, } = useQuisco();

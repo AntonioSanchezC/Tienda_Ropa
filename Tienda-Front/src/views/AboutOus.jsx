@@ -1,5 +1,5 @@
 export default function AboutUs() {
-    const baseURL = 'http://localhost';
+    const baseURL = import.meta.env.VITE_API_URL;
   
     return (
       <div className="container mx-auto p-0">

@@ -51,8 +51,8 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::get('/user', [UserController::class, 'getUserInfo']);
 
     Route::get('/productsAdmin', [ProductController::class, 'indexAdmin']);
-    Route::post('/verifyEmail', [EmailController::class, 'verifyEmail']);
     Route::post('/code', [EmailController::class, 'code']);
+    Route::post('/verifyEmail', [EmailController::class, 'verifyEmail']);
     Route::post('/logout', [AuthController::class, 'logout']);
 
     Route::get('/user/info', [UserController::class, 'getUserInfo']);
@@ -60,8 +60,8 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::get('/orders/{orderId}/deliveries', [OrderController::class, 'deliveries']);
     // Ruta para obtener los pedidos y entregas del usuario autenticado
     Route::get('/user/orders', [OrderController::class, 'getUserOrders']);
-    Route::put('/user/{id}', [UserController::class, 'update']);
-    Route::put('/user/{id}/password', [UserController::class, 'updatePassword']);
+    Route::post('/user/{id}', [UserController::class, 'update']);
+    Route::post('/user/{id}/password', [UserController::class, 'updatePassword']);
     Route::delete('/user/{id}', [UserController::class, 'destroy']);
 
     // Almacenar ordenes

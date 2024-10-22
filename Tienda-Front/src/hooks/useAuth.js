@@ -49,7 +49,9 @@ export const useAuth = () => {
             }
 
         } catch (error) {
-          setErrores(Object.values(error?.response?.data?.errors));            
+          const errores = error.response.data.errors;
+          setErrores(errores);       
+          return null;
         }
         
     }
@@ -125,9 +127,9 @@ const insetProduct = async (formData, setErrores) =>
                return null; // Return null for successful registration
 
            } catch (error) {
-               console.error("Error al enviar datos:", error);
-               setErrores(Object.values(error.response.data.errors));
-               return error; // Return error for unsuccessful registration
+            const errores = error.response.data.errors;
+            setErrores(errores);       
+            return null;
            }
    };
 
@@ -195,15 +197,15 @@ const GetSizesColorsImages = async (productCode, setErrores) => {
           await mutate();
           navigate('/auth/verify');
           return null; // Return null for successful registration
-      } catch (error) {
-          setErrores(Object.values(error?.response?.data?.errors));
+        } catch (error) {
+          const errores = error.response.data.errors;
+          setErrores(errores);
           return error; // Return error for unsuccessful registration
       }
   };
   const updateUser= async (user, setErrores) => {
       try {
         const { data } = await clienteAxios.post('/api/updateUser', user);
-        localStorage.setItem('AUTH_TOKEN', data.token);
         setErrores([]);
         return null; 
       } catch (error) {
@@ -414,6 +416,45 @@ const commentGet = async(product_id, setErrores) =>{
 }
 
 
+const updateUserPerfil = async (formData, setLoading) => {
+  try {
+      setLoading(true); // Comienza la carga
+      const token = localStorage.getItem('AUTH_TOKEN');
+      console.log("Desde el hook updateUserPerfil los datos de formData ", formData);
+      
+      const imageResponse = formData.get('file')
+          ? await clienteAxios.post('/api/saveImage', formData, {
+              headers: {
+                  Authorization: `Bearer ${token}`,
+              },
+          })
+          : { data: { imagen: null } };
+
+      const imageUrl = imageResponse.data.imagen;
+
+      const userUpdateData = {
+          name: formData.get('name'),
+          lastName: formData.get('lastName'),
+          gender: formData.get('gender'),
+          address: formData.get('address'),
+          email: formData.get('email'),
+          image: imageUrl,
+      };
+
+      const { data } = await clienteAxios.post(`/api/user/${user.id}`, userUpdateData, {
+          headers: {
+              Authorization: `Bearer ${token}`,
+          },
+      });
+
+      alert('Datos actualizados exitosamente');
+  } catch (error) {
+      console.error('Error updating user:', error);
+      alert('Hubo un problema al actualizar los datos');
+  } finally {
+      setLoading(false); // Finaliza la carga
+  }
+};
 
 const logout = async () => {
   try {
@@ -461,7 +502,8 @@ const logout = async () => {
         GetProductsByCode,
         commentComprobant, 
         setCommentComprobant,
-        GetSizesColorsImages
+        GetSizesColorsImages,
+        updateUserPerfil
       
     }
 }

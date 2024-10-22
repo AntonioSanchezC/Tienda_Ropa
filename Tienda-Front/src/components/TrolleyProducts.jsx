@@ -5,7 +5,7 @@ export default function TrolleyProducts({product}) {
 
   const {handleClickModal, handleEditarCantidad, handleEliminarProductoPedido} = useQuisco();
   const {id, name, price, quantity} = product
-  const baseURL = 'http://localhost'; 
+  const baseURL = import.meta.env.VITE_API_URL; 
 
 
   console.log("El valor de product en TrolleyProducts ", product);

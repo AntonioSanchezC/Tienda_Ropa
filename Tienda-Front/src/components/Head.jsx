@@ -13,7 +13,7 @@ export default function Head() {
   const searchRef = createRef();
   const { setCartState, order, cartState, handleClickFilteredProducts } = useQuiosco();
   const quantityOrder = order.length;
-  const baseURL = 'http://localhost';
+  const baseURL =  import.meta.env.VITE_API_URL;
   const [showSearch, setShowSearch] = useState(false);
   const [showLogoutButton, setShowLogoutButton] = useState(false);
   const [isHiding, setIsHiding] = useState(false);
@@ -77,7 +77,7 @@ export default function Head() {
             </Link>
             {quantityOrder > 0 && (
               <div
-                className="absolute transform translate-x-3 translate-y-1 w-4 h-4 flex items-center justify-center bg-red-500 text-white rounded-full text-xs"
+                className="absolute cursor-pointer transform translate-x-3 translate-y-1 w-4 h-4 flex items-center justify-center bg-red-500 text-white rounded-full text-xs"
                 style={{
                   width: '1rem',
                   height: '1.5rem',

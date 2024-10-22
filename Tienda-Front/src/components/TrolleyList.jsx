@@ -1,10 +1,7 @@
-import useQuisco from "../hooks/useQuiosco";
 import { formatearDinero } from "../helpers";
 export default function TrolleyList({product}) {
 
-    const {handleEditarCantidad, handleEliminarProductoPedido} = useQuisco();
-    const {id, name, price, quantity} = product
-    const baseURL = 'http://localhost'; 
+    const {name, price, } = product
 
     return (
         <div  className=" p-2">

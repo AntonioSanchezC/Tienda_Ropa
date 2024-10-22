@@ -9,6 +9,7 @@ use App\Models\Prefix;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -73,6 +74,28 @@ class AuthController extends Controller
             'user' => $user
         ];
     }
+    public function updatePassword(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+
+        // Validar los datos de la solicitud
+        $data = $request->validate([
+            'password' => 'required|string',
+            'newPassword' => 'required|string|min:8|confirmed',
+        ]);
+
+        // Verificar la contraseña actual
+        if (!Hash::check($data['password'], $user->password)) {
+            return response()->json(['error' => 'La contraseña actual no es correcta'], 400);
+        }
+
+        // Actualizar la contraseña del usuario
+        $user->password = Hash::make($data['newPassword']);
+        $user->save();
+
+        return response()->json(['message' => 'Contraseña actualizada exitosamente'], 200);
+    }
+
 
     public function logout(Request $request)
     {

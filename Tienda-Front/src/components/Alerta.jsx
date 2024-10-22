@@ -1,7 +1,7 @@
-export default function Alert({children}) {
+export default function Alert({ children }) {
   return (
-      <div className="text-center my-2 bg-red-600 text-white font-bold p-3 uppercase">
-          {children}
-      </div>
-  )
+    <div className="text-red-600 text-sm mt-1 z-20">
+      {children}
+    </div>
+  );
 }

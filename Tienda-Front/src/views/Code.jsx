@@ -9,7 +9,7 @@ export default function VerificationCode() {
     url: "/",
   });
 
-  const baseURL = 'http://localhost';
+  const baseURL = import.meta.env.VITE_API_URL;
 
   const handleChange = (index, value) => {
     if (value.length > 1) {

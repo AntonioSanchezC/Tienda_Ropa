@@ -3,6 +3,7 @@ import useQuisco from "../hooks/useQuiosco";
 import { useAuth } from "../hooks/useAuth";
 import ResumenProducto from "./ResumenProducto";
 import { useState } from "react";
+import { Link } from 'react-router-dom';
 
 export default function Resumen() {
   const { cartState, setCartState, order, total, handleSubmitNewOrder, arrivals } = useQuisco();
@@ -26,16 +27,15 @@ export default function Resumen() {
   };
 
   return (
-    <aside className="md:w-72 z-40 h-screen absolute overflow-y-scroll bg-indigo-100 md:top-32 right-0 p-5 mx-auto">
+    <aside className="md:w-72 z-40 h-screen absolute overflow-y-scroll bg-gray-400 md:top-32 right-0 p-5 mx-auto">
       <h1 className="text-4xl font-black">
         Mi pedido
       </h1>
-
       <div
-        className="flex items-center justify-center bg-red-500 text-white rounded-lg text-xs"
+        className="absolute top-5 right-5 cursor-pointer bg-red-500 text-white rounded-full p-2"
         onClick={handleBadgeClick}
       >
-        Cerrar
+        <span className="text-lg font-bold">X</span>
       </div>
 
       <p className="text-lg my-5">
@@ -66,34 +66,16 @@ export default function Resumen() {
         className="w-full"
         onSubmit={handleSubmit}
       >
-        <select
-          id="arrival"
-          className="mt-2 w-full p-3 bg-gray-50"
-          name="arrival"
-          value={selectedArrival}
-          onChange={handleArrivalChange}
-        >
-          <option value="" disabled>
-            Seleccione el punto de entrega
-          </option>
-          {arrivals.map(arrival => (
-            <option
-              key={arrival.id}
-              value={arrival.id}
-            >
-              {arrival.address}
-            </option>
-          ))}
-        </select>
 
-        <div className="mt-5">
+
+
+        <Link to={`/trolley`}>
           <input
             type="submit"
-            className={`${checkOrder() ? 'bg-indigo-100' : ' bg-indigo-600 hover:bg-indigo-800 '} px-5 py-2 rounded uppercase font-bold text-white text-center w-full cursor-pointer`}
+            className= 'bg-indigo-600 hover:bg-indigo-800  px-5 py-2 rounded uppercase font-bold text-white text-center w-full cursor-pointer'
             value="Confirmar Pedido"
-            disabled={checkOrder()}
-          />
-        </div>
+          />      
+      </Link>
       </form>
     </aside>
   )

@@ -31,7 +31,7 @@ export default function DetailsProductAdmin() {
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [imgRelated, setImgRelated] = useState(null);
     const [previewImage, setPreviewImage] = useState(null);
-    const baseURL = 'http://localhost';
+    const baseURL = import.meta.env.VITE_API_URL;
 
     const handleChangeCategoria = (e) => {
         const tipoCategoriaSeleccionada = e.target.value;

@@ -19,6 +19,7 @@ const QuioscoProvider = ({children}) =>{
     const [subCurrentSubCategory, setSubCurrentSubCategory] = useState({});
 
     const [modal, setModal] = useState(false);
+    const [modalActivate, setModalActivate] = useState(false);
     
     //Variables que optienen los productos
     const [product, setProduct] = useState([]);
@@ -35,6 +36,7 @@ const QuioscoProvider = ({children}) =>{
     const [phone, setPhone] = useState([]);
 
     const [promotions, setPromotion] = useState([]);
+    const [promotionsSearch, PsetPromotionsSearch] = useState(false);
 
     const [img, setImg] = useState([]);
     const [imgComprobant, setImgComprobant] = useState(false);
@@ -328,7 +330,7 @@ const QuioscoProvider = ({children}) =>{
     
     useEffect(() => {
         getPromoProducts();
-    },[promotions])
+    },[promotionsSearch])
     
 
     
@@ -417,6 +419,9 @@ const QuioscoProvider = ({children}) =>{
 
     const handleClickModal = () =>{
         setModal(!modal);
+    }
+    const handleClickModalActivated = () =>{
+        setModalActivate(!modalActivate);
     }
     const handleClickCategoria = id => {
         console.log("El valor de id en handleClickCategoria es ", id);
@@ -531,6 +536,7 @@ const QuioscoProvider = ({children}) =>{
         setOrder(currentOrder)
         toast.success('Eliminado del Pedido')
     }
+    
 
 
     const setEmailValue = (value) => {
@@ -729,6 +735,7 @@ const QuioscoProvider = ({children}) =>{
                 idImgProduct,
                 subCategoriesC,
                 promotions,
+                PsetPromotionsSearch,
                 promoProduct,
                 cartState,
                 setCartState,
@@ -755,6 +762,7 @@ const QuioscoProvider = ({children}) =>{
                 isGenderResolved,
                 imgComprobant, 
                 setImgComprobant,
+                modalActivate,
 
                 
                 handleClickCategoria,
@@ -784,7 +792,8 @@ const QuioscoProvider = ({children}) =>{
                 obtenerCategorias,
                 obtenerSubCategorias,
                 handleClickModal,
-                handleAgregarPedido
+                handleAgregarPedido,
+                handleClickModalActivated
 
             }}
         >

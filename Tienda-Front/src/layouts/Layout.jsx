@@ -17,6 +17,9 @@ const customStyles = {
     bottom: "auto",
     marginRight: "-50%",
     transform: "translate(-50%, -50%)",
+    width: "60rem", // Fixed width
+    height: "25rem", // Fixed height
+    padding: "2rem" // Padding for better spacing inside the modal
   },
 };
 
@@ -24,7 +27,7 @@ Modal.setAppElement('#root');
 
 export default function Layout() {
   const { user, error } = useAuth({ middleware: 'auth' });
-  const { gender,modal, getProducts, getPromotion, throttledGetProducts,throttledGetPromotion,isGenderResolved} = useQuisco();
+  const { gender, modal, getProducts, getPromotion, throttledGetProducts, throttledGetPromotion, isGenderResolved, product, modalActivate } = useQuisco();
   const navigate = useNavigate();
   const [resolvedGender, setResolvedGender] = useState(null);
 
@@ -34,21 +37,27 @@ export default function Layout() {
         const genderValue = await gender;
         setResolvedGender(genderValue);
         console.log("El valor de gender es ", genderValue);
-          if (isGenderResolved) {
-        if (!genderValue) {
-          navigate('/public/ini');
-        } else {
-          await throttledGetProducts(genderValue);
-          await throttledGetPromotion(genderValue);
+        if (isGenderResolved) {
+          if (!genderValue) {
+            navigate('/public/ini');
+          } else {
+            await getProducts(genderValue);
+            await getPromotion(genderValue);
+          }
         }
-      }
       } catch (error) {
         console.error('Error fetching data:', error);
       }
     };
 
     fetchData();
-  }, [gender, navigate]);
+  }, [gender, navigate, modalActivate]);
+
+  useEffect(() => {
+    window.scrollTo(0, 0); 
+  }, [location.pathname]);
+
+
 
   if (resolvedGender === null) {
     return <div>Loading...</div>;
@@ -60,7 +69,7 @@ export default function Layout() {
         <Head className="z-20" />
         <div>
           <div>
-            <Outlet  />
+            <Outlet />
           </div>
           <div className="flex-grow"></div>
         </div>
@@ -68,12 +77,11 @@ export default function Layout() {
       </div>
       <ToastContainer />
 
-    {modal && (
-      <Modal isOpen={modal} style={customStyles}>
-        <ModalProducto/>
-      </Modal>
-    )}
-
+      {modal && (
+        <Modal isOpen={modal} style={customStyles}>
+          <ModalProducto />
+        </Modal>
+      )}
     </>
   );
 }

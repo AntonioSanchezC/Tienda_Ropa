@@ -3,10 +3,10 @@ import { Link } from 'react-router-dom';
 import UbiCenter from './UbiCenter';
 
 export default function Footer() {
-  const baseURL = 'http://localhost'; 
+  const baseURL = import.meta.env.VITE_API_URL; 
 
   return (
-    <footer className="bg-zinc-100 text-zinc-500 font-playfair p-12">
+    <footer className="bg-zinc-100 text-zinc-500 font-playfair p-12 z-10">
       <div className="container mx-auto px-4">
         <div className="flex flex-wrap justify-center text-center">
           {/* Sección de cuenta */}
@@ -71,8 +71,8 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="flex flex-wrap justify-center mt-12 text-left">
-          <div className="w-full md:w-1/2 mb-6 md:mb-0 px-4 text-center">
+        <div className="flex flex-wrap justify-center mt-12 text-left z-10">
+          <div className="w-full md:w-1/2 mb-6 md:mb-0 px-4 text-center z-10">
             <h5 className="font-bold mb-2 text-xl">Nuestra ubicación</h5>
             <UbiCenter />
           </div>

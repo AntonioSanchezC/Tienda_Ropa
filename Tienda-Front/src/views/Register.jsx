@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import Alerta from "../components/Alerta";
 import { useAuth } from '../hooks/useAuth';
 import useQuisco from "../hooks/useQuiosco";
+import '../styles/errorStyle.css';
+
 
 export default function Register() {
     const { getPrefixes, setEmailValue, prefixes } = useQuisco();
@@ -10,7 +12,7 @@ export default function Register() {
         getPrefixes();
     }, [])
 
-    const baseURL = 'http://localhost';
+    const baseURL = import.meta.env.VITE_API_URL;
 
     const nameRef = createRef();
     const lastNameRef = createRef();
@@ -57,25 +59,31 @@ export default function Register() {
     };
 
     return (
-        <div className="relative md:place-content-center min-h-screen">
+        <div className="relative md:place-content-center  z-50 max-h-full">
+
             <div
                 className="absolute inset-0 w-full h-full bg-no-repeat bg-center bg-contain rounded-lg z-0"
                 style={{ backgroundImage: `url(${baseURL}/backgrounds/RegisterDeco.png)` }}
             ></div>
-        <div className="grid place-content-start  w-7/12 md:mb-12 font-playfair relative">
+        <div className="relative grid place-content-start  w-full md:mb-12 font-playfair ">
 
             <div className="relative w-full">
-                <div className="relative bg-transparent mt-12 px-10 py-7 z-10">
-                    <h1 className="text-4xl font-black mb-12">Registro</h1>
+                <div className="relative bg-transparent mt-12 px-10 py-7 z-10 ">
+
+                    <h1 className="text-4xl font-black mb-20">Registro</h1>
                     <form
                         onSubmit={handleSubmit}
                         noValidate
                     >
-                        <div className="flex items-start">
-                            {errores ? errores.map((error, i) => <Alerta key={i}>{error}</Alerta>) : null}
+                        <div className="absolute top-20 right-12 p-4 z-20">
+                            <Link to={`/`}>
+                                <img src={`${baseURL}/icon/backHome.png`} alt="logo icon" className="md:w-[3rem] md:h-[2rem]" />
+                            </Link>
+                        </div>
+                        <div className="flex items-start max-h-full">
 
-                            <div className="w-1/2 pr-4 mx-2">
-                                <div className="mb-4 space-x-8 flex">
+                            <div className="w-1/2 pr-4 mx-2 ">
+                                <div className="mb-1 space-x-12 relative">
                                     <label
                                         className="text-slate-800 w-20 mt-7"
                                         htmlFor="name"
@@ -88,9 +96,13 @@ export default function Register() {
                                         name="name"
                                         placeholder="Tu Nombre"
                                         ref={nameRef}
+
+                                        
                                     />
+                                    {errores.name && <Alerta>{errores.name}</Alerta>}
                                 </div>
-                                <div className="mb-4 space-x-8 flex">
+
+                                <div className="mb-1 space-x-12 relative">
                                     <label
                                         className="text-slate-800 w-20 mt-7"
                                         htmlFor="apellido"
@@ -104,8 +116,10 @@ export default function Register() {
                                         placeholder="Tu Apellido"
                                         ref={lastNameRef}
                                     />
+                                    {errores.lastName && <Alerta>{errores.lastName}</Alerta>}
                                 </div>
-                                <div className="mb-4 space-x-8 flex">
+
+                                <div className="mb-1 space-x-9  relative">
                                     <label
                                         className="text-slate-800 w-20 mt-7"
                                         htmlFor="direccion"
@@ -119,8 +133,11 @@ export default function Register() {
                                         placeholder="Tu Direccion"
                                         ref={direRef}
                                     />
+                                    {errores.address && <Alerta>{errores.address}</Alerta>}
+
                                 </div>
-                                <div className="mb-4 space-x-8 flex">
+
+                                <div className="mb-1 space-x-10  relative">
                                     <label
                                         htmlFor="valor"
                                         className="w-20 mt-7"
@@ -131,7 +148,7 @@ export default function Register() {
                                         name="valor"
                                         ref={prefRef}
                                         required
-                                        className="mt-10 h-8 shrink"
+                                        className="mt-2 h-8 shrink"
                                     >
                                         {prefixes.map(prefix => (
                                             <option
@@ -142,25 +159,29 @@ export default function Register() {
                                             </option>
                                         ))}
                                     </select>
+                                    {errores.value && <Alerta>{errores.value}</Alerta>}
+
                                 </div>
-                                <div className="mb-4 space-x-8 flex">
-                                    <label className="text-slate-800 w-20 mt-7" htmlFor="telf">Teléfono :</label>
+                                <div className="mb-1 space-x-9  relative">
+                                    <label className="text-slate-800 w-20 mt-4" htmlFor="telf">Teléfono :</label>
                                     <input
                                         type="text"
                                         id="telf"
-                                        className="bg-slate-300 h-6 p-3 mt-7 border-b-2 border-gray-400 focus:border-zinc-500 outline-none"
+                                        className="bg-slate-300 h-6 p-3 mt-4 border-b-2 border-gray-400 focus:border-zinc-500 outline-none"
                                         name="telf"
                                         placeholder="Teléfono Móvil (Formato internacional, ej: +123 4567890123)"
                                         ref={telfRef}
                                         required
                                     />
+                                    {errores.telf && <Alerta>{errores.telf}</Alerta>}
+
                                 </div>
                             </div>
 
                             <div className="absolute h-3/5 bg-zinc-800 w-px left-1/2 transform -translate-x-1/2 "></div>
 
                             <div className="w-1/2 pl-4 ml-4">
-                                <div className="mb-4 space-x-8 flex">
+                                <div className="mb-2 space-x-16  relative">
                                     <label
                                         className="text-slate-800 w-28 mt-7"
                                         htmlFor="email"
@@ -174,8 +195,11 @@ export default function Register() {
                                         placeholder="Escribe tu Correo Electronico"
                                         ref={emailRef}
                                     />
+                                    {errores.email && <Alerta className = "error-email" >{errores.email}</Alerta>}
+
                                 </div>
-                                <div className="mb-4">
+
+                                <div className="mb-2">
                                     <label className="text-slate-800 mb-2">Sexo:</label>
                                     <div className="flex ">
                                         <div className="mx-4">
@@ -191,8 +215,10 @@ export default function Register() {
                                             </label>
                                         </div>
                                     </div>
+                                    {errores.gender && <Alerta>{errores.gender}</Alerta>}
+
                                 </div>
-                                <div className="mb-4 space-x-8 flex">
+                                <div className="relative mb-2 space-x-6  ">
                                     <label
                                         className="text-slate-800 w-28 mt-7"
                                         htmlFor="password"
@@ -206,8 +232,11 @@ export default function Register() {
                                         placeholder="Escribe tu Contraseña"
                                         ref={passwordRef}
                                     />
+                                    {errores.password && <Alerta>{errores.password}</Alerta>}
+
                                 </div>
-                                <div className="mb-4 space-x-8 flex">
+
+                                <div className="mb-2 space-x-8 relative">
                                     <label
                                         className="text-slate-800 w-18 mt-7"
                                         htmlFor="password_confirmation"
@@ -221,7 +250,10 @@ export default function Register() {
                                         placeholder="Repite tu Contraseña"
                                         ref={passwordConfirmtionRef}
                                     />
+                                    {errores.password_confirmation && <Alerta>{errores.password_confirmation}</Alerta>}
+
                                 </div>
+
                                 <input
                                     type="submit"
                                     value="Crear Cuenta"
@@ -230,7 +262,7 @@ export default function Register() {
                             </div>
                         </div>
                     </form>
-                    <nav className="mt-5 ml-20">
+                    <nav className="mt-0 ml-20">
                         <Link to="/auth/login">
                             ¿Ya tienes cuenta? Inicia sesión
                         </Link>

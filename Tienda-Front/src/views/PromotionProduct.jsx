@@ -1,11 +1,15 @@
-import { createRef, useState } from "react" 
+import { createRef, useState, useEffect } from "react" 
 import useQuisco from "../hooks/useQuiosco";
 import {useAuth} from '../hooks/useAuth';
 import Alerta from "../components/Alerta";
 
 export default function PromotionProduct() {
 
-    const { product, promotions } = useQuisco();
+    const { product, promotions, obtenProducts,productAll} = useQuisco();
+
+    useEffect(() => {
+        obtenProducts();
+    }, []);
 
     const proRef = createRef();
     const promoRef = createRef();
@@ -70,7 +74,7 @@ export default function PromotionProduct() {
                         required
                         className="mt-10 h-8 shrink"
                     >
-                        {product.map(pro => (
+                        {productAll.map(pro => (
                             <option 
                                 key={pro.id}
                                 value={pro.id}

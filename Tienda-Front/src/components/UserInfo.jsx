@@ -7,6 +7,8 @@ import clienteAxios from '../config/axios';
 const UserInfo = ({ onShowOrders, showOrders }) => {
 
   const { getArrivals, getWarehouses, loading, error } = useQuiosco();
+  const baseURL =  import.meta.env.VITE_API_URL;
+
   const { logout, user } = useAuth({ middleware: 'auth' });
   console.log("El valor de user en UserInfo es ", user);
 
@@ -94,7 +96,7 @@ const UserInfo = ({ onShowOrders, showOrders }) => {
       };
       console.log("El valor de userUpdateData es ", userUpdateData);
 
-      const { data } = await clienteAxios.put(`/api/user/${user.id}`, userUpdateData, {
+      const { data } = await clienteAxios.post(`/api/user/${user.id}`, userUpdateData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -117,7 +119,7 @@ const UserInfo = ({ onShowOrders, showOrders }) => {
     }
     const token = localStorage.getItem('AUTH_TOKEN');
     try {
-      await clienteAxios.put(`/api/user/${user.id}/password`, {
+      await clienteAxios.post(`/api/user/${user.id}/password`, {
         password: formData.password,
         newPassword: formData.newPassword,
         newPassword_confirmation: formData.confirmPassword,
@@ -134,6 +136,9 @@ const UserInfo = ({ onShowOrders, showOrders }) => {
       alert('Hubo un problema al cambiar la contraseña');
     }
   };
+
+
+   
 
   const handleDeleteAccount = async () => {
     if (!user) return;
@@ -164,7 +169,7 @@ const UserInfo = ({ onShowOrders, showOrders }) => {
             <p className='md:mb-8'>{user.email}</p>
             {user.imgs && (
               <div>
-                <img src={`http://localhost/${user.imgs.image}`} alt="Imagen de perfil" className="w-32 h-32 object-cover rounded-full" />
+                <img src={`${baseURL}/${user.imgs.image}`}   alt="Imagen de perfil" className="w-32 h-32 object-cover rounded-full" />
               </div>
             )}
             <p className={`w-full font-bold truncate mt-4 cursor-pointer text-gray-500 hover:text-black`} onClick={onShowOrders}>

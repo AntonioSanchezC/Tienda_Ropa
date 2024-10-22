@@ -1,0 +1,11 @@
+/* Estilos personalizados para los mensajes de error */
+.input-error + .text-red-600 {
+    position: absolute;
+    margin-top: -40px; /* Ajusta según sea necesario */
+    color: red;
+    font-size: 0.875rem; /* 14px */
+    font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  }
+  .error-email {
+    margin-left: -20px; /* Ajusta este valor según sea necesario */
+}

@@ -1,10 +1,10 @@
 import { Outlet } from 'react-router-dom';
 
 export default function UserLayout() {
-  const baseURL = 'http://localhost';
+  const baseURL = import.meta.env.VITE_API_URL;
 
   return (
-    <div className="relative min-h-screen">
+    <div className="relative min-h-screen max-h-screen overflow-hidden">
       <img
         src={`${baseURL}/backgrounds/Fondo.png`}
         alt="vegetable background"

@@ -6,7 +6,7 @@ export default function ResumenProducto({product}) {
   const {handleEditarCantidad, handleEliminarProductoPedido, handleClickModal} = useQuisco();
   const {id, name, price, quantity} = product
     return (
-      <div className="shadow space-y-1 p-4 bg-white">
+      <div className="shadow space-y-1 p-4 bg-white mb-5">
         <div className="space-y-2">
           <p className="text-xl font-bold">{name}</p>
           <p className="text-lg font-bold ">Cantidad: {quantity}</p>
@@ -39,7 +39,7 @@ export default function ResumenProducto({product}) {
             type="button"
             className="bg-red-700 p-2 text-white rounded-md font-bold uppercase shadow-md text-center"
             onClick={() => [handleEliminarProductoPedido(id),
-              handleClickModal()]
+              ]
             }
             >
             <svg

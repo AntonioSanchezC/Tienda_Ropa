@@ -16,16 +16,16 @@ class WarehouseSeeder extends Seeder
         // Seed para almacenes
         $warehouses = [
             [
-                'name' => 'Almacén A',
-                'address' => 'Dirección del almacén A',
-                'latitude' => 8.686507, // Latitud del almacén A
-                'longitude' => 49.41943, // Longitud del almacén A
+                'name' => 'Almacén de Bernardino Abad, S.L.',
+                'address' => '13, Mlle. de Levante, 11, 11006 Cádiz',
+                'latitude' => 36.529112, // Latitud del almacén A 36.529112, -6.285167
+                'longitude' => -6.285167, // Longitud del almacén A
             ],
             [
-                'name' => 'Almacén B',
-                'address' => 'Dirección del almacén B',
-                'latitude' => 11.686507, // Latitud del almacén B
-                'longitude' => 53.41943, // Longitud del almacén B
+                'name' => 'El Almacén del Pata Negra',
+                'address' => 'C. San Diego de Alcalá, 20, 11100 San Fernando, Cádiz',
+                'latitude' => 36.465753, // Latitud del almacén B  36.465753, -6.199023
+                'longitude' => -6.199023, // Longitud del almacén B
             ],
         ];
 

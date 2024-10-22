@@ -12,6 +12,7 @@ class ImageController extends Controller
     public function saveImage(ImageUploadRequest $request)
     {
         try {
+
             $imagen = $request->file('file');
 
             if (!$imagen) {

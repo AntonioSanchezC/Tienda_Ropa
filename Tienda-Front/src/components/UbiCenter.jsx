@@ -4,8 +4,8 @@ import 'leaflet/dist/leaflet.css';
 import L from 'leaflet'; 
 
 export default function UbiCenter() {
-    const [arrival, setArrival] = useState({ lat: 36.593423, lng: -6.238616 }); // Inicializa con coordenadas de ejemplo
-    const baseURL = 'http://localhost'; 
+    const [arrival, setArrival] = useState({ lat: 36.593423, lng: -6.238616 }); 
+    const baseURL = import.meta.env.VITE_API_URL; 
 
     // Define el icono personalizado
     const myIcon = L.icon({
@@ -23,7 +23,7 @@ export default function UbiCenter() {
     }, []);
 
     return (
-        <div className="flex flex-col items-center p-6 mb-12">
+        <div className="flex flex-col items-center p-6 mb-12 z-10">
             <MapContainer center={[36.593423, -6.238616]} zoom={13} style={{ height: "200px", width: "70%" }}>
                 <TileLayer
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

@@ -5,6 +5,7 @@ import Alerta from "../components/Alerta";
 import useQuisco from "../hooks/useQuiosco";
 import { HexColorPicker } from 'react-colorful';
 import '../styles/detailsProducts.css';
+import '../styles/errorStyle.css';
 
 export default function InsertProducts() {
   const [color, setColor] = useState('#ffffff'); // Estado inicial del color
@@ -79,11 +80,14 @@ export default function InsertProducts() {
     console.log("El valor de color es ", color);
   }, [color]);
 
+  const selectedGender = document.querySelector('input[name="gender"]:checked');
+  const genderValue = selectedGender ? selectedGender.value : '';
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const datos = {
       name: nameRef.current.value,
-      gender: document.querySelector('input[name="gender"]:checked').value,
+      gender: genderValue,
       price: priceRef.current.value,
       disp: dispRef.current.checked ? 0 : 1,
       description: descriptionRef.current.value,
@@ -155,6 +159,8 @@ export default function InsertProducts() {
                       placeholder="Tu Nombre"
                       ref={nameRef}
                     />
+                    {errores.name && <Alerta>{errores.name}</Alerta>}
+
                   </div>
                   <div className="mb-4">
                     <label className="text-slate-800">Sexo desigando:</label>
@@ -166,6 +172,8 @@ export default function InsertProducts() {
                         <input type="radio" name="gender" value="M" ref={genderRef} />{" "} Masculino
                       </label>
                     </div>
+                    {errores.gender && <Alerta>{errores.gender}</Alerta>}
+
                   </div>
                   <div className="mb-4">
                     <label className="text-slate-800" htmlFor="price">Precio:</label>
@@ -178,6 +186,8 @@ export default function InsertProducts() {
                       placeholder="Precio del producto"
                       ref={priceRef}
                     />
+                    {errores.price && <Alerta>{errores.price}</Alerta>}
+
                   </div>
                   <div className="mb-4">
                     <label className="text-slate-800" htmlFor="quantity">Cantidad:</label>
@@ -190,6 +200,8 @@ export default function InsertProducts() {
                       placeholder="Cantidad del producto"
                       ref={quantityRef}
                     />
+                    {errores.quantity && <Alerta>{errores.quantity}</Alerta>}
+
                   </div>
                   <div className="mb-4">
                     <label className="text-slate-800" htmlFor="image">Añadir Imagen:</label>
@@ -213,6 +225,9 @@ export default function InsertProducts() {
                         <img src={previewImage} alt="Vista previa" className="max-w-xs mt-4" />
                       </div>
                     )}
+                    {errores.file && <Alerta>{errores.file}</Alerta>}
+                    {errores.image && <Alerta>{errores.image}</Alerta>}
+
                   </div>
                   <div className="mb-4">
                     <label className="text-slate-800">Disponibilidad:</label>
@@ -224,6 +239,8 @@ export default function InsertProducts() {
                         <input type="radio" name="disp" value="0" ref={dispRef} />{" "} No disponible
                       </label>
                     </div>
+                    {errores.disp && <Alerta>{errores.disp}</Alerta>}
+
                   </div>
                   <div className="mb-4">
                     <label className="text-slate-800">¿Es una novedad?:</label>
@@ -235,6 +252,8 @@ export default function InsertProducts() {
                         <input type="radio" name="nove" value="0" ref={noveRef} />{" "} No es novedad
                       </label>
                     </div>
+                    {errores.novelty && <Alerta>{errores.novelty}</Alerta>}
+
                   </div>
                   <div className="mb-4">
                     <label className="text-slate-800" htmlFor="description">Descripción:</label>
@@ -246,6 +265,7 @@ export default function InsertProducts() {
                       placeholder="Descripción de producto"
                       ref={descriptionRef}
                     />
+                    {errores.description && <Alerta>{errores.description}</Alerta>}
                   </div>
                 </div>
                 <div className="w-1/2 pl-4">
@@ -259,6 +279,7 @@ export default function InsertProducts() {
                       placeholder="Talla de producto"
                       ref={sizeRef}
                     />
+                    {errores.size && <Alerta>{errores.size}</Alerta>}
                   </div>
                   <div className="mb-4">
                     <label className="text-slate-800" htmlFor="color">Nombre del Color:</label>
@@ -270,6 +291,7 @@ export default function InsertProducts() {
                       placeholder="Color de producto"
                       ref={colorRef}
                     />
+                    {errores.color && <Alerta>{errores.color}</Alerta>}
                   </div>
                   <div className="color-picker-container rounded-lg overflow-hidde flex justify-center items-center">
                   <HexColorPicker
@@ -280,6 +302,7 @@ export default function InsertProducts() {
                       setCodeColor(newColor); // Actualiza el estado del código de color
                     }}
                   />
+                  {errores.code_color && <Alerta>{errores.code_color}</Alerta>}
                 </div>
                   <div className="mb-4">
                     <select
@@ -319,6 +342,7 @@ export default function InsertProducts() {
                           </option>
                         ))}
                     </select>
+                    {errores.subcate && <Alerta>{errores.subcate}</Alerta>}
                   </div>
                   <div className="mb-4">
                     <select
@@ -338,6 +362,7 @@ export default function InsertProducts() {
                         </option>
                       ))}
                     </select>
+                    {errores.warehouses && <Alerta>{errores.warehouses}</Alerta>}
                   </div>
                 </div>
                 <input

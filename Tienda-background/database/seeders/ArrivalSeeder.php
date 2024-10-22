@@ -16,16 +16,16 @@ class ArrivalSeeder extends Seeder
         // Seed para puntos de llegada
         $arrivals = [
             [
-                'name' => 'Punto de llegada A',
-                'address' => 'Dirección del punto de llegada A',
-                'latitude' => 8.681495, // Latitud del punto de llegada A
-                'longitude' => 47.629895, // Longitud del punto de llegada A
+                'name' => 'Oficina Correos Cádiz',
+                'address' => 'Suc. 3, Avenida de la Sanidad Pública, C/ Gibraltar, S/n, 11011 Cádiz',
+                'latitude' => 36.501978, // Latitud del punto de llegada A 36.501978, -6.271356
+                'longitude' => -6.271356, // Longitud del punto de llegada A
             ],
             [
-                'name' => 'Punto de llegada B',
-                'address' => 'Dirección del punto de llegada B',
-                'latitude' => 10.681495, // Latitud del punto de llegada B
-                'longitude' => 46.629895, // Longitud del punto de llegada B
+                'name' => 'Oficina Correos San Fernando',
+                'address' => 'C. Real, 113, 11100 San Fernando, Cádiz',
+                'latitude' => 36.462935, // Latitud del punto de llegada B 36.462935, -6.197713
+                'longitude' => -6.197713, // Longitud del punto de llegada B
             ],
         ];
 

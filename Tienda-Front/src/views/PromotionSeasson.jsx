@@ -13,11 +13,14 @@ export default function PromotionSeasson() {
   const filteredPromotionSeasson = promotions.filter(promo => promo.tipe === 'seasson' && promo.status === 1);
   const lastSeasonPromotionSeasson = filteredPromotionSeasson[filteredPromotionSeasson.length - 1];
 
+  // Verifica que `product` sea un arreglo
+  const validProducts = Array.isArray(product) ? product : [];
+
   // Obtener productos relacionados con la promoción 'seasson'
   const seassonProductIds = promoProduct
     .filter(item => filteredPromotionSeasson.some(promo => promo.id === item.promotion_id))
     .map(item => item.product_id);
-  const promotionProduct = product.filter(prod => seassonProductIds.includes(prod.id));
+  const promotionProduct = validProducts.filter(prod => seassonProductIds.includes(prod.id));
   console.log("El valor de promotionProduct desde PromotionSeasson es ", promotionProduct);
 
   const imgProductKeys = Object.keys(idImgProduct);
