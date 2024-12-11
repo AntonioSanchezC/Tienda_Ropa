@@ -7,7 +7,6 @@ export default function DetailsProduct() {
     const location = useLocation();
     const navigate = useNavigate();
     const { product, imageProduct: initialImageProduct } = location.state || {};
-    const  actualProductPrice = product.price;
     const [showComment, setShowComment] = useState(false);
     const [products, setProducts] = useState([]);
     const [sizes, setSizes] = useState([]);
@@ -21,7 +20,7 @@ export default function DetailsProduct() {
     const { user, commentInsert, commentGet, GetSizesColorsImages, commentComprobant, setCommentComprobant } = useAuth();
     const { handleQuantityCustomers } = useQuiosco();
 
-    const productCode = product.product_code;
+    const productCode = product.name;
     const baseURL = import.meta.env.VITE_API_URL;
 
     const formatImageUrl = (url) => {
@@ -32,25 +31,12 @@ export default function DetailsProduct() {
     };
 
     const [imageProducts, setImageProducts] = useState(formatImageUrl(initialImageProduct));
+    const actualProductPrice = product.discountedPrice ?? product.price;  
+    // Usa el precio con descuento si está presente
     const [priceProducts, setPriceProducts] = useState(actualProductPrice);
+    const [codeProduct, setCodeProduct] = useState(product.product_code);
 
-    useEffect(() => {
-        const fetchSizesColorsImages = async () => {
-            const data = await GetSizesColorsImages(productCode, setErrores);
-            const uniqueSizes = new Set();
-            data.products.forEach(product => {
-                product.sizes.forEach(size => {
-                    uniqueSizes.add(size.id);
-                });
-            });
-            const sizesArray = Array.from(uniqueSizes).map(sizeId => {
-                return data.products.flatMap(product => product.sizes).find(size => size.id === sizeId);
-            });
-            setSizes(sizesArray);
-            setProducts(data.products);
-        };
-        fetchSizesColorsImages();
-    }, [productCode]);
+    
 
     useEffect(() => {
         if (selectedSize) {
@@ -72,10 +58,36 @@ export default function DetailsProduct() {
 
     const handleSizeSelect = (sizeId) => {
         setSelectedSize(sizeId);
+        
         setSelectedColor(null);
+        // Filter colors available for the selected size
+        const filteredColors = products
+            .filter(prod => prod.sizes.some(size => size.id === sizeId))
+            .flatMap(prod => prod.colors)
+            .filter((color, index, self) => self.findIndex(c => c.id === color.id) === index);
+        
+        setColors(filteredColors);
+        
+        // If the previously selected color is not available for the new size, select the first available color
+        if (filteredColors.length > 0) {
+            const newSelectedColor = filteredColors[0].id; // Set the first available color
+            setSelectedColor(newSelectedColor);
+            
+            // Update image and price based on the new selected color and size
+            const selectedProduct = products.find(prod =>
+                prod.sizes.some(size => size.id === sizeId) &&
+                prod.colors.some(color => color.id === newSelectedColor)
+            );
+            
+            if (selectedProduct && selectedProduct.imgs && selectedProduct.imgs.length > 0) {
+                setImageProducts(formatImageUrl(selectedProduct.imgs[0].image));
+                setPriceProducts(selectedProduct.discountedPrice ?? selectedProduct.price); // Keep discounted price if available
+            }
+        }
     };
-
+    
     const handleColorSelect = (colorId) => {
+
         setSelectedColor(colorId);
         const selectedProduct = products.find(prod =>
             prod.sizes.some(size => size.id === selectedSize) &&
@@ -83,12 +95,12 @@ export default function DetailsProduct() {
         );
         if (selectedProduct && selectedProduct.imgs && selectedProduct.imgs.length > 0) {
             setImageProducts(formatImageUrl(selectedProduct.imgs[0].image));
-            setPriceProducts(selectedProduct.price);
+            setPriceProducts(product.discountedPrice ?? selectedProduct.price);
+            setCodeProduct(selectedProduct.product_code??product.product_code);
         }
-        console.log("El valor de priceProducts es ", priceProducts);
-        console.log("El valor de selectedProduct es ", selectedProduct);
-    
     };
+    
+    
     
     const handleChangeQuantity = (event) => {
         setQuantityDP(event.target.value);
@@ -125,6 +137,45 @@ export default function DetailsProduct() {
         setCommentComprobant(true);  
     };
 
+        
+    useEffect(() => {
+        const fetchSizesColorsImages = async () => {
+            const data = await GetSizesColorsImages(productCode, setErrores);
+            const uniqueSizes = new Set();
+            
+            data.products.forEach(prod => {
+                if (prod.sizes) {
+                    prod.sizes.forEach(size => {
+                        uniqueSizes.add(size.id);
+                    });
+                }
+            });
+            
+            const sizesArray = Array.from(uniqueSizes).map(sizeId => {
+                return data.products
+                    .flatMap(prod => (prod.sizes || [])) // Asegura que 'prod.sizes' no sea undefined
+                    .find(size => size.id === sizeId);
+            });
+            
+            setSizes(sizesArray);
+            setProducts(data.products);
+    
+            // Validar que product y sus propiedades estén definidos antes de establecer el tamaño y color
+            if (sizesArray.length > 0 && product?.sizes?.length > 0) {
+                setSelectedSize(product.sizes[0]?.id); // Toma el ID de la primera talla del producto
+            }
+    
+            if (data.products.length > 0 && product?.colors?.length > 0) {
+                setSelectedColor(product.colors[0]?.id); // Toma el ID del primer color del primer producto
+            }
+        };
+    
+        // Solo ejecutar fetchSizesColorsImages si productCode está definido
+        if (productCode) {
+            fetchSizesColorsImages();
+        }
+    }, [productCode, product]); // Incluye 'product' como dependencia en el useEffect
+    
     return (
         <>
             <div className="flex text-zinc-500 p-3 bg-white font-playfair">
@@ -141,8 +192,9 @@ export default function DetailsProduct() {
                 <div className="md:w-1/2 p-2 md:mt-24 md:ml-12">
                     <div className="p-3">
                         <h3 className="text-3xl font-black">{product.name}</h3>
-                        <p className="mt-5 text-2xl md:ml-2">Precio: ${parseFloat(priceProducts).toFixed(2)}</p>
+                        <p className="mt-5 text-2xl md:ml-2">Precio: {parseFloat(priceProducts).toFixed(2)} €</p>
                         <p className="mt-5 text-2xl md:ml-2">Descripción: {product.description}</p>
+                        <p className="mt-5 text-2xl md:ml-2">Codigo producto: {codeProduct}</p>
                         <div className="mt-5 text-2xl md:ml-2">
                             <label className="block font-bold">Tallas disponibles:</label>
                             <div className="flex space-x-2">

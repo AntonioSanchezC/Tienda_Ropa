@@ -11,8 +11,10 @@ export default function Head() {
 
   const { logout, user } = useAuth({ middleware: 'auth' });
   const searchRef = createRef();
-  const { setCartState, order, cartState, handleClickFilteredProducts } = useQuiosco();
-  const quantityOrder = order.length;
+  const { obtenerCategorias,obtenerSubCategorias,setCartState, order, cartState, handleClickFilteredProducts, searchProductsByCode } = useQuiosco();
+    const { GetSizesColorsImages} = useAuth();
+
+    const quantityOrder = order.length;
   const baseURL =  import.meta.env.VITE_API_URL;
   const [showSearch, setShowSearch] = useState(false);
   const [showLogoutButton, setShowLogoutButton] = useState(false);
@@ -27,9 +29,23 @@ export default function Head() {
   const handleSubmit = async e => {
     e.preventDefault();
     const searchTerm = searchRef.current.value;
-    handleClickFilteredProducts({ value: searchTerm, type: 'string' });
+
+    // Expresión regular para identificar un código de producto con formato `Parte1-Parte2-Parte3`
+    const productCodePattern = /^[a-zA-Z0-9]+-[a-zA-Z0-9]+-[a-zA-Z0-9]+$/;
+
+    if (productCodePattern.test(searchTerm)) {
+        // Si el término de búsqueda sigue el formato de un código de producto
+        searchProductsByCode(searchTerm);
+    } else {
+        // Si no es un código, usamos el filtro general
+        handleClickFilteredProducts({ value: searchTerm, type: 'string' });
+    }
+
+    // Navegamos a la lista de productos después de la búsqueda
     search();
-  };
+};
+
+
 
   const handleUserIconClick = () => {
     if (showLogoutButton) {

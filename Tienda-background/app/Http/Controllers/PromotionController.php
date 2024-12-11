@@ -17,7 +17,9 @@ class PromotionController extends Controller
     public function getPromotionsByGender($gender)
     {
         try {
-            $promotions = Promotion::where('gender', $gender)->get();
+            $promotions = Promotion::where('gender', $gender)
+            ->where('status', 1)
+            ->get();
             return response()->json(['data' => $promotions], 200);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);

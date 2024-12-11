@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import useQuiosco from "../hooks/useQuiosco";
 import SidebarMostrar from "./SidebarMostrar";
 
@@ -6,8 +6,14 @@ export default function Sidebar() {
 
   const [showSidebar, setShowSidebar] = useState(false);
   const [isAnimatingOut, setIsAnimatingOut] = useState(false);
-  const { selectGender, setGender } = useQuiosco();
+  const { obtenerCategorias,obtenerSubCategorias,selectGender, setGender } = useQuiosco();
 
+  useEffect(() => {
+
+    obtenerCategorias();
+    obtenerSubCategorias();
+
+  }, []);
 
   const handleGenderClick = (gender) => {
     selectGender(gender);

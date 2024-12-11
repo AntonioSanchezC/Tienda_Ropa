@@ -9,6 +9,9 @@ export default {
       fontFamily: {
         playfair: ['Playfair Display', 'serif'],
       },
+      screens: {
+        xs: '480px', // Define el ancho mínimo para xs
+      },
     
     },
   },

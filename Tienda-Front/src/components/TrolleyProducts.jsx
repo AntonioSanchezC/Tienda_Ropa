@@ -8,8 +8,6 @@ export default function TrolleyProducts({product}) {
   const baseURL = import.meta.env.VITE_API_URL; 
 
 
-  console.log("El valor de product en TrolleyProducts ", product);
-  
     return (
       <div className="shadow-2xl mt-1 p-4 bg-white flex items-center space-x-4">
       {product.imgs && product.imgs.map(img => (

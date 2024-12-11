@@ -13,7 +13,6 @@ const PayPalPayment = ({ orderData }) => {
 
   const captureOrder = async (orderData) => {
     const token = localStorage.getItem('AUTH_TOKEN');
-    console.log("Datos de orderData desde captureOrder:", orderData);
 
     try {
       const response = await clienteAxios.post('/api/ordersSuccess', {
@@ -26,7 +25,6 @@ const PayPalPayment = ({ orderData }) => {
           Authorization: `Bearer ${token}`
         }
       });
-      console.log('Order captured successfully:', response.data.validated);
     } catch (error) {
       if (error.response) {
         console.error('Error in response:', error.response.data);
@@ -39,7 +37,6 @@ const PayPalPayment = ({ orderData }) => {
 
   useEffect(() => {
     setPaypalOrderData(orderData);
-    console.log("useEffect actualizó paypalOrderData:", orderData);
   }, [orderData]);
 
   useEffect(() => {
@@ -54,14 +51,17 @@ const PayPalPayment = ({ orderData }) => {
 
   
   return (
-    <PayPalScriptProvider options={{ "client-id": "AZFdIK3fHvxMgCVr91s9ldQVcTDi_8W7A8dizMdec2vv9Vwy-QmyjxElqKQqT5eYLYVvEZtnowFDrQYV" }}>
+    <PayPalScriptProvider options={{ 
+      "client-id": "AZFdIK3fHvxMgCVr91s9ldQVcTDi_8W7A8dizMdec2vv9Vwy-QmyjxElqKQqT5eYLYVvEZtnowFDrQYV",
+      "currency": "EUR", 
+     }}>
       <PayPalButtons
         createOrder={(data, actions) => {
-          console.log("Creando orden con total:", (paypalOrderData.total / 100).toFixed(2));
           return actions.order.create({
             purchase_units: [{
               amount: {
-                value: (paypalOrderData.total / 100).toFixed(2), // Verifica si esta conversión es correcta
+                currency_code: "EUR",
+                value: (paypalOrderData.total).toFixed(2), // Verifica si esta conversión es correcta
               },
             }],
           });
@@ -69,7 +69,6 @@ const PayPalPayment = ({ orderData }) => {
         onApprove={async (data, actions) => {
           try {
             const details = await actions.order.capture();
-            console.log("Detalles de la orden de PayPal capturados:", details);
             setTransactionId(details.id); // Captura y almacena el ID de la transacción
             setIsOrderApproved(true); // Marca la orden como aprobada
           } catch (error) {

@@ -60,15 +60,16 @@ class Product extends Model
 
     public function generateFullProductCode()
     {
-        $size = Size::find($this->size_id);
-        $color = Color::find($this->color_id);
+        $size = $this->sizes->first();
+        $color = $this->colors->first();
 
         if ($size && $color) {
-            return $this->product_code . '-' . $size->code . '-' . $color->code;
+            return $this->name . '-' . $size->code . '-' . $color->code_shop;
         }
 
-        return $this->product_code;
+        return $this->name;
     }
+
 
     public function colors()
     {

@@ -13,7 +13,6 @@ export default function Resumen() {
     setSelectedArrival(e.target.value);
   }
 
-  console.log("El valor de arrivals en Resumen es ", arrivals);
   const { logout } = useAuth({})
   const checkOrder = () => order.length === 0;
   const handleSubmit = e => {

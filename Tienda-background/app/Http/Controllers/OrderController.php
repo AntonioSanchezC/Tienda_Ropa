@@ -65,8 +65,8 @@ class OrderController extends Controller
 
         $orders = Order::where('user_id', $user->id)
             ->with([
-                'deliveries.warehouse', // Asegura que se incluye el warehouse
-                'deliveries.arrival',    // Asegura que se incluye el arrival
+                'deliveries.warehouse',
+                'deliveries.arrival',
                 'products'
             ])
             ->get();

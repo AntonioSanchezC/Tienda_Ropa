@@ -5,6 +5,16 @@ import { Link } from "react-router-dom";
 
 export default function Products() {
   const { obtenProducts,productAll } = useQuisco();
+  const [currentPage, setCurrentPage] = useState(1);
+  const productsPerPage = 8;
+
+  const indexOfLastOrder = currentPage * productsPerPage;
+  const indexOfFirstOrder = indexOfLastOrder - productsPerPage;
+  const currentProducts = productAll.slice(indexOfFirstOrder, indexOfLastOrder);
+
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
 
   useEffect(() => {
       obtenProducts();
@@ -36,8 +46,8 @@ export default function Products() {
           <table className="w-full table-auto text-sm">
             <thead>
               <tr className="text-sm leading-normal">
-                <th className="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light w-1/4">Nombre</th>
                 <th className="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light w-1/4">Código</th>
+                <th className="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light w-1/4">Nombre</th>
                 <th className="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light w-1/4">Precio</th>
                 <th className="py-2 px-4 bg-grey-lightest font-bold uppercase text-sm text-grey-light border-b border-grey-light w-1/4 ">Acciones</th>
               </tr>
@@ -45,10 +55,10 @@ export default function Products() {
             
             {/* Lista de productos */}
             <tbody>
-              {productAll.map((prod) => (
+              {currentProducts.map((prod) => (
                 <tr key={prod.id} className="hover:bg-grey-lighter">
+                <td className="py-2 px-4 border-b border-grey-light text-center">{prod.product_code}</td>
                   <td className="py-2 px-4 border-b border-grey-light text-center">{prod.name}</td>
-                  <td className="py-2 px-4 border-b border-grey-light text-center">{prod.product_code}</td>
                   <td className="py-2 px-4 border-b border-grey-light text-center">${prod.price}</td>
                   <td className="py-2 px-4 border-b border-grey-light text-center">
                   <div className="flex justify-center items-center">
@@ -66,11 +76,19 @@ export default function Products() {
             </tbody>
           </table>
           
-          {/* Botón "Ver más" para la tabla de Transacciones */}
+          {/* Paginacion */}
           <div className="text-right mt-4">
-            <Link to="/admin/transactions" className="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded">
-              Ver más
-            </Link>
+            <div className="flex justify-center my-6">
+              {Array.from({ length: Math.ceil(productAll.length / productsPerPage) }, (_, index) => (
+                <button
+                  key={index}
+                  onClick={() => paginate(index + 1)}
+                  className={`mx-2 px-4 py-2 border ${currentPage === index + 1 ? 'bg-blue-500 text-white' : 'bg-white text-blue-500'}`}
+                >
+                  {index + 1}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>

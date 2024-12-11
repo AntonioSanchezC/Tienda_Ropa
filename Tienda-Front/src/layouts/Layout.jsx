@@ -27,7 +27,7 @@ Modal.setAppElement('#root');
 
 export default function Layout() {
   const { user, error } = useAuth({ middleware: 'auth' });
-  const { gender, modal, getProducts, getPromotion, throttledGetProducts, throttledGetPromotion, isGenderResolved, product, modalActivate } = useQuisco();
+  const { filteredProducts, gender, modal, getProducts, getPromotion,  isGenderResolved, modalActivate } = useQuisco();
   const navigate = useNavigate();
   const [resolvedGender, setResolvedGender] = useState(null);
 
@@ -36,7 +36,6 @@ export default function Layout() {
       try {
         const genderValue = await gender;
         setResolvedGender(genderValue);
-        console.log("El valor de gender es ", genderValue);
         if (isGenderResolved) {
           if (!genderValue) {
             navigate('/public/ini');
@@ -51,7 +50,7 @@ export default function Layout() {
     };
 
     fetchData();
-  }, [gender, navigate, modalActivate]);
+  }, [gender, navigate, modalActivate, filteredProducts]);
 
   useEffect(() => {
     window.scrollTo(0, 0); 

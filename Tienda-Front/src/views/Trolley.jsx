@@ -8,8 +8,7 @@ import TrolleyList from "../components/TrolleyList";
 
 export default function Trolley() {
   const { order, total, handleSubmitNewOrder, arrivals } = useQuisco();
-  console.log("El valor de total en Trolley es ", total);
-  console.log("El valor de order en Trolley es ", order);
+
   const [selectedArrival, setSelectedArrival] = useState("");
 
   const handleArrivalChange = (e) => {

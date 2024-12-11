@@ -21,10 +21,7 @@ export default function SidebarMostrar({ onClose, isAnimatingOut }) {
     middleware: "guest",
     url: "/",
   });
-  useEffect(() => {
-    obtenerCategorias();
-    obtenerSubCategorias();
-},[])
+
 
   useEffect(() => {
     if (isAnimatingOut) {

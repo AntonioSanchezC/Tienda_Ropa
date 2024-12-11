@@ -15,9 +15,6 @@ use App\Models\Promotion;
 use App\Models\PromotionProduct;
 use App\Models\Size;
 use App\Models\User;
-use App\Models\Warehouse;
-use App\Models\WarehouseProduct;
-use App\Models\WarehouseProducts;
 use App\Models\warehouses_products;
 use Exception;
 use Illuminate\Http\Request;
@@ -42,20 +39,13 @@ public function insertProduct(AddProductoRequest $request)
         $sizeId = $size->id;
 
         // Crear o buscar el color
-        $color = Color::where('name', $data['color'])->first();
-
-        if ($color) {
-            // Actualizar el código de color si el color ya existe
-            $color->update(['code_color' => $data['code_color'], 'code_shop' => strtoupper(substr($data['code_color'], 2, 5))]);
-        } else {
-            // Crear un nuevo color si no existe
-            $color = Color::create([
-                'name' => $data['color'],
+        $color = Color::firstOrCreate(
+            ['name' => $data['color']],
+            [
                 'code_color' => $data['code_color'],
                 'code_shop' => strtoupper(substr($data['code_color'], 2, 5))
-            ]);
-        }
-
+            ]
+        );
         $colorId = $color->id;
 
         // Crear la imagen
@@ -81,6 +71,10 @@ public function insertProduct(AddProductoRequest $request)
         $product->sizes()->attach($sizeId);
         $product->colors()->attach($colorId);
 
+        // Generar y asignar el código completo de producto
+        $fullProductCode = $product->name . '-' . $size->code . '-' . $color->code_shop;
+        $product->update(['product_code' => $fullProductCode]);
+
         // Crear la relación entre imagen y producto
         ImgProduct::create([
             'img_id' => $imageId,
@@ -93,25 +87,22 @@ public function insertProduct(AddProductoRequest $request)
             'product_id' => $product->id,
         ]);
 
-        // Confirmar la transacción
         DB::commit();
 
         return response()->json([
             'message' => 'Producto creado exitosamente.',
             'product' => $product,
-            'full_product_code' => $product->generateFullProductCode(),
+            'full_product_code' => $fullProductCode,
             'image' => $image,
             'sizeId' => $sizeId,
             'colorId' => $colorId,
         ], 201);
     } catch (Exception $e) {
-        // Deshacer la transacción en caso de error
         DB::rollback();
 
-        // Manejar el error y devolver una respuesta de error
         return response()->json([
             'error' => 'Error al crear producto e imagen.',
-            'message' => $e->getMessage(), // Para más detalles sobre el error
+            'message' => $e->getMessage(),
         ], 500);
     }
 }
@@ -280,7 +271,10 @@ public function updateUser(Request $request)
         if ($request->has('password')) {
             $user->password = Hash::make($request->input('password'));
         }
-
+      // Actualizar el campo admin
+      if ($request->has('admin')) {
+        $user->admin = (int) $request->input('admin');
+    }
         $user->save();
 
         // Si todo se ejecuta correctamente, devuelve una respuesta exitosa
@@ -306,6 +300,7 @@ public function updateUser(Request $request)
         try {
             // Validar el registro
             $data = $request->validated();
+            $data['status'] = (int)$data['status'];
 
             //Crear la imagen
             $image = Img::create([
@@ -314,6 +309,12 @@ public function updateUser(Request $request)
                 'entity' => $data['entity'],
             ]);
             $imageId = $image->id;
+
+            // Verificar si hay una promoción existente con el mismo 'description' y 'gender' con 'status' = 1
+            Promotion::where('tipe', $data['tipe'])
+            ->where('gender', $data['gender'])
+            ->where('status', 1)
+            ->update(['status' => 0]);
 
             //Crear la promocion
              Promotion::create([

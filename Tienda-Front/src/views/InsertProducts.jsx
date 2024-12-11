@@ -37,7 +37,7 @@ export default function InsertProducts() {
     setSelectedSubcategory(subcategoriaSeleccionada);
   };
 
-  const { getRootProps, getInputProps, isDragActive, open, removeFile } = useDropzone({
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept: {
       'image/*': ['.jpeg', '.jpg', '.png'],
       'application/pdf': ['.pdf']
@@ -53,7 +53,6 @@ export default function InsertProducts() {
     },
     onDropRejected: (fileRejections) => {
       setPreviewImage(null);
-      console.log(fileRejections);
     },
   });
 
@@ -75,10 +74,6 @@ export default function InsertProducts() {
     middleware: "auth",
     url: "/",
   });
-
-  useEffect(() => {
-    console.log("El valor de color es ", color);
-  }, [color]);
 
   const selectedGender = document.querySelector('input[name="gender"]:checked');
   const genderValue = selectedGender ? selectedGender.value : '';
@@ -138,6 +133,7 @@ export default function InsertProducts() {
 
   const setPreviewImageNull = () => {
     setPreviewImage(null);
+    setAcceptedFiles([]); 
   };
 
   return (
@@ -206,12 +202,12 @@ export default function InsertProducts() {
                   <div className="mb-4">
                     <label className="text-slate-800" htmlFor="image">Añadir Imagen:</label>
                     <div {...getRootProps()} className="dropzone">
-                      <input type="file" name="file" {...getInputProps()} />
+                      <input type="file" id="image" name="file" {...getInputProps()} />
                       {acceptedFiles.length > 0 ? (
                         acceptedFiles.map((file) => (
                           <div key={file.name}>
                             <p>Archivo seleccionado: {file.name}</p>
-                            <button onClick={() => [setPreviewImageNull(), removeFile(file)]}>Eliminar archivo</button>
+                            <button onClick={() => [setPreviewImageNull()]}>Eliminar archivo</button>
                           </div>
                         ))
                       ) : isDragActive ? (

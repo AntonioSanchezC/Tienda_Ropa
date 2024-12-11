@@ -95,11 +95,8 @@ export const useAuth = () => {
 const insetProduct = async (formData, setErrores) => 
   {
        try {
-         console.log('LLegado al hook' );
          // Primero, subir la imagen
          const { data: imagenData } = await clienteAxios.post('/api/saveImage', formData);
-            console.log('Imagen subida:', imagenData); // Agregar esta línea
-
            // Luego, enviar los datos del formulario junto con la ruta de la imagen
            const datosP = {
                            name: formData.get('name'),
@@ -117,11 +114,9 @@ const insetProduct = async (formData, setErrores) =>
                            novelty:parseInt(formData.get('novelty')), // Convertir a número entero
                            warehouses: formData.get('warehouses'), 
                          };
-               console.log('Datos del producto:', datosP); 
            const { data } = await clienteAxios.post('/api/insertProduct', datosP);
            toast.success(data.message);
            setImgComprobant(!imgComprobant);
-               console.log('Respuesta del servidor:', data); // Agregar esta línea
                setErrores([]);
                await mutate();
                return null; // Return null for successful registration
@@ -137,13 +132,10 @@ const insetProduct = async (formData, setErrores) =>
 
    const deleteProduct = async (prod, setErrores) => {
     try {
-        console.log("El valor de prod desde deleteProduct", prod);
-
        await clienteAxios.post("/api/deleteProduct", { prod: prod });
 
         setErrores([]);
         await mutate();
-        console.log("Return null for successful delete");
         window.location.reload();
         return null;
     } catch (error) {
@@ -155,7 +147,6 @@ const insetProduct = async (formData, setErrores) =>
 const GetSizesAndColors = async (productCode, setErrores) => {
   try {
     const { data } = await clienteAxios.get(`/api/products/${productCode}/sizes-colors`);
-    console.log("El valor de data en GetSizesAndColors es ", data);
     return data;
   } catch (error) {
     setErrores(["Error with the product to fetch sizes and colors"]);
@@ -165,7 +156,6 @@ const GetSizesAndColors = async (productCode, setErrores) => {
 const GetSizesColorsImages = async (productCode, setErrores) => {
   try {
     const { data } = await clienteAxios.get(`/api/products/${productCode}/sizes-colors-img`);
-    console.log("El valor de data en GetSizesAndColors es ", data);
     return data;
   } catch (error) {
     setErrores(["Error with the product to fetch sizes and colors"]);
@@ -174,7 +164,7 @@ const GetSizesColorsImages = async (productCode, setErrores) => {
     
     const GetProductsByCode = async (productCode, setError, filters = {}) => {
       try {
-        const { data }  = await clienteAxios.get(`/api/products/${productCode}/sizes-colors-filter`, {
+        const { data }  = await clienteAxios.get(`/api/products/${productCode}/by-code`, {
           params: filters,
         });
 
@@ -206,6 +196,8 @@ const GetSizesColorsImages = async (productCode, setErrores) => {
   const updateUser= async (user, setErrores) => {
       try {
         const { data } = await clienteAxios.post('/api/updateUser', user);
+
+        toast.success(data.message);
         setErrores([]);
         return null; 
       } catch (error) {
@@ -420,7 +412,6 @@ const updateUserPerfil = async (formData, setLoading) => {
   try {
       setLoading(true); // Comienza la carga
       const token = localStorage.getItem('AUTH_TOKEN');
-      console.log("Desde el hook updateUserPerfil los datos de formData ", formData);
       
       const imageResponse = formData.get('file')
           ? await clienteAxios.post('/api/saveImage', formData, {
@@ -483,6 +474,7 @@ const logout = async () => {
         register, 
         logout,
         user: authUser || user,
+        mutate,
         error,
         insetImg,
         insetProduct,

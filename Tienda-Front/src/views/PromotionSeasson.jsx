@@ -5,7 +5,6 @@ import Product from "../components/Product";
 
 export default function PromotionSeasson() {
   const { img, promotions, promoProduct, imgProduct, idImgProduct, product } = useQuisco();
-  console.log("El valor de promotion desde PromotionSeasson es ", promotions);
   const listRef = useRef();
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -21,7 +20,6 @@ export default function PromotionSeasson() {
     .filter(item => filteredPromotionSeasson.some(promo => promo.id === item.promotion_id))
     .map(item => item.product_id);
   const promotionProduct = validProducts.filter(prod => seassonProductIds.includes(prod.id));
-  console.log("El valor de promotionProduct desde PromotionSeasson es ", promotionProduct);
 
   const imgProductKeys = Object.keys(idImgProduct);
   const filteredKeys = imgProductKeys.filter(key => {
@@ -33,7 +31,6 @@ export default function PromotionSeasson() {
     acc[key] = idImgProduct[key];
     return acc;
   }, {});
-  console.log("El valor de filteredIdImgProduct desde PromotionSeasson es ", filteredIdImgProduct);
 
   // Obtener la imagen de la última promoción de tipo 'seasson'
   const imgP = img.find(img => img.id === lastSeasonPromotionSeasson.id_imgs);

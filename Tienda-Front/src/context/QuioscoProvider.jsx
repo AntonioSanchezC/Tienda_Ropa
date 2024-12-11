@@ -24,6 +24,7 @@ const QuioscoProvider = ({children}) =>{
     //Variables que optienen los productos
     const [product, setProduct] = useState([]);
     const [productAll, setProductAll] = useState([]);
+    const [productAllSex, setProductAllSex] = useState([]);
     const [genderProducts, setGenderProducts] = useState([]);
     const [currentProduct, setCurrentProduct] = useState({});
 
@@ -69,6 +70,9 @@ const QuioscoProvider = ({children}) =>{
 
     //Variable para filtrado en barra de busqueda y menu catageorías
     const [ filteredProducts, setFilteredProducts ] = useState([]);
+    const [isCodeSearch, setIsCodeSearch] = useState(false);
+
+    
     const [ filteredProductsCount, setFilteredProductsCount ] = useState([]);
 
     //Variable para Layout
@@ -129,7 +133,6 @@ const QuioscoProvider = ({children}) =>{
 
     const selectGender = async (newGender) => {
         setGender(newGender);
-        console.log("El valor de gender desde selectGender es ", gender);
         setCookie('selectedGender', newGender, 7); 
     };
 
@@ -176,10 +179,9 @@ const QuioscoProvider = ({children}) =>{
     
     const obtenerSubCategorias = async () => {
         try {
-            if (!subCategoriesC.length) {
                 const { data } = await clienteAxios('/api/subcategories')
                 setSubCategoryC(data.data);
-            }
+            
             
         } catch (error) {
             console.log(error);
@@ -201,6 +203,23 @@ const QuioscoProvider = ({children}) =>{
                   });
 
                 setProductAll(data.data);
+            
+
+        } catch (error) {
+            console.log(error);
+        }
+    };    
+    const GetProductsSex = async (gender) => {
+        const token = localStorage.getItem('AUTH_TOKEN');
+        try {
+
+                const { data } = await clienteAxios.get(`/api/productsAdminSex/${gender}`, {
+                    headers: {
+                      Authorization: `Bearer ${token}`
+                    }
+                  });
+
+                  setProductAllSex(data.data);
             
 
         } catch (error) {
@@ -239,7 +258,6 @@ const QuioscoProvider = ({children}) =>{
                   const userData = response.data.data;
                   setUsers(userData);
  
-                console.log("El valor de response en getUsers es ", response);
             } catch (error) {
                 console.error('Error al obtener los usuarios:', error);
                 setError(error);
@@ -424,14 +442,12 @@ const QuioscoProvider = ({children}) =>{
         setModalActivate(!modalActivate);
     }
     const handleClickCategoria = id => {
-        console.log("El valor de id en handleClickCategoria es ", id);
         const category = categories.filter(category => category.id === id)[0]
         setCurrentCategory(category)
     }
     
       
     const handleClickSubCategoria = id => {
-        console.log("El valor de id en handleClickSubCategoria es ", id);
         const subCategory = subCategories.filter(sub => sub.id === id)[0]
         setSubCurrentSubCategory(subCategory)
     }
@@ -462,7 +478,6 @@ const QuioscoProvider = ({children}) =>{
         } else {
             const newProduct = { ...product, quantity: quantityNumber, price };
             setOrder([...order, newProduct]);
-            console.log("El valor de order en handleQuantityCustomers es, ", order);
             toast.success('Producto agregado al pedido');
         }
     };
@@ -472,7 +487,6 @@ const QuioscoProvider = ({children}) =>{
     
       
     const handleSubmitNewOrder = async (orderData, setErrores) => {
-        console.log("El valor de orderData desde handleSubmitNewOrder es", orderData);
         const token = localStorage.getItem('AUTH_TOKEN');
         try {
           const { data } = await clienteAxios.post('/api/orders', orderData, {
@@ -496,7 +510,6 @@ const QuioscoProvider = ({children}) =>{
         }
       };    
       const handleSubmitNewOrderSuccess = async (orderData,transactionId, setErrores) => {
-          console.log("El valor de orderData desde handleSubmitNewOrder es", orderData);
           const token = localStorage.getItem('AUTH_TOKEN');
           try {
             const { data } = await clienteAxios.post('/api/ordersSuccess', {
@@ -549,8 +562,7 @@ const QuioscoProvider = ({children}) =>{
     }
 
     const handleClickEnviarMensaje = async (address, addressCode) => {
-        console.log("desde handleClickEnviarMensaje addressCode es: ", address);
-        console.log("desde handleClickEnviarMensaje addressCode es: ", addressCode);
+
         try {
             // Realiza una solicitud al backend para enviar el mensaje
             await clienteAxios.post('/api/send-mail', { email: address, addressCode: addressCode });
@@ -611,11 +623,10 @@ const QuioscoProvider = ({children}) =>{
     
 
     };
-    const handleClickFilteredProducts = (filter) => {
+    const handleClickFilteredProducts = async (filter) => {
         try {
             setFilteredProducts([]); // Limpiar el estado antes de filtrar
-    
-            console.log('Valor de filter:', filter);
+
     
             let filtered = [];
     
@@ -632,19 +643,24 @@ const QuioscoProvider = ({children}) =>{
                 const filtLowerCase = filter.value.toLowerCase();
     
                 // Filtrar productos por nombre
-                filtered = product.filter(prod => prod.name.toLowerCase().includes(filtLowerCase));
+                filtered = product.filter(
+                    prod => 
+                        prod.name.toLowerCase().includes(filtLowerCase) || 
+                        prod.product_code.toLowerCase().includes(filtLowerCase) 
+                );
     
                 if (filtered.length === 0) {
+                    // Buscar categoría
                     const category = categories.find(cat => cat.name.toLowerCase().includes(filtLowerCase));
     
                     if (category) {
                         const subCategoriesByCategory = subCategoriesC.filter(sub => sub.parent_category_id === category.id);
                         const subCategoryIds = subCategoriesByCategory.map(sub => sub.id);
-    
                         filtered = product.filter(prod => subCategoryIds.includes(prod.sub_categories_id));
                     }
     
                     if (filtered.length === 0) {
+                        // Buscar subcategoría
                         const subCategory = subCategoriesC.find(sub => sub.name.toLowerCase().includes(filtLowerCase));
     
                         if (subCategory) {
@@ -653,9 +669,7 @@ const QuioscoProvider = ({children}) =>{
                     }
                 }
             }
-    
-            console.log('Productos filtrados:', filtered);
-    
+        
             setFilteredProducts(filtered);
     
         } catch (error) {
@@ -665,35 +679,26 @@ const QuioscoProvider = ({children}) =>{
     
     
     
-    useEffect(() => {
 
-        if(filteredProductsCount.length > 0){
 
             const searchCount = async (filteredProductsCount) => {
                 try {
-                    console.log("Desde searchCount en useEffect de provider ", filteredProductsCount);
                     const { data } = await clienteAxios.post('/api/productSearch', filteredProductsCount);
-                    console.log({ data });
                     return null; 
                 } catch (error) {
                     console.log(Object.values(error.response.data.errors));
-                    console.log("Return error for unsuccessful");
                     return error;
                 }
             };
         
+    useEffect(() => {
 
             searchCount(filteredProducts);
-        }
-    }, [filteredProductsCount])
+    }, [filteredProducts])
 
 
     const handleArriveId = (arriveId) => {
         try {
-
-    
-            console.log('Productos filtrados:', arriveId);
-    
             setSelectedArrival(arriveId);
     
         } catch (error) {
@@ -712,7 +717,21 @@ const QuioscoProvider = ({children}) =>{
         }
     }
 
+    const searchProductsByCode = async (productCode) => {
+        try {
+            setFilteredProducts([]);
+            setIsCodeSearch(true); // Indicador de búsqueda por código
     
+            const response = await clienteAxios.get(`/api/products/${productCode}/by-code`);
+            setFilteredProducts(response.data.products || []);
+        } catch (error) {
+            console.error('Error buscando productos:', error);
+            setFilteredProducts([]);
+        }
+    };
+    
+    
+
     return (
         <QuioscoContext.Provider
             value={{
@@ -793,7 +812,14 @@ const QuioscoProvider = ({children}) =>{
                 obtenerSubCategorias,
                 handleClickModal,
                 handleAgregarPedido,
-                handleClickModalActivated
+                handleClickModalActivated,
+                searchProductsByCode,
+                searchCount,
+
+
+                isCodeSearch,setIsCodeSearch,
+               productAllSex, GetProductsSex
+
 
             }}
         >

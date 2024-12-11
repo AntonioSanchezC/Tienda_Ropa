@@ -5,7 +5,6 @@ import clienteAxios from "../config/axios";
 
 export default function ModalProducto() {
   const { product, handleClickModal, handleAgregarPedido, order, handleClickModalActivated } = useQuisco();
-  console.log("El valor de product en el modal es ", product);
   const [quantity, setQuantity] = useState(1);
   const [edition, setEdition] = useState(false);
 

@@ -75,11 +75,12 @@ export default function Register() {
                         onSubmit={handleSubmit}
                         noValidate
                     >
-                        <div className="absolute top-20 right-12 p-4 z-20">
+                        <div className="absolute top-20 right-12 p-4 z-20  hover:bg-slate-300 rounded-full">
                             <Link to={`/`}>
-                                <img src={`${baseURL}/icon/backHome.png`} alt="logo icon" className="md:w-[3rem] md:h-[2rem]" />
+                                <img src={`${baseURL}/icon/backHome.png`} alt="logo icon" className="md:w-[2.5rem] md:h-[2.5rem]" />
                             </Link>
                         </div>
+       
                         <div className="flex items-start max-h-full">
 
                             <div className="w-1/2 pr-4 mx-2 ">

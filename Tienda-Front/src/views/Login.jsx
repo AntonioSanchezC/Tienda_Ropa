@@ -28,9 +28,10 @@ export default function Login() {
 
   return (
     <div className="w-full max-w-md relative p-6 mx-auto font-playfair">
-      <div className="absolute top-0 left-0 p-4 z-20">
+      <div className="absolute top-0 left-0 p-4 z-20 hover:bg-slate-300 rounded-full">
         <Link to={`/`}>
-          <img src={`${baseURL}/icon/backHome.png`} alt="logo icon" className="md:w-[3rem] md:h-[2rem]" />
+          <img src={`${baseURL}/icon/backHome.png`} alt="logo icon" className="md:w-[2.5rem] md:h-[2.5rem]" 
+          />
         </Link>
       </div>
       <div

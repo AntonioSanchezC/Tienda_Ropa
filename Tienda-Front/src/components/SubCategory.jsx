@@ -10,7 +10,6 @@ import useQuisco from "../hooks/useQuiosco";
         };
       
 
-        console.log("Los datos de sub ",subCurrentSubCategory);
     return (
         <div
           className='flex items-center gap-4  w-full p-3  cursor-pointer'

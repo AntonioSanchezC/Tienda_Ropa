@@ -15,18 +15,29 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function indexAdmin()
+    public function indexAdminSex($gender)
     {
         // Obtener productos agrupados por nombre y tomar solo uno por cada grupo
         $products = Product::with('imgs')
+            ->where('gender', $gender)
             ->select('products.*')
-            ->join(DB::raw('(SELECT MIN(id) as id FROM products GROUP BY name) as grouped_products'), 'products.id', '=', 'grouped_products.id')
             ->orderBy('products.id', 'DESC')
             ->get();
 
         // Retornar los productos agrupados en una colección de productos
         return new ProductCollection($products);
     }
+
+    public function indexAdmin()
+        {
+            // Obtener todos los productos con imágenes
+            $products = Product::with('imgs')
+            ->orderBy('products.id', 'DESC')
+            ->get();
+
+            return new ProductCollection($products);
+        }
+
 
     public function index($gender)
     {
@@ -92,38 +103,9 @@ class ProductController extends Controller
         }
     }
 
-
-
-    public function GetProductsByCode(Request $request)
-    {
-        $productCode = $request->input('product_code');
-        $sizeId = $request->input('size_id');
-
-        $products = Product::where('product_code', $productCode)->get();
-
-        $sizes = Size::whereHas('products', function ($query) use ($productCode) {
-            $query->where('product_code', $productCode);
-        })->get();
-
-        $colors = Color::whereHas('products', function ($query) use ($productCode, $sizeId) {
-            $query->where('product_code', $productCode);
-            if ($sizeId) {
-                $query->whereHas('sizes', function ($query) use ($sizeId) {
-                    $query->where('size_id', $sizeId);
-                });
-            }
-        })->get();
-
-        return response()->json([
-            'products' => $products,
-            'sizes' => $sizes,
-            'colors' => $colors,
-        ]);
-    }
-
     public function getProductSizesColorsImages($productCode)
     {
-        $products = Product::where('product_code', $productCode)
+        $products = Product::where('name', $productCode)
             ->with(['sizes', 'colors', 'imgs'])
             ->get();
 
@@ -131,6 +113,35 @@ class ProductController extends Controller
             'products' => $products,
         ]);
     }
+
+
+
+    public function getProductsByCode($productCode)
+    {
+        // Paso 1: Encontrar el producto específico con el código dado
+        $product = Product::where('product_code', $productCode)
+            ->with(['sizes', 'colors', 'imgs'])
+            ->first();
+
+        // Verificar si se encontró el producto
+        if (!$product) {
+            return response()->json(['message' => 'Producto no encontrado'], 404);
+        }
+
+        // Paso 2: Obtener todos los productos que tengan el mismo nombre
+        $products = Product::where('name', $product->name)
+            ->where('product_code', '!=', $productCode) // Excluir el producto específico del resto
+            ->with(['sizes', 'colors', 'imgs'])
+            ->get();
+
+        // Paso 3: Insertar el producto específico al inicio del array
+        $allProducts = collect([$product])->merge($products);
+
+        return response()->json([
+            'products' => $allProducts,
+        ]);
+    }
+
 
 
 

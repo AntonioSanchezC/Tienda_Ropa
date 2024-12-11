@@ -1,4 +1,3 @@
-/* Agrega estas clases a tu CSS */
 .flex-column {
   display: flex;
   flex-direction: column;
@@ -28,7 +27,6 @@
     transform: translateX(0);
   }
 }
-
 @keyframes slideRight {
   0% {
     transform: translateX(-100%);
@@ -37,3 +35,5 @@
     transform: translateX(0);
   }
 }
+
+/*# sourceMappingURL=styleInitialA.css.map */

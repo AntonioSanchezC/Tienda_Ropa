@@ -10,14 +10,14 @@ export default function Footer() {
       <div className="container mx-auto px-4">
         <div className="flex flex-wrap justify-center text-center">
           {/* Sección de cuenta */}
-          <div className="w-full md:w-1/4 mb-6 md:mb-0 px-2 text-left">
+          <div className="w-full md:w-1/4 sm:w-1/2 xs:w-1/2 mb-6 md:mb-0 px-2 text-left">
             <h5 className="font-bold mb-2">Mi cuenta</h5>
             <ul className="list-none">
               <li className="mb-2">
-                <Link to="/" className="text-zinc-500 hover:text-zinc-700 hover:underline">Iniciar sesión</Link>
+                <Link to="/auth/login" className="text-zinc-500 hover:text-zinc-700 hover:underline">Iniciar sesión</Link>
               </li>
               <li className="mb-2">
-                <Link to="/register" className="text-zinc-500 hover:text-zinc-700 hover:underline">Registrarme</Link>
+                <Link to="/auth/register" className="text-zinc-500 hover:text-zinc-700 hover:underline">Registrarme</Link>
               </li>
               <li className="mb-2">
                 <Link to="/aboutUs" className="text-zinc-500 hover:text-zinc-700 hover:underline">Direcciones de envío</Link>
@@ -29,12 +29,10 @@ export default function Footer() {
           </div>
 
           {/* Sección de enlaces */}
-          <div className="w-full md:w-1/4 mb-6 md:mb-0 px-2 text-left">
+          <div className="w-full md:w-1/4 sm:w-1/2 xs:w-1/2 mb-6 md:mb-0 px-2 text-left">
             <h5 className="font-bold mb-2">Empresa</h5>
             <ul className="list-none">
-              <li className="mb-2">
-                <Link to="/" className="text-zinc-500 hover:text-zinc-700 hover:underline">Quienes somos</Link>
-              </li>
+
               <li className="mb-2">
                 <Link to="/auth/contactUs" className="text-zinc-500 hover:text-zinc-700 hover:underline">Contáctanos</Link>
               </li>
@@ -45,7 +43,7 @@ export default function Footer() {
           </div>
 
           {/* Sección de métodos de pago */}
-          <div className="w-full md:w-1/4 mb-6 md:mb-0 px-2 text-center">
+          <div className="w-full md:w-1/4 sm:w-1/2 xs:w-1/2 mb-6 md:mb-0 px-2 text-center">
             <h5 className="font-bold mb-2">Métodos de pagos</h5>
             <ul className="list-none">
               <li className="mb-2">
@@ -58,7 +56,7 @@ export default function Footer() {
           </div>
 
           {/* Sección de información legal */}
-          <div className="w-full md:w-1/4 mb-6 md:mb-0 px-2 text-left">
+          <div className="w-full md:w-1/4 sm:w-1/2 xs:w-1/2 mb-6 md:mb-0 px-2 text-left">
             <h5 className="font-bold mb-2">Legal</h5>
             <ul className="list-none">
               <li className="mb-2">
@@ -72,11 +70,11 @@ export default function Footer() {
         </div>
 
         <div className="flex flex-wrap justify-center mt-12 text-left z-10">
-          <div className="w-full md:w-1/2 mb-6 md:mb-0 px-4 text-center z-10">
+          <div className="hidden sm:block  w-full md:w-1/2 mb-6 md:mb-0 px-4 text-center z-10 ">
             <h5 className="font-bold mb-2 text-xl">Nuestra ubicación</h5>
-            <UbiCenter />
+              <UbiCenter />
           </div>
-          <div className="w-full md:w-1/2 mb-6 md:mb-0 px-4">
+          <div className="w-full md:w-1/2 mb-6 md:mb-0 px-4 xs:text-center md:text-left">
             <h5 className="font-bold mb-2 text-xl md:mb-7">Dirección</h5>
             <p className="text-zinc-600 text-lg md:mb-2">c\ Poeta Rafael Alberti, nº 8</p>
             <p className="text-zinc-600 text-lg md:mb-2">Puerto Santa María, España</p>

@@ -1,3 +1,4 @@
+import useSWR from 'swr';
 import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useQuiosco from '../hooks/useQuiosco';
@@ -9,8 +10,7 @@ const UserInfo = ({ onShowOrders, showOrders }) => {
   const { getArrivals, getWarehouses, loading, error } = useQuiosco();
   const baseURL =  import.meta.env.VITE_API_URL;
 
-  const { logout, user } = useAuth({ middleware: 'auth' });
-  console.log("El valor de user en UserInfo es ", user);
+  const { logout, user,mutate } = useAuth({ middleware: 'auth' });
 
   const navigate = useNavigate();
 
@@ -87,22 +87,19 @@ const UserInfo = ({ onShowOrders, showOrders }) => {
 
       const imageUrl = imageResponse.data.imagen;
 
-      console.log("El valor de imageUrl es ", imageUrl);
-
       // Actualizar el usuario con la ruta de la imagen
       const userUpdateData = {
         ...formData,
         image: imageUrl,
       };
-      console.log("El valor de userUpdateData es ", userUpdateData);
 
       const { data } = await clienteAxios.post(`/api/user/${user.id}`, userUpdateData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log("El valor de data es ", data.user);
 
+      mutate('/api/user');
       alert('Datos actualizados exitosamente');
       setIsEditing(false);
     } catch (error) {
@@ -142,6 +139,14 @@ const UserInfo = ({ onShowOrders, showOrders }) => {
 
   const handleDeleteAccount = async () => {
     if (!user) return;
+
+    // Mostrar ventana modal de confirmación
+    const isConfirmed = window.confirm('¿Estás seguro de que quieres borrar tu cuenta? Esta acción no se puede deshacer.');
+
+    if (!isConfirmed) {
+      return;  // Si el usuario cancela, no hacemos nada
+    }
+
     const token = localStorage.getItem('AUTH_TOKEN');
     try {
       await clienteAxios.delete(`/api/user/${user.id}`, {
@@ -150,6 +155,7 @@ const UserInfo = ({ onShowOrders, showOrders }) => {
         },
       });
       alert('Cuenta borrada exitosamente');
+      mutate('/api/user');
       logout();
     } catch (error) {
       console.error('Error deleting account:', error);

@@ -10,17 +10,19 @@ export default function Checkout() {
   useEffect(() => {
     getArrivals();
   }, []);
-  const { user } = useAuth({ middleware: 'auth' }); 
+  const { user } = useAuth({ middleware: "auth" });
 
-  const [arrivalId, setarrivalId] = useState();
+  const [arrivalId, setarrivalId] = useState("");
+  const [isArrivalSelected, setIsArrivalSelected] = useState(false);
   const [cardNumber, setCardNumber] = useState("");
   const [cardExpiry, setCardExpiry] = useState("");
   const [cardCVC, setCardCVC] = useState("");
   const [errores, setErrores] = useState([]);
 
   const handleArrivalChange = (e) => {
-    const selectedValue = parseInt(e.target.value, 10);
+    const selectedValue = e.target.value;
     setarrivalId(selectedValue);
+    setIsArrivalSelected(selectedValue !== ""); // Actualiza el estado según la selección
   };
 
   const handleCardNumberChange = (e) => setCardNumber(e.target.value);
@@ -29,9 +31,14 @@ export default function Checkout() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!arrivalId) {
+      setErrores(["Debe seleccionar un Punto de Entrega antes de confirmar el pedido."]);
+      return;
+    }
+
     const orderData = {
       total,
-      arrivalId: arrivalId,
+      arrivalId: parseInt(arrivalId, 10),
       products: order.map((product) => ({
         id: product.id,
         quantity: product.quantity,
@@ -43,7 +50,7 @@ export default function Checkout() {
       })),
       cardNumber,
       cardExpiry,
-      cardCVC
+      cardCVC,
     };
     handleSubmitNewOrder(orderData, setErrores);
   };
@@ -80,7 +87,9 @@ export default function Checkout() {
                   </tbody>
                 </table>
                 <div className="text-right mt-4">
-                  <p className="text-xl font-semibold">Total: <span className="text-blue-500">{formatearDinero(total)}</span></p>
+                  <p className="text-xl font-semibold">
+                    Total: <span className="text-blue-500">{formatearDinero(total)}</span>
+                  </p>
                 </div>
               </>
             )}
@@ -88,12 +97,21 @@ export default function Checkout() {
         </div>
 
         <div className="md:w-1/2 mx-auto">
-          <form onSubmit={handleSubmit} className="bg-gray-200 shadow-md border-solid border-2 border-gray-700 rounded-lg p-8 md:p-12" noValidate>
+          <form
+            onSubmit={handleSubmit}
+            className="bg-gray-200 shadow-md border-solid border-2 border-gray-700 rounded-lg p-8 md:p-12"
+            noValidate
+          >
             <h2 className="text-2xl font-bold mb-6 text-center">Detalles de Pago</h2>
             {errores.length > 0 && errores.map((error, i) => <Alerta key={i}>{error}</Alerta>)}
 
             <div className="mb-4 flex items-center">
-              <label htmlFor="arrivalId" className="w-1/3 text-lg font-medium text-gray-700">Punto de Entrega</label>
+              <label
+                htmlFor="arrivalId"
+                className="w-1/3 text-lg font-medium text-gray-700"
+              >
+                Punto de Entrega
+              </label>
               <select
                 id="arrivalId"
                 name="arrivalId"
@@ -104,77 +122,102 @@ export default function Checkout() {
               >
                 <option value="">Seleccione el punto de entrega</option>
                 {arrivals.map((arrival) => (
-                  <option key={arrival.id} value={arrival.id}>{arrival.address}</option>
+                  <option key={arrival.id} value={arrival.id}>
+                    {arrival.address}
+                  </option>
                 ))}
               </select>
             </div>
 
-            <div className="mb-4 flex items-center">
-              <label htmlFor="cardNumber" className="w-1/3 text-lg font-medium text-gray-700">Número de Tarjeta</label>
-              <input
-                type="text"
-                id="cardNumber"
-                name="cardNumber"
-                autoComplete="cc-number"
-                className="w-2/3 bg-gray-100 h-12 p-3 border-b-2 border-gray-400 focus:border-blue-500 outline-none"
-                value={cardNumber}
-                onChange={handleCardNumberChange}
-              />
-            </div>
+            {isArrivalSelected && (
+              <>
+                <div className="mb-4 flex items-center">
+                  <label
+                    htmlFor="cardNumber"
+                    className="w-1/3 text-lg font-medium text-gray-700"
+                  >
+                    Número de Tarjeta
+                  </label>
+                  <input
+                    type="text"
+                    id="cardNumber"
+                    name="cardNumber"
+                    autoComplete="cc-number"
+                    className="w-2/3 bg-gray-100 h-12 p-3 border-b-2 border-gray-400 focus:border-blue-500 outline-none"
+                    value={cardNumber}
+                    onChange={handleCardNumberChange}
+                  />
+                </div>
 
-            <div className="mb-4 flex items-center">
-              <label htmlFor="cardExpiry" className="w-1/3 text-lg font-medium text-gray-700">Fecha de Expiración</label>
-              <input
-                type="text"
-                id="cardExpiry"
-                name="cardExpiry"
-                autoComplete="cc-exp"
-                className="w-2/3 bg-gray-100 h-12 p-3 border-b-2 border-gray-400 focus:border-blue-500 outline-none"
-                value={cardExpiry}
-                onChange={handleCardExpiryChange}
-                placeholder="MM/YY"
-              />
-            </div>
+                <div className="mb-4 flex items-center">
+                  <label
+                    htmlFor="cardExpiry"
+                    className="w-1/3 text-lg font-medium text-gray-700"
+                  >
+                    Fecha de Expiración
+                  </label>
+                  <input
+                    type="text"
+                    id="cardExpiry"
+                    name="cardExpiry"
+                    autoComplete="cc-exp"
+                    className="w-2/3 bg-gray-100 h-12 p-3 border-b-2 border-gray-400 focus:border-blue-500 outline-none"
+                    value={cardExpiry}
+                    onChange={handleCardExpiryChange}
+                    placeholder="MM/YY"
+                  />
+                </div>
 
-            <div className="mb-4 flex items-center">
-              <label htmlFor="cardCVC" className="w-1/3 text-lg font-medium text-gray-700">CVC</label>
-              <input
-                type="text"
-                id="cardCVC"
-                name="cardCVC"
-                autoComplete="cc-csc"
-                className="w-2/3 bg-gray-100 h-12 p-3 border-b-2 border-gray-400 focus:border-blue-500 outline-none"
-                value={cardCVC}
-                onChange={handleCardCVCChange}
-              />
-            </div>
+                <div className="mb-4 flex items-center">
+                  <label
+                    htmlFor="cardCVC"
+                    className="w-1/3 text-lg font-medium text-gray-700"
+                  >
+                    CVC
+                  </label>
+                  <input
+                    type="text"
+                    id="cardCVC"
+                    name="cardCVC"
+                    autoComplete="cc-csc"
+                    className="w-2/3 bg-gray-100 h-12 p-3 border-b-2 border-gray-400 focus:border-blue-500 outline-none"
+                    value={cardCVC}
+                    onChange={handleCardCVCChange}
+                  />
+                </div>
 
-            {user && user.email_verified_at ? (
-              <div className="mt-5 text-center">
-                <input
-                  type="submit"
-                  className="bg-blue-600 hover:bg-blue-800 text-white font-bold py-2 px-4 rounded cursor-pointer mb-8"
-                  value="Confirmar Pedido"
-                  disabled={order.length === 0}
-                />
-                <PayPalPayment 
-                  orderData={{ 
-                    total, 
-                    arrivalId,
-                    products: order.map((product) => ({
-                      id: product.id,
-                      quantity: product.quantity,
-                      name: product.name,
-                      price: product.price,
-                      color: product.selectedColor,
-                      size: product.selectedSize,
-                      product_code: product.product_code,
-                    })),
-                  }} 
-                />
-              </div>
-            ) : (
-              <p className="text-red-500 mt-5 text-center">Inicie sesión y verifique su correo para confirmar el pedido.</p>
+                <div className="mt-5 text-center">
+                  {user && user.email_verified_at ? (
+                    <>
+                      <input
+                        type="submit"
+                        className="bg-blue-600 hover:bg-blue-800 text-white font-bold py-2 px-4 rounded cursor-pointer mb-8"
+                        value="Confirmar Pedido"
+                        disabled={order.length === 0}
+                      />
+                      <PayPalPayment
+                        orderData={{
+                          total,
+                          arrivalId,
+                          products: order.map((product) => ({
+                            id: product.id,
+                            quantity: product.quantity,
+                            name: product.name,
+                            price: product.price,
+                            color: product.selectedColor,
+                            size: product.selectedSize,
+                            product_code: product.product_code,
+                          })),
+                        }}
+                      />
+                    </>
+                  ) : (
+                    <p className="text-red-500 mt-5 text-center">
+                      Inicie sesión y verifique su correo para confirmar el pedido.
+                    </p>
+                  )}
+                </div>
+              </>
             )}
           </form>
         </div>

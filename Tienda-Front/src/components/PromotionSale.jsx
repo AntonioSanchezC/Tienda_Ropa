@@ -5,9 +5,6 @@ export default function PromotionSale({promotion, img,}) {
 
     const { name } = promotion;
 
-    // Verificar si img está definido y tiene la propiedad 'image'
-    console.log(img);
-  
     // Construir la ruta completa de la imagen utilizando import.meta.env
     const imagePromotion = img && img.image ? `${clienteAxios.defaults.baseURL}/${img.image}` : null;
   

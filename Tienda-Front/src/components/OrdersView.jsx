@@ -7,6 +7,7 @@ import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 
+
 const pointIconUrlGo = '/icon/Go.png';
 const pointIconUrlArrive = '/icon/Arrive.png'; // Ruta desde la carpeta 'public' de Laravel
 
@@ -33,7 +34,6 @@ const OrdersView = () => {
             Authorization: `Bearer ${token}`
           }
         });
-        console.log('Response data: ', response.data);
         setOrders(response.data.orders || []);
       } catch (error) {
         console.error('Error fetching orders:', error);
@@ -42,7 +42,6 @@ const OrdersView = () => {
 
     fetchOrders();
   }, []);
-  console.log("El valor de orders en Orders es de ", orders);
 
 
   const handleMapVisibility = (orderId) => {
@@ -86,11 +85,12 @@ const OrdersView = () => {
         <div key={order.id} className="mb-8">
           <div className="flex flex-col md:flex-row">
             <div className="md:w-1/2">
-              <h4 className="text-2xl font-bold">Pedido {order.code}</h4>
+              <h4 className="text-2xl font-bold">Pedido</h4>
+              <p>Código: {order.code}</p>
               <p>Total: {order.total}</p>
               <p>Status: {order.status}</p>
-              <p>Created At: {order.created_at}</p>
-              <p>Updated At: {order.updated_at}</p>
+              <p>Creado:{new Intl.DateTimeFormat('es-ES', { dateStyle: 'long', timeStyle: 'short' }).format(new Date(order.created_at))}</p>
+              <p>Últios camios:{new Intl.DateTimeFormat('es-ES', { dateStyle: 'long', timeStyle: 'short' }).format(new Date(order.updated_at))}</p>
             </div>
             <div className="md:w-1/2">
               {order.products && order.products.length > 0 && (
@@ -99,7 +99,7 @@ const OrdersView = () => {
                   <ul>
                     {order.products.map(product => (
                       <li key={product.id}>
-                        {product.name} - Quantity: {product.pivot.quantity} - Price: {product.price}
+                        {product.name} - Cantidad: {product.pivot.quantity} - Precio: {product.price} 
                       </li>
                     ))}
                   </ul>
@@ -167,10 +167,10 @@ const OrdersView = () => {
                 <h2 className="font-bold text-2xl">Detalles de Entregas</h2>
                 {order.deliveries.map(delivery => (
                   <div key={delivery.id} className="mt-4">
-                    <p><strong>Warehouse:</strong> {delivery.warehouse.name} ({delivery.departure})</p>
-                    <p><strong>Departure Time:</strong> {delivery.departure_time}</p>
-                    <p><strong>Arrival:</strong> {delivery.arrival.name} ({delivery.arrival.address})</p>
-                    <p><strong>Arrival Time:</strong> {delivery.arrival_time}</p>
+                    <p><strong>Almacen:</strong> {delivery.warehouse.name} ({delivery.departure})</p>
+                    <p><strong>Hora de salida:</strong> {delivery.departure_time}</p>
+                    <p><strong>Punto de entrega:</strong> {delivery.arrival.name} ({delivery.arrival.address})</p>
+                    <p><strong>Hora de llegada:</strong> {delivery.arrival_time}</p>
                   </div>
                 ))}
               </div>

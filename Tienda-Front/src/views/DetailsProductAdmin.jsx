@@ -9,6 +9,8 @@ export default function DetailsProductAdmin() {
     const location = useLocation();
     const { product } = location.state || {};
     const {
+        obtenerCategorias,
+        obtenerSubCategorias,
         categories,
         subCategories,
         subCategoriesC,
@@ -16,6 +18,11 @@ export default function DetailsProductAdmin() {
         imgProduct,
         idImgProduct,
     } = useQuisco();
+    useEffect(() => {
+        obtenerCategorias(); 
+        obtenerSubCategorias();
+    }, []);
+
 
     const [errores, setErrores] = useState([]);
     const { updateProduct } = useAuth({
@@ -53,19 +60,29 @@ export default function DetailsProductAdmin() {
 
     useEffect(() => {
         if (product && product.sub_categories_id !== undefined) {
-            const selectedSubcategoryC = subCategoriesC.find(subCategory => subCategory.id === product.sub_categories_id);
+            // Intentamos encontrar la subcategoría seleccionada
+            const selectedSubcategoryC = subCategoriesC.find(
+                (subCategory) => subCategory.id === product.sub_categories_id
+            );
+            
             if (selectedSubcategoryC) {
                 setSelectedSubcategoryId(selectedSubcategoryC.id);
                 setSelectedSubcategory(selectedSubcategoryC);
+    
+                // Solo intentamos buscar la categoría padre si se encontró una subcategoría válida
+                const selectedCategoryC = categories.find(
+                    (category) => category.id === selectedSubcategoryC.parent_category_id
+                );
+                setSelectedCategory(selectedCategoryC);
             }
-
-            const selectedCategoryC = categories.find(category => category.id === selectedSubcategoryC.parent_category_id);
-            setSelectedCategory(selectedCategoryC);
-
-            const imgProductForProducto = imgProduct.find((imgP) => imgP.product_id === product.id);
+    
+            // Buscar la imagen relacionada con el producto
+            const imgProductForProducto = imgProduct.find(
+                (imgP) => imgP.product_id === product.id
+            );
             const key = imgProductForProducto ? `${product.id}_${imgProductForProducto.img_id}` : '';
             const imgRelated = key && idImgProduct[key];
-
+    
             setImgRelated(imgRelated);
             if (imgRelated && imgRelated.image) {
                 const imgURL = `${baseURL}/${imgRelated.image}`;
@@ -73,6 +90,7 @@ export default function DetailsProductAdmin() {
             }
         }
     }, [product, subCategoriesC, categories, imgProduct, idImgProduct, baseURL]);
+    
 
     const {
         acceptedFiles,
@@ -81,7 +99,10 @@ export default function DetailsProductAdmin() {
         isDragActive,
         open,
     } = useDropzone({
-        accept: ['.png', '.jpg', '.jpeg', '.gif'],
+        accept: {
+            'image/*': ['.jpeg', '.jpg', '.png'],
+            'application/pdf': ['.pdf']
+          },
         maxFiles: 1,
         onDrop: (acceptedFiles) => {
             if (acceptedFiles.length > 0) {
@@ -278,7 +299,7 @@ export default function DetailsProductAdmin() {
                                           onChange={handleChangeCategoria}
                         
                                       >
-                                        <option value="" disabled selected >
+                                        <option defaultValue >
                                         {selectedCategory ? selectedCategory.name : 'Cargando...'}
                                         </option>
                                         {categories.map(category => (
@@ -303,11 +324,10 @@ export default function DetailsProductAdmin() {
                          onChange={handleChangeSubcategory}
          
                        >
-         
-     
-                       <option value="" disabled selected >
+                       <option defaultValue >
                        {selectedSubcategory ? selectedSubcategory.name : 'Cargando...'}
                        </option>
+
            
                        {subCategories
                          .filter((sub) => sub.parent_category_id === selectCategoryId)

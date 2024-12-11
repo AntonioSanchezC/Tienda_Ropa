@@ -20,7 +20,6 @@ export default function PromotionSaleView() {
       if (productDetails) {
         const discount = parseFloat(promotion.discount) / 100;
         const discountedPrice = productDetails.price - (productDetails.price * discount);
-        console.log("El valor de discountedPrice en PromotionSaleView es de ", discountedPrice);
         return { ...productDetails, discountedPrice };
       }
       return null;
@@ -35,7 +34,6 @@ export default function PromotionSaleView() {
             <li className={`page flex-shrink-0 w-full`}>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2">
                 {promotionProducts.map((item, index) => {
-                  console.log("El valor de item en PromotionSaleView es de ", item);
                   const imgProductForProduct = imgProduct.find(imgP => imgP.product_id === item.id);
                   const key = imgProductForProduct ? `${item.id}_${imgProductForProduct.img_id}` : '';
                   const imgRelacionated = key && idImgProduct[key];

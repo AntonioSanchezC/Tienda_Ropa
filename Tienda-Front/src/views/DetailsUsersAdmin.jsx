@@ -8,7 +8,8 @@ import { useAuth } from "../hooks/useAuth";
 export default function DetailsUsersAdmin() {
     const location = useLocation();
     const { user } = location.state || {};
-    console.log("El valor de user en DetailsUsersAdmin es ", user);
+    const [admin, setAdmin] = useState(user.admin ?? 0); 
+
 
     if (!user) {
         return <div>Error: No se encontró el usuario.</div>;
@@ -30,6 +31,7 @@ export default function DetailsUsersAdmin() {
     const prefRef = useRef();
     const telfRef = useRef();
     const emailRef = useRef();
+    const adminRef = useRef();
     const passwordRef = useRef();
     const passwordConfirmtionRef = useRef();
 
@@ -38,9 +40,10 @@ export default function DetailsUsersAdmin() {
       middleware: 'auth',
       url: '/'
     });
-    const handleSubmit = async e => {
-        e.preventDefault();
 
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+    
         const datos = {
             id: user.id,
             name: nameRef.current.value,
@@ -50,15 +53,23 @@ export default function DetailsUsersAdmin() {
             value: prefRef.current.value,
             telf: telfRef.current.value,
             email: emailRef.current.value,
-            password: passwordRef.current.value,
-            password_confirmation: passwordConfirmtionRef.current.value
-        }
-
+            admin: parseInt(admin),
+            password: passwordRef.current.value ? passwordRef.current.value : undefined,
+            password_confirmation: passwordConfirmtionRef.current.value ? passwordConfirmtionRef.current.value : undefined,
+        };
+    
+    
+        try {
             await updateUser(datos, setErrores);
             setEmailValue(datos.email);
-
-
-      };
+        } catch (error) {
+            console.error("Error al actualizar el usuario:", error);
+        }
+    };
+    
+    
+    
+    
     const [selectPhone, setSelectPhone] = useState({}); 
     const [selectPrefix, setSelectPrefix] = useState({}); 
 
@@ -66,7 +77,6 @@ export default function DetailsUsersAdmin() {
         if (phone && phone.length > 0) {
             // Buscar el número de teléfono asociado al user_id del usuario actual
             const selectedPhone = phone.find(item => item.user_id === user.id);
-            console.log("El valor de selectedPhone en DetailsUsersAdmin es ", selectedPhone);
 
             // Si se encuentra un número de teléfono, establecerlo en selectPhone
             if (selectedPhone) {
@@ -203,25 +213,26 @@ export default function DetailsUsersAdmin() {
                                         ))}
                                     </select>
                             </div>
+                                <div >
+                                    <label  className="text-slate-800" htmlFor="telf">Teléfono :</label>
+                                    <input
+                                    defaultValue={selectPhone.number}
+                                    className="mt-2 w-full p-3 bg-gray-50"
+
+                                            type="text"
+                                            id="telf"
+                                            name="telf"
+                                            placeholder="Teléfono Móvil (Formato internacional, ej: +123 4567890123)"
+                                            ref={telfRef}
+                                            required
+                                    />
+                                </div>
                             </div>
 
                             </div>
                             <div className="w-1/2 pr-4 mt-10">
 
-                            <div >
-                                <label  className="text-slate-800" htmlFor="telf">Teléfono :</label>
-                                <input
-                                defaultValue={selectPhone.number}
-                                className="mt-2 w-full p-3 bg-gray-50"
 
-                                        type="text"
-                                        id="telf"
-                                        name="telf"
-                                        placeholder="Teléfono Móvil (Formato internacional, ej: +123 4567890123)"
-                                        ref={telfRef}
-                                        required
-                                />
-                            </div>
 
                         
                         <div>
@@ -256,42 +267,60 @@ export default function DetailsUsersAdmin() {
 
                                 />
                             </div>
-                            <div >
-                                <label 
-                                    className="text-slate-800"
-                                    htmlFor="password"
-                                    >Contraseña:
-                                </label>
-                                <input 
-                                defaultValue={user.password}
-                                className="mt-2 w-full p-3 bg-gray-50"
+                            <div className="w-1/2 pr-4 mt-10">
+                            <label className="text-slate-800">Tipo de usuario</label>
+                            <div className="mt-2">
+                        <label htmlFor="admin-1">
+                            <input
+                                id="admin-1"
+                                type="radio"
+                                name="admin"
+                                value="1"
+                                checked={admin === 1}  // Usa `checked` en lugar de `defaultChecked`
+                                onChange={(e) => setAdmin(parseInt(e.target.value, 10))}
+                            />
+                            Administrador
+                        </label>
+                        <label htmlFor="admin-0">
+                            <input
+                                id="admin-0"
+                                type="radio"
+                                name="admin"
+                                value="0"
+                                checked={admin === 0}  // Usa `checked` en lugar de `defaultChecked`
+                                onChange={(e) => setAdmin(parseInt(e.target.value, 10))}
+                            />
+                            Usuario
+                        </label>
 
+                            </div>
+                        </div>
+                        
+                          
+                            <div>
+                                <label className="text-slate-800" htmlFor="password">Contraseña:</label>
+                                <input
+                                    className="mt-2 w-full p-3 bg-gray-50"
                                     type="password"
                                     id="password"
                                     name="password"
-                                    placeholder="Escribe tu Contraseña"
+                                    placeholder="Escribe una nueva contraseña"
                                     ref={passwordRef}
-
                                 />
                             </div>
-                            <div >
-                                <label 
-                                    className="text-slate-800"
-                                    htmlFor="password_confirmation"
-                                    >Repite tu Contraseña:
-                                </label>
-                                <input 
-                                defaultValue={user.password}
-                                className="mt-2 w-full p-3 bg-gray-50"
 
+                            <div>
+                                <label className="text-slate-800" htmlFor="password_confirmation">Repite la Contraseña:</label>
+                                <input
+                                    className="mt-2 w-full p-3 bg-gray-50"
                                     type="password"
                                     id="password_confirmation"
                                     name="password_confirmation"
-                                    placeholder="Repite tu Contraseña"
+                                    placeholder="Repite tu nueva contraseña"
                                     ref={passwordConfirmtionRef}
-
                                 />
                             </div>
+
                         </div>
                     </div>
 

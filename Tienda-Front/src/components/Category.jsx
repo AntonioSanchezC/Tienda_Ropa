@@ -9,11 +9,9 @@ export default function Category({ category }) {
 
 
   const handleClick = () => {
-    console.log("Categoría clickeada:", category);
     handleClickCategoria(id);
   };
 
-  console.log("Los datos de categoria ",currentCategory);
   return (
     <div
     className='flex items-center gap-4  w-full p-3  cursor-pointer'
